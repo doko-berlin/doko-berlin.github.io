@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doko-Saisonverwaltung</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Doko-Saison">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/065f46/ffffff?text=Doko">
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const blob = new Blob([`
+                    self.addEventListener('fetch', function(e) {
+                        // Minimaler Service Worker für PWA-Kriterien
+                    });
+                `], { type: 'application/javascript' });
+                navigator.serviceWorker.register(URL.createObjectURL(blob));
+            });
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-6">
+        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-emerald-100 flex items-center justify-center gap-3">
+                <span>🂡</span> Doko-Saisonverwaltung <span>🂱</span>
+            </h1>
+            <span id="connectionStatus" class="absolute top-4 right-4 bg-yellow-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-6 md:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-xl font-semibold mb-3 border-b pb-2">1. Spieler verwalten</h2>
+                    <div class="flex gap-2 mb-3">
+                        <input id="newPlayerName" type="text" placeholder="Name..." class="border rounded-lg p-2 flex-grow text-sm">
+                        <button onclick="addPlayer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold">＋</button>
+                    </div>
+                    <ul id="playerList" class="space-y-1 max-h-40 overflow-y-auto text-sm"></ul>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md space-y-4">
+                    <h2 class="text-xl font-semibold border-b pb-2">2. Saison steuern</h2>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ausgewählte Saison:</label>
+                        <select id="seasonSelect" onchange="changeSeasonView()" class="w-full bg-white border rounded p-1.5 text-sm font-medium">
+                        </select>
+                    </div>
+                    <div class="pt-2 border-t space-y-2">
+                        <p class="text-xs text-gray-500 font-medium">Neue Saison anlegen:</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-500">Halbjahr:</label>
+                                <select id="newSeasonHalf" class="w-full bg-white border rounded p-1 text-xs">
+                                    <option value="Erstes Halbjahr">Erstes Halbjahr</option>
+                                    <option value="Zweites Halbjahr">Zweites Halbjahr</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500">Jahr:</label>
+                                <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border rounded p-1 text-xs text-center">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
+                            <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
+                        </div>
+                        <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1">Saison anlegen</button>
+                    </div>
+                    <div id="seasonStatusContainer" class="pt-2 border-t flex items-center justify-between">
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-xl font-semibold mb-3 border-b pb-2" id="formTitle">3. Abend eintragen</h2>
+                    <div id="inputForm" class="space-y-3">
+                        <div id="modernFormFields" class="space-y-3">
+                            <div class="bg-gray-50 p-2 rounded border">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
+                                <input id="matchDate" type="date" class="w-full bg-white border rounded p-1 text-sm">
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded border">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">🏠 Gastgeber:</label>
+                                <select id="hostSelect" class="w-full bg-white border rounded p-1.5 text-sm">
+                                    <option value="">-- Bitte wählen --</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler &amp; echte Spielpunkte:</p>
+                        <div id="matchPlayersContainer" class="space-y-2"></div>
+                        <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4">Abend speichern</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6 md:col-span-2">
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <div class="flex justify-between items-center mb-4 border-b pb-2 flex-wrap gap-2">
+                        <h2 id="tableTitle" class="text-xl font-semibold">🏆 Live Saison-Tabelle</h2>
+                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                            📊 Excel-Export
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                                    <th class="p-3">Platz</th>
+                                    <th class="p-3">Spieler</th>
+                                    <th class="p-3 text-center">Teilnahmen</th>
+                                    <th class="p-3 text-center">Quote</th>
+                                    <th class="p-3 text-right">Saison-Pkt (Gesamt)</th>
+                                    <th class="p-3 text-right">Schnitt (Wertung)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardBody" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Spieler unter 40% Teilnahmequote werden am Tabellenende ohne Platzierung gelistet.</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Eingetragene Abende</h2>
+                    <div id="historyContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md" id="recordsBox">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">✨ Saison-Rekorde (Echte Spielpunkte)</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recordsContainer"></div>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-6 rounded-2xl shadow-xl border border-slate-700/50">
+                    <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-2 flex items-center gap-2">👑 Ewige Bestenliste (All-Time Rekorde)</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === HIER DEINE FIREBASE-KONFIGURATION EINSETZEN ===
+  const firebaseConfig = {
+    apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4",
+    authDomain: "doko-saisonverwaltung.firebaseapp.com",
+    databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "doko-saisonverwaltung",
+    storageBucket: "doko-saisonverwaltung.firebasestorage.app",
+    messagingSenderId: "133639961632",
+    appId: "1:133639961632:web:92413df663c371964bd045"
+        };
+        // ===================================================
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let state = { players: [], seasons: {}, currentSeasonKey: "" };
+
+        db.ref('doko_v2_data').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                state.players = data.players || [];
+                state.seasons = data.seasons || {};
+                if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
+                    const keys = Object.keys(state.seasons);
+                    if (keys.length > 0) {
+                        keys.sort((a, b) => b.localeCompare(a));
+                        state.currentSeasonKey = keys[0];
+                    } else { state.currentSeasonKey = ""; }
+                }
+            } else { state.players = []; state.seasons = {}; state.currentSeasonKey = ""; }
+            
+            const status = document.getElementById('connectionStatus');
+            status.textContent = "Live-Verbunden";
+            status.className = "absolute top-4 right-4 bg-emerald-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
+            render();
+        }, (error) => {
+            console.error(error);
+            document.getElementById('connectionStatus').textContent = "Fehler!";
+        });
+
+        function saveToCloud() {
+            db.ref('doko_v2_data').set({ players: state.players, seasons: state.seasons });
+        }
+
+        function addPlayer() {
+            const input = document.getElementById('newPlayerName');
+            const name = input.value.trim();
+            if (name && !state.players.includes(name)) {
+                state.players.push(name);
+                input.value = '';
+                saveToCloud();
+            }
+        }
+
+        function removePlayer(name) {
+            if(confirm(`Möchtest du ${name} wirklich löschen?`)) {
+                state.players = state.players.filter(p => p !== name);
+                saveToCloud();
+            }
+        }
+
+        function createNewSeason() {
+            const half = document.getElementById('newSeasonHalf').value;
+            const year = parseInt(document.getElementById('newSeasonYear').value);
+            const isHistorical = document.getElementById('newSeasonIsHistorical').checked;
+            
+            if (!year || year < 1900 || year > 2100) return alert("Ungültiges Jahr!");
+            const seasonKey = `${half} ${year}`;
+            if (state.seasons[seasonKey]) return alert("Existiert bereits!");
+
+            state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, matches: [] };
+            state.currentSeasonKey = seasonKey;
+            document.getElementById('newSeasonIsHistorical').checked = false;
+            saveToCloud();
+        }
+
+        function changeSeasonView() {
+            state.currentSeasonKey = document.getElementById('seasonSelect').value;
+            render();
+        }
+
+        function toggleSeasonStatus() {
+            if (!state.currentSeasonKey) return;
+            const currentStatus = state.seasons[state.currentSeasonKey].status;
+            const newStatus = currentStatus === "aktiv" ? "abgeschlossen" : "aktiv";
+            if (confirm(`Saison auf "${newStatus}" setzen?`)) {
+                state.seasons[state.currentSeasonKey].status = newStatus;
+                saveToCloud();
+            }
+        }
+
+        function deleteMatch(matchId) {
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            
+            if (confirm("Möchtest du diesen Abend wirklich unwiderruflich löschen?")) {
+                if (season.matches && season.matches[matchId]) {
+                    delete season.matches[matchId];
+                    saveToCloud();
+                }
+            }
+        }
+
+        function getPlacementScoresForMatch(matchScores) {
+            let participants = Object.keys(matchScores).map(name => ({ name, realScore: matchScores[name] }));
+            let totalPlayersAtAbend = participants.length;
+            participants.sort((a, b) => b.realScore - a.realScore);
+
+            let placementScores = {};
+            participants.forEach((p) => {
+                let tieIndex = participants.findIndex(x => x.realScore === p.realScore);
+                placementScores[p.name] = totalPlayersAtAbend - tieIndex;
+            });
+            return placementScores;
+        }
+
+        function calculateSeasonStats(seasonKey) {
+            let totalSeasonPoints = {}; let matchCounts = {};       
+            let maxWin = { score: -999, player: "-", date: "-", season: "" };
+            let maxLoss = { score: 999, player: "-", date: "-", season: "" };
+            let hostStats = {}; 
+
+            state.players.forEach(p => { 
+                totalSeasonPoints[p] = 0; matchCounts[p] = 0; hostStats[p] = { totalScore: 0, count:
