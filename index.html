@@ -14,18 +14,15 @@
     <meta name="apple-mobile-web-app-title" content="Doko-Saison">
     <link rel="apple-touch-icon" href="https://placehold.co/192x192/065f46/ffffff?text=Doko">
     
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                const blob = new Blob([`
-                    self.addEventListener('fetch', function(e) {
-                        // Minimaler Service Worker für PWA-Kriterien
-                    });
-                `], { type: 'application/javascript' });
-                navigator.serviceWorker.register(URL.createObjectURL(blob));
-            });
-        }
-    </script>
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('App bereit!'))
+                .catch(err => console.log('PWA Fehler', err));
+        });
+    }
+</script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
 
