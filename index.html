@@ -124,7 +124,7 @@
                             <tbody id="leaderboardBody" class="divide-y text-sm"></tbody>
                         </table>
                     </div>
-                    <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Unter 40% Quote ohne Wertung.</p>
+                    <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Unter 40 % Teilnahmequote ohne Wertung.</p>
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl shadow-md">
@@ -444,7 +444,7 @@ const firebaseConfig = {
                 document.getElementById('formTitle').textContent = isHist ? "3. Alten Abend eintragen" : "3. Abend eintragen";
                 document.getElementById('modernFormFields').style.display = isHist ? "none" : "block";
                 document.getElementById('pointsLabel').innerHTML = isHist 
-                    ? "👥 Spieler &amp; <b>direkte Platzierungspunkte</b>:" : "👥 Spieler &amp; echte Spielpunkte:";
+                    ? "👥 Spieler &amp; <b>direkte Platzierungspunkte</b>:" : "👥 Spieler / Spielpunkte am Ende des Abends:";
                 document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
             }
 
@@ -459,7 +459,7 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
             const seasonKeys = Object.keys(state.seasons).sort((a, b) => b.localeCompare(a));
             seasonSelect.innerHTML = seasonKeys.length === 0 
                 ? '<option value="">-- Keine Saison vorhanden --</option>'
-                : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch)' : ''} (${state.seasons[key].status})</option>`).join('');
+                : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch (nur Platzierungspunkte))' : ''} (${state.seasons[key].status})</option>`).join('');
             if (state.currentSeasonKey) seasonSelect.value = state.currentSeasonKey;
 
             const statusContainer = document.getElementById('seasonStatusContainer');
