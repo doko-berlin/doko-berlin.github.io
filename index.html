@@ -445,7 +445,7 @@ const firebaseConfig = {
             const isHist = season && season.isHistorical;
 
             if (season) {
-                document.getElementById('formTitle').textContent = isHist ? "3. Alten Abend eintragen" : "3. Abend eintragen";
+                document.getElementById('formTitle').textContent = isHist ? "Alten Abend eintragen" : "Abend eintragen";
                 document.getElementById('modernFormFields').style.display = isHist ? "none" : "block";
                 document.getElementById('pointsLabel').innerHTML = isHist 
                     ? "👥 Spieler &amp; <b>direkte Platzierungspunkte</b>:" : "👥 Spieler / Spielpunkte am Ende des Abends:";
