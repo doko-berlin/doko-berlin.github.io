@@ -418,8 +418,12 @@ const firebaseConfig = {
 
             let sortedData = playerData.sort((a, b) => b.avg - a.avg || b.played - a.played);
 
+            let lastAvgExp=null,lastRankExp=0;
             sortedData.forEach((p, index) => {
-                let rank = p.inRating && p.played > 0 ? `${index + 1}.` : "-";
+                if(p.inRating && p.played>0){
+                    if(lastAvgExp===null || Math.abs(parseFloat(p.avg)-lastAvgExp)>0.0001){lastRankExp=index+1;lastAvgExp=parseFloat(p.avg);}
+                }
+                let rank = p.inRating && p.played > 0 ? `${lastRankExp}.` : "-";
                 let row = `${rank};${p.name};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts};${p.avg}`;
                 csvContent += row + "\r\n";
             });
@@ -505,16 +509,20 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
                 let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
                 let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-                leaderboardBody.innerHTML = qualified.map((p, i) => `
+                let lastAvg=null,lastRank=0;
+                leaderboardBody.innerHTML = qualified.map((p, i) => {
+                    if(lastAvg===null || Math.abs(p.avg-lastAvg)>0.0001){lastRank=i+1;lastAvg=p.avg;}
+                    return `
                     <tr class="hover:bg-gray-50 font-medium">
-                        <td class="p-3 text-emerald-700 font-bold">${i + 1}.</td>
+                        <td class="p-3 text-emerald-700 font-bold">${lastRank}.</td>
                         <td class="p-3 font-semibold">${p.name}</td>
                         <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
                         <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
                         <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
                         <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
                     </tr>
-                `).join('') + unqualified.map(p => `
+                    `;
+                }).join('') + unqualified.map(p => `
                     <tr class="bg-gray-50/50 text-gray-400 italic">
                         <td class="p-3 text-center font-bold font-mono">-</td>
                         <td class="p-3 font-medium text-gray-500">${p.name}</td>
