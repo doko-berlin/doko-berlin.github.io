@@ -502,29 +502,18 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
                     return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= 0.40 };
                 });
 
-// 1. Platzierung berechnen
-let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
+                let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
+                let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-// Logik für geteilte Plätze
-let rankedQualified = qualified.map((p, i) => {
-    let rank = i + 1;
-    // Wenn es nicht der erste ist und der Schnitt gleich dem Vorgänger ist -> gleicher Rang
-    if (i > 0 && p.avg === qualified[i - 1].avg) {
-        rank = qualified[i - 1].rank;
-    }
-    return { ...p, rank };
-});
-
-// 2. Tabelle rendern
-leaderboardBody.innerHTML = rankedQualified.map((p, i) => `
-    <tr class="hover:bg-gray-50 font-medium">
-        <td class="p-3 text-emerald-700 font-bold">${p.rank}.</td>
-        <td class="p-3 font-semibold">${p.name}</td>
-        <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
-        <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
-        <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
-        <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
-    </tr>
+                leaderboardBody.innerHTML = qualified.map((p, i) => `
+                    <tr class="hover:bg-gray-50 font-medium">
+                        <td class="p-3 text-emerald-700 font-bold">${i + 1}.</td>
+                        <td class="p-3 font-semibold">${p.name}</td>
+                        <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
+                        <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
+                        <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
+                        <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
+                    </tr>
                 `).join('') + unqualified.map(p => `
                     <tr class="bg-gray-50/50 text-gray-400 italic">
                         <td class="p-3 text-center font-bold font-mono">-</td>
