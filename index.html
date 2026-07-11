@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
-    <!-- Chart.js für die grafische Platzierungs-Entwicklung -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <meta name="mobile-web-app-capable" content="yes">
@@ -30,130 +29,172 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
 
+    <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
+            <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2">Spieler Name</h2>
+            <div id="playerModalContent" class="space-y-4">
+                </div>
+            <button onclick="closePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+        </div>
+    </div>
+
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="if(event.target === this) toggleAdminModal(false)">
+        <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
+            
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3 shrink-0">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
+                <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-semibold mb-3 border-b pb-2 text-emerald-800" id="formTitle">Abend eintragen</h2>
+                <div id="inputForm" class="space-y-3">
+                    <div id="modernFormFields" class="space-y-3">
+                        <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
+                            <input id="matchDate" type="date" class="w-full bg-white border border-gray-300 rounded p-1 text-sm">
+                        </div>
+                    </div>
+
+                    <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
+                    <div id="matchPlayersContainer" class="space-y-2"></div>
+                    <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <h2 class="text-lg font-semibold mb-3 border-b pb-2 text-slate-800">Spieler dieser Saison</h2>
+                <div class="flex gap-2 mb-4">
+                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <button onclick="addPlayer()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
+                </div>
+                <div id="playerList" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 space-y-4">
+                <h2 class="text-lg font-semibold border-b pb-2 text-slate-800">Saison-Einstellungen</h2>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Ausgewählte Saison bearbeiten:</label>
+                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white border border-gray-300 rounded p-1.5 text-sm font-medium"></select>
+                </div>
+                <div class="pt-2 border-t border-gray-100 space-y-2">
+                    <p class="text-xs text-gray-500 font-medium">Neue Saison anlegen:</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-500">Halbjahr:</label>
+                            <select id="newSeasonHalf" class="w-full bg-white border border-gray-300 rounded p-1 text-xs">
+                                <option value="Erstes Halbjahr">Erstes Halbjahr</option>
+                                <option value="Zweites Halbjahr">Zweites Halbjahr</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-500">Jahr:</label>
+                            <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border border-gray-300 rounded p-1 text-xs text-center">
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
+                        <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
+                    </div>
+                    <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
+                </div>
+                
+                <div id="seasonStatusContainer" class="pt-2 border-t border-gray-100 flex items-center justify-between gap-2 flex-wrap"></div>
+            </div>
+
+        </div>
+    </div>
+
     <div class="max-w-5xl mx-auto space-y-6">
-        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
+        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-emerald-100 flex items-center justify-center gap-3">
-                <span>🂽</span> Doko-Saisonverwaltung <span>🂽</span>
+            <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight flex items-center justify-center gap-3 md:gap-4 text-white">
+                <svg class="w-7 h-10 md:w-8 md:h-12 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)] shrink-0 select-none bg-white rounded-md" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
+                    <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                    <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                    <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
+                    <g transform="rotate(180 30 45)">
+                        <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                        <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                    </g>
+                </svg>
+                
+                <span class="bg-clip-text text-transparent bg-gradient-to-b from-white to-emerald-100">Doko-Saisonverwaltung</span>
+                
+                <svg class="w-7 h-10 md:w-8 md:h-12 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)] shrink-0 select-none bg-white rounded-md" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
+                    <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                    <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                    <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
+                    <g transform="rotate(180 30 45)">
+                        <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                        <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                    </g>
+                </svg>
             </h1>
-            <span id="connectionStatus" class="absolute top-4 right-4 bg-yellow-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
+            <span id="connectionStatus" class="absolute top-3 right-3 bg-yellow-500/90 backdrop-blur-sm text-[9px] px-2 py-0.5 rounded-full font-bold tracking-wider uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-6 md:col-span-1">
-                
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-3 border-b pb-2" id="formTitle">Abend eintragen</h2>
-                    <div id="inputForm" class="space-y-3">
-                        <div id="modernFormFields" class="space-y-3">
-                            <div class="bg-gray-50 p-2 rounded border">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
-                                <input id="matchDate" type="date" class="w-full bg-white border rounded p-1 text-sm">
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded border">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">🏠 Gastgeber:</label>
-                                <select id="hostSelect" class="w-full bg-white border rounded p-1.5 text-sm">
-                                    <option value="">-- Bitte wählen --</option>
-                                </select>
-                            </div>
-                        </div>
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <label for="mainSeasonSelect" class="text-sm font-semibold text-slate-600 shrink-0">📅 Saison:</label>
+                <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 border border-slate-200 rounded-xl p-2 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-56"></select>
+            </div>
+            <button onclick="toggleAdminModal(true)" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
+                ⚙️ Verwaltung & Eingabe
+            </button>
+        </div>
 
-                        <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler / Spielpunkte am Ende des Abends:</p>
-                        <div id="matchPlayersContainer" class="space-y-2"></div>
-                        <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
-                    </div>
+        <div class="space-y-6">
+            
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
+                <div class="flex justify-between items-center mb-4 border-b pb-3 flex-wrap gap-2">
+                    <h2 id="tableTitle" class="text-xl font-bold text-slate-900">🏆 Live Saison-Tabelle</h2>
+                    <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                        📊 Excel-Export
+                    </button>
                 </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">Spieler dieser Saison</h2>
-                    <div class="flex gap-2 mb-4">
-                        <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
-                        <button onclick="addPlayer()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
-                    </div>
-                    <div id="playerList" class="flex flex-wrap gap-2"></div>
+                <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+                    <table class="w-full text-left border-collapse min-w-[550px]">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider border-b border-gray-100">
+                                <th class="p-3 w-16">Platz</th>
+                                <th class="p-3">Spieler</th>
+                                <th class="p-3 text-center">Teilnahmen</th>
+                                <th class="p-3 text-center">Quote</th>
+                                <th class="p-3 text-right">Saison-Pkt</th>
+                                <th class="p-3 text-right">Schnitt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody" class="divide-y divide-gray-100 text-sm"></tbody>
+                    </table>
                 </div>
+                <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Klicke auf einen Namen für Details. Unter 40 % Teilnahmequote ohne Wertung.</p>
+            </div>
 
-                <div class="bg-white p-6 rounded-2xl shadow-md space-y-4">
-                    <h2 class="text-xl font-semibold border-b pb-2">Saisonverwaltung</h2>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ausgewählte Saison:</label>
-                        <select id="seasonSelect" onchange="changeSeasonView()" class="w-full bg-white border rounded p-1.5 text-sm font-medium"></select>
-                    </div>
-                    <div class="pt-2 border-t space-y-2">
-                        <p class="text-xs text-gray-500 font-medium">Neue Saison anlegen:</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] text-gray-500">Halbjahr:</label>
-                                <select id="newSeasonHalf" class="w-full bg-white border rounded p-1 text-xs">
-                                    <option value="Erstes Halbjahr">Erstes Halbjahr</option>
-                                    <option value="Zweites Halbjahr">Zweites Halbjahr</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-gray-500">Jahr:</label>
-                                <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border rounded p-1 text-xs text-center">
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2 pt-1">
-                            <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
-                            <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
-                        </div>
-                        <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
-                    </div>
-                    
-                    <div id="seasonStatusContainer" class="pt-2 border-t flex items-center justify-between gap-2 flex-wrap"></div>
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
+                <h2 class="text-xl font-bold mb-4 border-b pb-3 text-slate-900">📈 Saisonverlauf (Abend-Platzierungen)</h2>
+                <div class="relative w-full" style="height: 320px;">
+                    <canvas id="saisonVerlaufChart"></canvas>
                 </div>
             </div>
 
-            <div class="space-y-6 md:col-span-2">
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <div class="flex justify-between items-center mb-4 border-b pb-2 flex-wrap gap-2">
-                        <h2 id="tableTitle" class="text-xl font-semibold">🏆 Live Saison-Tabelle</h2>
-                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
-                            📊 Excel-Export
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
-                                    <th class="p-3">Platz</th>
-                                    <th class="p-3">Spieler</th>
-                                    <th class="p-3 text-center">Teilnahmen</th>
-                                    <th class="p-3 text-center">Quote</th>
-                                    <th class="p-3 text-right">Saison-Pkt</th>
-                                    <th class="p-3 text-right">Schnitt</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leaderboardBody" class="divide-y text-sm"></tbody>
-                        </table>
-                    </div>
-                    <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Unter 40 % Teilnahmequote ohne Wertung.</p>
-                </div>
-
-                <!-- Grafischer Saisonverlauf -->
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">📈 Saisonverlauf (Abend-Platzierungen)</h2>
-                    <div class="relative w-full" style="height: 300px;">
-                        <canvas id="saisonVerlaufChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Eingetragene Abende</h2>
-                    <div id="historyContainer" class="space-y-4 max-h-120 overflow-y-auto pr-1"></div>
-                </div>
-
-                <div class="bg-white p-6 rounded-2xl shadow-md" id="recordsBox">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">✨ Saison-Rekorde</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recordsContainer"></div>
-                </div>
-
-                <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-6 rounded-2xl shadow-xl border border-slate-700/50">
-                    <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-2">👑 Ewige Bestenliste</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
-                </div>
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
+                <h2 class="text-xl font-bold mb-4 border-b pb-3 text-slate-900">⏳ Spieltage</h2>
+                <div id="historyContainer" class="space-y-4 max-h-120 overflow-y-auto pr-1"></div>
             </div>
+
+            <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60" id="recordsBox">
+                <h2 class="text-xl font-bold mb-4 border-b pb-3 text-slate-900">✨ Saison-Rekorde</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recordsContainer"></div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
+                <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
+            </div>
+
         </div>
     </div>
 
@@ -176,6 +217,100 @@
         let state = { seasons: {}, currentSeasonKey: "" };
         let courseChartInstance = null;
 
+        // --- SPIELER DETAILS MODAL FUNKTIONEN ---
+        function openPlayerDetails(playerName) {
+            const season = state.seasons[state.currentSeasonKey];
+            if (!season || !season.matches || season.isHistorical) return; // HISTORISCH: Keine Details
+
+            let history = [];
+            Object.keys(season.matches).forEach(key => {
+                const match = season.matches[key];
+                if (match.scores && match.scores[playerName] !== undefined) {
+                    history.push({ date: match.date, score: match.scores[playerName] });
+                }
+            });
+
+            // Sortierung nach Punkten
+            history.sort((a, b) => b.score - a.score);
+
+            const modalContent = document.getElementById('playerModalContent');
+            document.getElementById('playerModalName').textContent = playerName;
+
+            if (history.length === 0) {
+                modalContent.innerHTML = `<p class="text-gray-500">Keine Spieldaten für diese Saison gefunden.</p>`;
+            } else {
+                const best = history[0];
+                const worst = history[history.length - 1];
+                const avg = (history.reduce((sum, m) => sum + m.score, 0) / history.length).toFixed(1);
+
+                modalContent.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Teilnahmen</p>
+                            <p class="text-xl font-bold">${history.length}</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+                                <p class="text-[10px] text-emerald-800 uppercase font-bold">Bester</p>
+                                <p class="font-bold text-emerald-900">+${best.score}</p>
+                                <p class="text-[10px] text-emerald-600">${padDateString(best.date)}</p>
+                            </div>
+                            <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                                <p class="text-[10px] text-red-800 uppercase font-bold">Schlechtester</p>
+                                <p class="font-bold text-red-900">${worst.score}</p>
+                                <p class="text-[10px] text-red-600">${padDateString(worst.date)}</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800 text-white p-3 rounded-lg flex justify-between items-center">
+                            <p class="text-sm font-bold">Saison-Schnitt</p>
+                            <p class="text-xl font-black">${avg}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            document.getElementById('playerDetailsModal').classList.remove('hidden');
+        }
+
+        function closePlayerModal() {
+            document.getElementById('playerDetailsModal').classList.add('hidden');
+        }
+
+        // --- ALTE FUNKTIONEN ---
+
+        function sortSeasonsChronologically(keys) {
+            return keys.sort((a, b) => {
+                const partsA = a.split(' ');
+                const partsB = b.split(' ');
+                const yearA = parseInt(partsA[partsA.length - 1]) || 0;
+                const yearB = parseInt(partsB[partsB.length - 1]) || 0;
+                
+                if (yearA !== yearB) {
+                    return yearB - yearA;
+                }
+                const isSecondHalfA = a.includes('Zweites') ? 1 : 0;
+                const isSecondHalfB = b.includes('Zweites') ? 1 : 0;
+                return isSecondHalfB - isSecondHalfA;
+            });
+        }
+
+        function toggleAdminModal(show) {
+            const modal = document.getElementById('adminModal');
+            const drawer = document.getElementById('adminDrawer');
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    drawer.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                modal.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
         function padDateString(dateStr) {
             if (!dateStr || typeof dateStr !== 'string') return '-';
             if (dateStr.includes('Alter Abend')) return dateStr;
@@ -194,7 +329,6 @@
             if (data && data.seasons) {
                 state.seasons = data.seasons;
                 
-                // MIGRATION: Wenn globale Spieler existieren, diese in Saisons ohne eigene Spielerliste kopieren
                 Object.keys(state.seasons).forEach(key => {
                     if (!state.seasons[key].players) {
                         if (data.players && data.players.length > 0) {
@@ -211,7 +345,7 @@
             if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
                 const keys = Object.keys(state.seasons);
                 if (keys.length > 0) {
-                    keys.sort((a, b) => b.localeCompare(a));
+                    sortSeasonsChronologically(keys);
                     state.currentSeasonKey = keys[0];
                 } else { 
                     state.currentSeasonKey = ""; 
@@ -220,7 +354,7 @@
             
             const status = document.getElementById('connectionStatus');
             status.textContent = "Live-Verbunden";
-            status.className = "absolute top-4 right-4 bg-emerald-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
+            status.className = "absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
             render();
         }, (error) => {
             console.error(error);
@@ -275,8 +409,8 @@
             saveToCloud();
         }
 
-        function changeSeasonView() {
-            state.currentSeasonKey = document.getElementById('seasonSelect').value;
+        function changeSeasonView(selectId) {
+            state.currentSeasonKey = document.getElementById(selectId).value;
             render();
         }
 
@@ -296,7 +430,7 @@
                 delete state.seasons[state.currentSeasonKey];
                 const keys = Object.keys(state.seasons);
                 if (keys.length > 0) {
-                    keys.sort((a, b) => b.localeCompare(a));
+                    sortSeasonsChronologically(keys);
                     state.currentSeasonKey = keys[0];
                 } else {
                     state.currentSeasonKey = "";
@@ -381,7 +515,6 @@
             let globalMaxLoss = { score: 999, player: "-", date: "-", season: "-" };
             let globalHostStats = {}; 
 
-            // Eindeutige Spieler über alle Saisons hinweg ermitteln
             let allUniquePlayers = new Set();
             Object.values(state.seasons).forEach(s => {
                 if (s.players) s.players.forEach(p => allUniquePlayers.add(p));
@@ -424,8 +557,15 @@
 
             let matchScores = {}; let matchJokers = {}; let count = 0; let formattedDate = "-"; let host = ""; let timestamp = Date.now();
 
-            host = document.getElementById('hostSelect').value;
             const rawDate = document.getElementById('matchDate').value;
+
+            const seasonPlayers = season.players || [];
+            seasonPlayers.forEach(name => {
+                const hostRadio = document.getElementById(`host-${name}`);
+                if (hostRadio && hostRadio.checked) {
+                    host = name;
+                }
+            });
 
             if (!season.isHistorical) {
                 if (!rawDate || !host) return alert("Datum und Gastgeber fehlen!");
@@ -453,7 +593,6 @@
             }
 
             let doubleJokerError = false;
-            const seasonPlayers = season.players || [];
             
             seasonPlayers.forEach(name => {
                 const checkbox = document.getElementById(`check-${name}`);
@@ -486,7 +625,6 @@
             if (!season.matches) season.matches = {};
             season.matches[matchId] = { date: formattedDate, host, scores: matchScores, jokers: matchJokers, timestamp };
 
-            document.getElementById('hostSelect').value = ""; 
             document.getElementById('matchDate').value = "";
             saveToCloud();
         }
@@ -508,10 +646,7 @@
             const seasonPlayers = season.players || [];
             
             let rankHistory = {};
-            seasonPlayers.forEach(p => { 
-                rankHistory[p] = []; 
-            });
-
+            seasonPlayers.forEach(p => { rankHistory[p] = []; });
             let labels = [];
 
             sortedMatches.forEach((match, index) => {
@@ -569,9 +704,9 @@
                     scales: {
                         y: {
                             reverse: true,
-                            min: 1,
-                            max: seasonPlayers.length > 0 ? seasonPlayers.length : 4,
-                            ticks: { stepSize: 1, callback: value => value + '.' },
+                            min: 0.5,
+                            max: (seasonPlayers.length || 4) + 0.5,
+                            ticks: { stepSize: 1, callback: value => value % 1 === 0 ? value + '.' : '' },
                             title: { display: true, text: 'Platzierung am Abend' }
                         },
                         x: { title: { display: true, text: 'Spieltage' } }
@@ -628,6 +763,23 @@
             document.body.removeChild(link);
         }
 
+        function handleHostChange(selectedName) {
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            if(!season) return;
+            (season.players || []).forEach(name => {
+                const label = document.getElementById(`host-label-${name}`);
+                if(label) {
+                    if(name === selectedName) {
+                        label.classList.remove('bg-gray-100', 'text-gray-600', 'border-gray-200');
+                        label.classList.add('bg-amber-100', 'text-amber-800', 'border-amber-300');
+                    } else {
+                        label.classList.remove('bg-amber-100', 'text-amber-800', 'border-amber-300');
+                        label.classList.add('bg-gray-100', 'text-gray-600', 'border-gray-200');
+                    }
+                }
+            });
+        }
+
         function render() {
             const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
             const isHist = season && season.isHistorical;
@@ -647,7 +799,7 @@
             if (season) {
                 document.getElementById('formTitle').textContent = isHist ? "Alten Abend eintragen" : "Abend eintragen";
                 document.getElementById('modernFormFields').style.display = "block"; 
-                document.getElementById('pointsLabel').innerHTML = "Spieler / Spielpunkte am Ende des Abends:";
+                document.getElementById('pointsLabel').innerHTML = "Spieler / Status am Ende des Abends:";
                 document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
             }
 
@@ -658,12 +810,27 @@
                 </span>
             `).join('');
 
-            const seasonSelect = document.getElementById('seasonSelect');
-            const seasonKeys = Object.keys(state.seasons).sort((a, b) => b.localeCompare(a));
-            seasonSelect.innerHTML = seasonKeys.length === 0 
+            const seasonKeys = Object.keys(state.seasons);
+            sortSeasonsChronologically(seasonKeys);
+
+            const adminOptionsHtml = seasonKeys.length === 0 
                 ? '<option value="">-- Keine Saison vorhanden --</option>'
                 : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch)' : ''} (${state.seasons[key].status})</option>`).join('');
-            if (state.currentSeasonKey) seasonSelect.value = state.currentSeasonKey;
+            
+            const mainOptionsHtml = seasonKeys.length === 0 
+                ? '<option value="">-- Keine Saison vorhanden --</option>'
+                : seasonKeys.map(key => `<option value="${key}">${key}</option>`).join('');
+            
+            const seasonSelect = document.getElementById('seasonSelect');
+            const mainSeasonSelect = document.getElementById('mainSeasonSelect');
+            
+            seasonSelect.innerHTML = adminOptionsHtml;
+            mainSeasonSelect.innerHTML = mainOptionsHtml;
+
+            if (state.currentSeasonKey) {
+                seasonSelect.value = state.currentSeasonKey;
+                mainSeasonSelect.value = state.currentSeasonKey;
+            }
 
             const statusContainer = document.getElementById('seasonStatusContainer');
             if (season) {
@@ -682,30 +849,65 @@
                 statusContainer.innerHTML = '';
             }
 
-            const hostSelect = document.getElementById('hostSelect');
-            const currentHost = hostSelect.value;
-            hostSelect.innerHTML = '<option value="">-- Bitte wählen --</option>' + seasonPlayers.map(name => `<option value="${name}">${name}</option>`).join('');
-            hostSelect.value = currentHost;
-
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
                 return `
-                    <div class="flex items-center justify-between gap-2 p-1.5 bg-gray-50 rounded border">
-                        <label class="flex items-center gap-2 cursor-pointer text-sm font-medium flex-grow">
-                            <input type="checkbox" id="check-${name}" onchange="document.getElementById('score-${name}').disabled = !this.checked; const jb = document.getElementById('joker-${name}'); if(jb) { jb.disabled = !this.checked || ${hasUsedJokerAlready}; if(!this.checked) jb.checked = false; }" class="rounded text-emerald-600">
-                            ${name}
-                        </label>
-                        <div class="flex items-center gap-3">
+                    <div class="flex flex-col gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
+                        <div class="flex items-center justify-between gap-2">
+                            <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 flex-grow truncate">
+                                <input type="checkbox" id="check-${name}" onchange="
+                                    const isChecked = this.checked;
+                                    document.getElementById('score-${name}').disabled = !isChecked; 
+                                    const jb = document.getElementById('joker-${name}'); if(jb) { jb.disabled = !isChecked || ${hasUsedJokerAlready}; if(!isChecked) jb.checked = false; }
+                                    const hb = document.getElementById('host-${name}'); hb.disabled = !isChecked; if(!isChecked) { hb.checked = false; handleHostChange(''); }
+                                " class="rounded text-emerald-600">
+                                ${name}
+                            </label>
+                            
+                            <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
+                        </div>
+                        
+                        <div class="flex gap-2 justify-end pt-1 border-t border-gray-200/50">
+                            <label id="host-label-${name}" class="flex items-center gap-1 text-[10px] text-gray-600 bg-gray-100 border-gray-200 opacity-40 rounded border px-2 py-0.5 font-bold cursor-not-allowed select-none transition" title="Mitspieler aktivieren, um ihn als Host zu wählen">
+                                <input type="radio" name="matchHost" id="host-${name}" disabled onchange="handleHostChange('${name}')" class="text-amber-600 focus:ring-amber-500 w-3 h-3"> 🏠 Host
+                            </label>
+                            
                             ${isHist ? '' : `
-                            <label class="flex items-center gap-1 text-[11px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-50 bg-gray-100 border-gray-200 cursor-not-allowed' : 'text-red-600 bg-red-50 border-red-200 cursor-pointer'} font-bold px-1.5 py-0.5 rounded border select-none" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : ''}>
-                                <input type="checkbox" id="joker-${name}" disabled class="rounded text-red-600"> 💥 SoG
+                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed' : 'text-red-600 bg-red-50 border-red-200 opacity-40 cursor-not-allowed'} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"'}>
+                                <input type="checkbox" id="joker-${name}" disabled onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                             </label>
                             `}
-                            <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border rounded p-1 text-sm text-right disabled:bg-gray-200">
                         </div>
                     </div>
                 `;
             }).join('');
+
+            seasonPlayers.forEach(name => {
+                const cb = document.getElementById(`check-${name}`);
+                if (cb) {
+                    cb.addEventListener('change', function() {
+                        const hostLabel = document.getElementById(`host-label-${name}`);
+                        const jokerLabel = document.getElementById(`joker-label-${name}`);
+                        if (this.checked) {
+                            if (hostLabel) hostLabel.classList.remove('opacity-40', 'cursor-not-allowed');
+                            if (hostLabel) hostLabel.classList.add('cursor-pointer');
+                            if (jokerLabel && !seasonJokers[name]) {
+                                jokerLabel.classList.remove('opacity-40', 'cursor-not-allowed');
+                                jokerLabel.classList.add('cursor-pointer');
+                            }
+                        } else {
+                            if (hostLabel) {
+                                hostLabel.classList.remove('cursor-pointer');
+                                hostLabel.classList.add('opacity-40', 'cursor-not-allowed');
+                            }
+                            if (jokerLabel) {
+                                jokerLabel.classList.remove('cursor-pointer', 'opacity-100');
+                                jokerLabel.classList.add('opacity-40', 'cursor-not-allowed');
+                            }
+                        }
+                    });
+                }
+            });
 
             const leaderboardBody = document.getElementById('leaderboardBody');
             const recordsContainer = document.getElementById('recordsContainer');
@@ -730,11 +932,19 @@
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
                     const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 text-red-700 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
                     
+                    // --- NEU: LOGIK FÜR KLICKBARE SPIELER ---
+                    const playerNameContent = isHist 
+                        ? `<span class="text-emerald-700 font-bold">${p.name}</span>`
+                        : `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 decoration-2 underline-offset-2">${p.name}</button>`;
+
                     if (isQ) {
                         return `
-                        <tr class="hover:bg-gray-50 font-medium">
+                        <tr class="hover:bg-gray-50/80 font-medium transition duration-150">
                             <td class="p-3 text-emerald-700 font-bold">${lastRank}.</td>
-                            <td class="p-3 font-semibold flex items-center">${p.name}${jokerBadge}</td>
+                            <td class="p-3 font-semibold flex items-center">
+                                ${playerNameContent}
+                                ${jokerBadge}
+                            </td>
                             <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
                             <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
@@ -742,10 +952,18 @@
                         </tr>
                         `;
                     } else {
+                        // Unqualifiziert
+                        const playerNameContentUnqual = isHist 
+                            ? `<span class="text-gray-500">${p.name}</span>`
+                            : `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left">${p.name}</button>`;
+                        
                         return `
                         <tr class="bg-gray-50/50 text-gray-400 italic">
                             <td class="p-3 text-center font-bold font-mono">-</td>
-                            <td class="p-3 font-medium text-gray-500 flex items-center">${p.name}${jokerBadge}</td>
+                            <td class="p-3 font-medium text-gray-500 flex items-center">
+                                ${playerNameContentUnqual}
+                                ${jokerBadge}
+                            </td>
                             <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-amber-600 font-semibold">${Math.round(p.ratio * 100)}%</td>
                             <td class="p-3 text-right text-gray-400">${p.pts} Pkt.</td>
@@ -815,51 +1033,66 @@
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
                     let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 font-bold bg-red-50 px-1 rounded border border-red-200 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
 
-                    let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
-                        name: pName,
-                        score: match.scores[pName]
-                    })).sort((a, b) => b.score - a.score);
+let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
+    name: pName,
+    score: match.scores[pName]
+})).sort((a, b) => b.score - a.score);
 
+let currentRank = 1;
+sortedEveningPlayers.forEach((p, idx) => {
+    if (idx > 0 && p.score < sortedEveningPlayers[idx - 1].score) {
+        currentRank = idx + 1;
+    }
+    p.rank = currentRank;
+});
+
+return `
+    <div class="bg-gray-50 rounded-xl border border-gray-200 text-xs shadow-sm overflow-hidden">
+        <div class="p-3 bg-slate-100 flex justify-between items-center border-b border-gray-200">
+            <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
+                <span class="font-bold text-gray-700 text-sm">${padDateString(match.date)}</span>
+                ${match.host ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200">🏠 ${match.host}</span>` : ''}
+                ${jokerInfo}
+            </div>
+            <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend löschen">
+                🗑️
+            </button>
+        </div>
+        <div class="p-3 bg-white">
+            <p class="font-bold text-gray-500 text-[10px] uppercase tracking-wider mb-2">Ergebnisse an diesem Abend (nach Platzierung):</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                ${sortedEveningPlayers.map((playerObj) => {
+                    const p = playerObj.name;
+                    const score = playerObj.score;
+                    const scoreClass = score >= 0 ? 'text-emerald-600' : 'text-red-600';
+                    const prefix = score > 0 ? '+' : '';
+                    
+                    const rankNum = playerObj.rank;
+                    let rankBadgeClass = "bg-slate-200 text-slate-700"; 
+                    if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-950 font-black shadow-xs";
+                    if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 font-extrabold";
+                    if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
+                    
                     return `
-                        <div class="bg-gray-50 rounded-xl border border-gray-200 text-xs shadow-sm overflow-hidden">
-                            <div class="p-3 bg-slate-100 flex justify-between items-center border-b border-gray-200">
-                                <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
-                                    <span class="font-bold text-gray-700 text-sm">${padDateString(match.date)}</span>
-                                    ${match.host ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200">🏠 ${match.host}</span>` : ''}
-                                    ${jokerInfo}
-                                </div>
-                                <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend löschen">
-                                    🗑️
-                                </button>
+                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between">
+                            <div class="flex justify-between items-center gap-1">
+                                <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
                             </div>
-                            <div class="p-3 bg-white">
-                                <p class="font-bold text-gray-500 text-[10px] uppercase tracking-wider mb-2">Ergebnisse an diesem Abend (nach Platzierung):</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                    ${sortedEveningPlayers.map((playerObj, index) => {
-                                        const p = playerObj.name;
-                                        const score = playerObj.score;
-                                        const scoreClass = score >= 0 ? 'text-emerald-600' : 'text-red-600';
-                                        const prefix = score > 0 ? '+' : '';
-                                        
-                                        return `
-                                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between">
-                                                <div class="flex justify-between items-center gap-1">
-                                                    <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
-                                                    <span class="text-[10px] text-gray-400 font-mono">#${index + 1}</span>
-                                                </div>
-                                                <div class="mt-1">
-                                                    <span class="${scoreClass} font-bold block text-xs">
-                                                        ${prefix}${score} Spielpunkte
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
+                            ${isHist ? '' : `
+                            <div class="mt-1">
+                                <span class="${scoreClass} font-bold block text-xs">
+                                    ${prefix}${score} Spieltagspunkte
+                                </span>
                             </div>
+                            `}
                         </div>
                     `;
-                }).join('');
+                }).join('')}
+            </div>
+        </div>
+    </div>
+`;                }).join('');
             } else { historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>'; }
 
             updateSeasonCourseChart(season);
