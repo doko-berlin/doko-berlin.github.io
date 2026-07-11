@@ -93,7 +93,7 @@
                         </div>
                         <div class="flex items-center gap-2 pt-1">
                             <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
-                            <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch</label>
+                            <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
                         </div>
                         <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
                     </div>
@@ -459,7 +459,7 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
             const seasonKeys = Object.keys(state.seasons).sort((a, b) => b.localeCompare(a));
             seasonSelect.innerHTML = seasonKeys.length === 0 
                 ? '<option value="">-- Keine Saison vorhanden --</option>'
-                : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch (nur Platzierungspunkte))' : ''} (${state.seasons[key].status})</option>`).join('');
+                : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch)' : ''} (${state.seasons[key].status})</option>`).join('');
             if (state.currentSeasonKey) seasonSelect.value = state.currentSeasonKey;
 
             const statusContainer = document.getElementById('seasonStatusContainer');
