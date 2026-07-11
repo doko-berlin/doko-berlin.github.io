@@ -5,101 +5,588 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doko-Saisonverwaltung</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Doko-Saison">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/065f46/ffffff?text=Doko">
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('App bereit!'))
+                    .catch(err => console.log('PWA Fehler', err));
+            });
+        }
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
 
     <div class="max-w-5xl mx-auto space-y-6">
-        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl">
-            <h1 class="text-3xl font-extrabold">🂡 Doko-Saisonverwaltung 🂱</h1>
+        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-emerald-100 flex items-center justify-center gap-3">
+                <span>🂡</span> Doko-Saisonverwaltung <span>🂱</span>
+            </h1>
+            <span id="connectionStatus" class="absolute top-4 right-4 bg-yellow-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="space-y-6">
+            <div class="space-y-6 md:col-span-1">
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-3 border-b pb-2">1. Abend eintragen</h2>
-                    <input id="matchDate" type="date" class="w-full border rounded p-2 mb-2">
-                    <select id="hostSelect" class="w-full border rounded p-2 mb-2"><option value="">-- Gastgeber --</option></select>
-                    <div id="matchPlayersContainer" class="space-y-1 mb-3 text-sm"></div>
-                    <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Abend speichern</button>
-                </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-3 border-b pb-2">2. Spieler verwalten</h2>
+                    <h2 class="text-xl font-semibold mb-3 border-b pb-2">1. Spieler verwalten</h2>
                     <div class="flex gap-2 mb-3">
-                        <input id="newPlayerName" type="text" class="border rounded p-2 flex-grow text-sm">
-                        <button onclick="addPlayer()" class="bg-emerald-600 text-white px-4 rounded">+</button>
+                        <input id="newPlayerName" type="text" placeholder="Name..." class="border rounded-lg p-2 flex-grow text-sm">
+                        <button onclick="addPlayer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
                     </div>
-                    <div id="playerList" class="flex flex-wrap gap-2"></div>
+                    <ul id="playerList" class="space-y-1 max-h-40 overflow-y-auto text-sm"></ul>
                 </div>
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold border-b pb-2 mb-2">3. Saison</h2>
-                    <select id="seasonSelect" onchange="changeSeasonView()" class="w-full border p-2 mb-3"></select>
-                    <button onclick="createNewSeason()" class="w-full bg-blue-600 text-white py-1 rounded text-sm">Neue Saison anlegen</button>
-                </div>
-            </div>
 
-            <div class="md:col-span-2 space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">🏆 Live Tabelle</h2>
-                    <table class="w-full text-left text-sm"><thead><tr class="text-gray-500 text-xs uppercase"><th>Platz</th><th>Spieler</th><th>Schnitt</th><th>Punkte</th></tr></thead><tbody id="leaderboardBody"></tbody></table>
+                <div class="bg-white p-6 rounded-2xl shadow-md space-y-4">
+                    <h2 class="text-xl font-semibold border-b pb-2">2. Saison steuern</h2>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">Ausgewählte Saison:</label>
+                        <select id="seasonSelect" onchange="changeSeasonView()" class="w-full bg-white border rounded p-1.5 text-sm font-medium">
+                        </select>
+                    </div>
+                    <div class="pt-2 border-t space-y-2">
+                        <p class="text-xs text-gray-500 font-medium">Neue Saison anlegen:</p>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] text-gray-500">Halbjahr:</label>
+                                <select id="newSeasonHalf" class="w-full bg-white border rounded p-1 text-xs">
+                                    <option value="Erstes Halbjahr">Erstes Halbjahr</option>
+                                    <option value="Zweites Halbjahr">Zweites Halbjahr</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-500">Jahr:</label>
+                                <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border rounded p-1 text-xs text-center">
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 pt-1">
+                            <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
+                            <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
+                        </div>
+                        <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
+                    </div>
+                    <div id="seasonStatusContainer" class="pt-2 border-t flex items-center justify-between">
+                    </div>
                 </div>
+
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">✨ Rekorde</h2>
-                    <div id="recordsContainer" class="grid grid-cols-2 gap-4"></div>
+                    <h2 class="text-xl font-semibold mb-3 border-b pb-2" id="formTitle">3. Abend eintragen</h2>
+                    <div id="inputForm" class="space-y-3">
+                        <div id="modernFormFields" class="space-y-3">
+                            <div class="bg-gray-50 p-2 rounded border">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
+                                <input id="matchDate" type="date" class="w-full bg-white border rounded p-1 text-sm">
+                            </div>
+                            <div class="bg-gray-50 p-2 rounded border">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">🏠 Gastgeber:</label>
+                                <select id="hostSelect" class="w-full bg-white border rounded p-1.5 text-sm">
+                                    <option value="">-- Bitte wählen --</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+            <div class="space-y-6 md:col-span-2">
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <div class="flex justify-between items-center mb-4 border-b pb-2 flex-wrap gap-2">
+                        <h2 id="tableTitle" class="text-xl font-semibold">🏆 Live Saison-Tabelle</h2>
+                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                            📊 Excel-Export
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+                                    <th class="p-3">Platz</th>
+                                    <th class="p-3">Spieler</th>
+                                    <th class="p-3 text-center">Teilnahmen</th>
+                                    <th class="p-3 text-center">Quote</th>
+                                    <th class="p-3 text-right">Saison-Pkt (Gesamt)</th>
+                                    <th class="p-3 text-right">Schnitt (Wertung)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leaderboardBody" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                    <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Spieler unter 40% Teilnahmequote werden am Tabellenende ohne Platzierung gelistet.</p>
                 </div>
+
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Abende</h2>
-                    <div id="historyContainer" class="space-y-2"></div>
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Eingetragene Abende</h2>
+                    <div id="historyContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md" id="recordsBox">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">✨ Saison-Rekorde (Echte Spielpunkte)</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recordsContainer"></div>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-6 rounded-2xl shadow-xl border border-slate-700/50">
+                    <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-2 flex items-center gap-2">👑 Ewige Bestenliste (All-Time Rekorde)</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const firebaseConfig = { apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4", databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app", projectId: "doko-saisonverwaltung" };
+        // === HIER DEINE FIREBASE-KONFIGURATION EINSETZEN ===
+const firebaseConfig = {
+  apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4",
+  authDomain: "doko-saisonverwaltung.firebaseapp.com",
+  databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "doko-saisonverwaltung",
+  storageBucket: "doko-saisonverwaltung.firebasestorage.app",
+  messagingSenderId: "133639961632",
+  appId: "1:133639961632:web:92413df663c371964bd045"
+};
+        // ===================================================
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
         let state = { players: [], seasons: {}, currentSeasonKey: "" };
 
-        db.ref('doko_v2_data').on('value', (s) => {
-            const data = s.val() || {};
-            state.players = data.players || [];
-            state.seasons = data.seasons || {};
-            if (!state.currentSeasonKey && Object.keys(state.seasons).length > 0) state.currentSeasonKey = Object.keys(state.seasons).sort().reverse()[0];
+        db.ref('doko_v2_data').on('value', (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data && (data.players || data.seasons)) {
+                state.players = data.players || [];
+                state.seasons = data.seasons || {};
+            } else {
+                // Falls die DB komplett unbeschrieben ist (null)
+                state.players = [];
+                state.seasons = {};
+            }
+
+            if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
+                const keys = Object.keys(state.seasons);
+                if (keys.length > 0) {
+                    keys.sort((a, b) => b.localeCompare(a));
+                    state.currentSeasonKey = keys[0];
+                } else { 
+                    state.currentSeasonKey = ""; 
+                }
+            }
+            
+            const status = document.getElementById('connectionStatus');
+            status.textContent = "Live-Verbunden";
+            status.className = "absolute top-4 right-4 bg-emerald-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
             render();
+        }, (error) => {
+            console.error(error);
+            document.getElementById('connectionStatus').textContent = "Fehler!";
         });
 
-        function saveToCloud() { db.ref('doko_v2_data').set({ players: state.players, seasons: state.seasons }); }
+        function saveToCloud() {
+            db.ref('doko_v2_data').set({ 
+                players: state.players, 
+                seasons: state.seasons 
+            });
+        }
 
-        function render() {
-            document.getElementById('playerList').innerHTML = state.players.map(n => `<span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">${n} <button onclick="removePlayer('${n}')" class="text-red-600">×</button></span>`).join('');
-            document.getElementById('seasonSelect').innerHTML = Object.keys(state.seasons).map(k => `<option value="${k}" ${k===state.currentSeasonKey?'selected':''}>${k}</option>`).join('');
-            document.getElementById('hostSelect').innerHTML = '<option value="">-- Gastgeber --</option>' + state.players.map(n => `<option value="${n}">${n}</option>`).join('');
-            document.getElementById('matchPlayersContainer').innerHTML = state.players.map(n => `<div class="flex items-center gap-2"><input type="checkbox" id="check-${n}"><label>${n}</label><input type="number" id="score-${n}" class="w-16 border rounded p-0.5 text-right"></div>`).join('');
-            
-            if (state.currentSeasonKey && state.seasons[state.currentSeasonKey].matches) {
-                const matches = state.seasons[state.currentSeasonKey].matches;
-                document.getElementById('historyContainer').innerHTML = Object.entries(matches).reverse().map(([id, m]) => `<div class="text-xs bg-gray-50 p-2 rounded flex justify-between"><span><b>${m.date}</b> (${m.host})</span><span>${Object.values(m.scores).reduce((a,b)=>a+b,0)} Pkt</span></div>`).join('');
-                
-                // Einfache Tabellen-Logik
-                let stats = {};
-                Object.values(matches).forEach(m => Object.entries(m.scores).forEach(([n, s]) => { stats[n] = (stats[n] || 0) + s; }));
-                document.getElementById('leaderboardBody').innerHTML = Object.entries(stats).sort((a,b)=>b[1]-a[1]).map((p,i) => `<tr><td class="p-2 font-bold">${i+1}.</td><td class="p-2">${p[0]}</td><td class="p-2">-</td><td class="p-2">${p[1]}</td></tr>`).join('');
+        function addPlayer() {
+            const input = document.getElementById('newPlayerName');
+            const name = input.value.trim();
+            if (name && !state.players.includes(name)) {
+                state.players.push(name);
+                input.value = '';
+                saveToCloud();
             }
         }
 
-        function addPlayer() { const n = document.getElementById('newPlayerName').value; if(n) { state.players.push(n); saveToCloud(); } }
-        function removePlayer(n) { state.players = state.players.filter(x => x !== n); saveToCloud(); }
-        function changeSeasonView() { state.currentSeasonKey = document.getElementById('seasonSelect').value; render(); }
-        function createNewSeason() { const k = "Saison " + new Date().getFullYear(); state.seasons[k] = { matches: {} }; state.currentSeasonKey = k; saveToCloud(); }
-        function saveMatch() {
-            const date = document.getElementById('matchDate').value;
-            const host = document.getElementById('hostSelect').value;
-            let scores = {}; state.players.forEach(n => { if(document.getElementById('check-'+n).checked) scores[n] = parseInt(document.getElementById('score-'+n).value)||0; });
-            if(!state.seasons[state.currentSeasonKey].matches) state.seasons[state.currentSeasonKey].matches = {};
-            state.seasons[state.currentSeasonKey].matches['m_'+Date.now()] = { date, host, scores };
+        function removePlayer(name) {
+            if(confirm(`Möchtest du ${name} wirklich löschen?`)) {
+                state.players = state.players.filter(p => p !== name);
+                saveToCloud();
+            }
+        }
+
+        function createNewSeason() {
+            const half = document.getElementById('newSeasonHalf').value;
+            const year = parseInt(document.getElementById('newSeasonYear').value);
+            const isHistorical = document.getElementById('newSeasonIsHistorical').checked;
+            
+            if (!year || year < 1900 || year > 2100) return alert("Ungültiges Jahr!");
+            const seasonKey = `${half} ${year}`;
+            if (state.seasons[seasonKey]) return alert("Existiert bereits!");
+
+            state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, matches: {} };
+            state.currentSeasonKey = seasonKey;
+            document.getElementById('newSeasonIsHistorical').checked = false;
             saveToCloud();
+        }
+
+        function changeSeasonView() {
+            state.currentSeasonKey = document.getElementById('seasonSelect').value;
+            render();
+        }
+
+        function toggleSeasonStatus() {
+            if (!state.currentSeasonKey) return;
+            const currentStatus = state.seasons[state.currentSeasonKey].status;
+            const newStatus = currentStatus === "aktiv" ? "abgeschlossen" : "aktiv";
+            if (confirm(`Saison auf "${newStatus}" setzen?`)) {
+                state.seasons[state.currentSeasonKey].status = newStatus;
+                saveToCloud();
+            }
+        }
+
+        function deleteMatch(matchId) {
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            
+            if (confirm("Möchtest du diesen Abend wirklich unwiderruflich löschen?")) {
+                if (season.matches && season.matches[matchId]) {
+                    delete season.matches[matchId];
+                    saveToCloud();
+                }
+            }
+        }
+
+        function getPlacementScoresForMatch(matchScores) {
+            let participants = Object.keys(matchScores).map(name => ({ name, realScore: matchScores[name] }));
+            let totalPlayersAtAbend = participants.length;
+            participants.sort((a, b) => b.realScore - a.realScore);
+
+            let placementScores = {};
+            participants.forEach((p) => {
+                let tieIndex = participants.findIndex(x => x.realScore === p.realScore);
+                placementScores[p.name] = totalPlayersAtAbend - tieIndex;
+            });
+            return placementScores;
+        }
+
+        function calculateSeasonStats(seasonKey) {
+            let totalSeasonPoints = {}; let matchCounts = {};       
+            let maxWin = { score: -999, player: "-", date: "-", season: "" };
+            let maxLoss = { score: 999, player: "-", date: "-", season: "" };
+            let hostStats = {}; 
+
+            state.players.forEach(p => { 
+                totalSeasonPoints[p] = 0; matchCounts[p] = 0; hostStats[p] = { totalScore: 0, count: 0 };
+            });
+
+            const season = state.seasons[seasonKey];
+            if (!season || !season.matches) return { totalSeasonPoints, matchCounts, totalMatchesCount: 0, maxWin, maxLoss, hostStats };
+
+            const matchesEntries = Object.entries(season.matches);
+            matchesEntries.forEach(([id, match]) => {
+                if (!match.scores) return;
+
+                if (season.isHistorical) {
+                    Object.keys(match.scores).forEach(name => {
+                        if (matchCounts[name] !== undefined) matchCounts[name]++;
+                        if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += match.scores[name];
+                    });
+                } else {
+                    Object.keys(match.scores).forEach(name => {
+                        let score = match.scores[name];
+                        if (matchCounts[name] !== undefined) matchCounts[name]++;
+                        if (score > maxWin.score) maxWin = { score: score, player: name, date: match.date, season: seasonKey };
+                        if (score < maxLoss.score) maxLoss = { score: score, player: name, date: match.date, season: seasonKey };
+                        if (match.host && match.host === name && hostStats[name]) {
+                            hostStats[name].totalScore += score; hostStats[name].count++;
+                        }
+                    });
+
+                    let placements = getPlacementScoresForMatch(match.scores);
+                    Object.keys(placements).forEach(name => {
+                        if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += placements[name];
+                    });
+                }
+            });
+
+            return { totalSeasonPoints, matchCounts, totalMatchesCount: matchesEntries.length, maxWin, maxLoss, hostStats };
+        }
+
+        function calculateAllTimeRecords() {
+            let globalMaxWin = { score: -999, player: "-", date: "-", season: "-" };
+            let globalMaxLoss = { score: 999, player: "-", date: "-", season: "-" };
+            let globalHostStats = {}; 
+
+            state.players.forEach(p => { globalHostStats[p] = { totalScore: 0, count: 0 }; });
+
+            Object.keys(state.seasons).forEach(sKey => {
+                const season = state.seasons[sKey];
+                if (season.isHistorical || !season.matches) return;
+
+                Object.values(season.matches).forEach(match => {
+                    if (!match.scores) return;
+                    Object.keys(match.scores).forEach(name => {
+                        let score = match.scores[name];
+                        if (score > globalMaxWin.score) globalMaxWin = { score, player: name, date: match.date, season: sKey };
+                        if (score < globalMaxLoss.score) globalMaxLoss = { score, player: name, date: match.date, season: sKey };
+                        if (match.host && match.host === name && globalHostStats[name]) {
+                            globalHostStats[name].totalScore += score; globalHostStats[name].count++;
+                        }
+                    });
+                });
+            });
+
+            let bestAllTimeHostName = "-"; let bestAllTimeHostAvg = -999;
+            Object.keys(globalHostStats).forEach(name => {
+                if (globalHostStats[name].count > 0) {
+                    let avg = globalHostStats[name].totalScore / globalHostStats[name].count;
+                    if (avg > bestAllTimeHostAvg) { bestAllTimeHostAvg = avg; bestAllTimeHostName = name; }
+                }
+            });
+
+            return { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg };
+        }
+
+        function saveMatch() {
+            if (!state.currentSeasonKey) return alert("Keine Saison gewählt!");
+            const season = state.seasons[state.currentSeasonKey];
+            if (season.status === "abgeschlossen") return alert("Saison ist abgeschlossen!");
+
+            let matchScores = {}; let count = 0; let formattedDate = "-"; let host = ""; let timestamp = Date.now();
+
+            if (!season.isHistorical) {
+                host = document.getElementById('hostSelect').value;
+                const rawDate = document.getElementById('matchDate').value;
+                if (!rawDate || !host) return alert("Datum und Gastgeber fehlen!");
+                const dateObj = new Date(rawDate);
+                formattedDate = dateObj.toLocaleDateString('de-DE');
+                timestamp = dateObj.getTime();
+            } else {
+                let existingCount = season.matches ? Object.keys(season.matches).length : 0;
+                formattedDate = `Alter Abend Nr. ${existingCount + 1}`;
+                timestamp = Date.now() - (100000 * existingCount);
+            }
+
+            state.players.forEach(name => {
+                const checkbox = document.getElementById(`check-${name}`);
+                const input = document.getElementById('score-' + name);
+                if (checkbox && checkbox.checked) {
+                    matchScores[name] = parseInt(input.value) || 0; count++;
+                }
+            });
+
+            if (count < 4 || count > 7) return alert("4 bis 7 Spieler erlaubt!");
+            if (!season.isHistorical && !matchScores.hasOwnProperty(host)) return alert("Der Gastgeber muss mitgespielt haben!");
+
+            const matchId = 'match_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            if (!season.matches) season.matches = {};
+            season.matches[matchId] = { date: formattedDate, host, scores: matchScores, timestamp };
+
+            if(!season.isHistorical) {
+                document.getElementById('hostSelect').value = ""; document.getElementById('matchDate').value = "";
+            }
+            saveToCloud();
+        }
+
+        function exportTableToCSV() {
+            const season = state.currentSeasonKey;
+            if (!season) return alert("Keine Saisondaten zum Exportieren vorhanden!");
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Platz;Spieler;Teilnahmen;Quote;Saison-Punkte;Schnitt\r\n";
+
+            const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(season);
+
+            let playerData = state.players.map(name => {
+                let played = matchCounts[name] || 0;
+                let pts = totalSeasonPoints[name] || 0;
+                let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
+                return {
+                    name,
+                    played,
+                    ratio: Math.round(ratio * 100) + "%",
+                    pts,
+                    avg: played > 0 ? (pts / played).toFixed(2) : "0.00",
+                    inRating: ratio >= 0.40
+                };
+            });
+
+            let sortedData = playerData.sort((a, b) => b.avg - a.avg || b.played - a.played);
+
+            sortedData.forEach((p, index) => {
+                let rank = p.inRating && p.played > 0 ? `${index + 1}.` : "-";
+                let row = `${rank};${p.name};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts};${p.avg}`;
+                csvContent += row + "\r\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            
+            const fileName = `Doko_Export_${season.replace(/\s+/g, '_')}.csv`;
+            link.setAttribute("download", fileName);
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function render() {
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            const isHist = season && season.isHistorical;
+
+            if (season) {
+                document.getElementById('formTitle').textContent = isHist ? "3. Alten Abend eintragen" : "3. Abend eintragen";
+                document.getElementById('modernFormFields').style.display = isHist ? "none" : "block";
+                document.getElementById('pointsLabel').innerHTML = isHist 
+                    ? "👥 Spieler &amp; <b>direkte Platzierungspunkte</b>:" : "👥 Spieler &amp; echte Spielpunkte:";
+                document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
+            }
+
+            document.getElementById('playerList').innerHTML = state.players.map(name => `
+                <li class="flex justify-between items-center bg-gray-50 p-2 rounded border text-sm">
+                    <span>${name}</span>
+                    <button onclick="removePlayer('${name}')" class="text-red-500 font-bold font-mono cursor-pointer">×</button>
+                </li>
+            `).join('');
+
+            const seasonSelect = document.getElementById('seasonSelect');
+            const seasonKeys = Object.keys(state.seasons).sort((a, b) => b.localeCompare(a));
+            seasonSelect.innerHTML = seasonKeys.length === 0 
+                ? '<option value="">-- Keine Saison vorhanden --</option>'
+                : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch)' : ''} (${state.seasons[key].status})</option>`).join('');
+            if (state.currentSeasonKey) seasonSelect.value = state.currentSeasonKey;
+
+            const statusContainer = document.getElementById('seasonStatusContainer');
+            if (season) {
+                statusContainer.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-400 font-bold">STATUS:</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${season.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-800'} mt-0.5">${season.status.toUpperCase()}</span>
+                    </div>
+                    <button onclick="toggleSeasonStatus()" class="${season.status === 'aktiv' ? 'bg-gray-600' : 'bg-emerald-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${season.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
+                `;
+                document.getElementById('saveMatchBtn').disabled = season.status === "abgeschlossen";
+            }
+
+            const hostSelect = document.getElementById('hostSelect');
+            const currentHost = hostSelect.value;
+            hostSelect.innerHTML = '<option value="">-- Bitte wählen --</option>' + state.players.map(name => `<option value="${name}">${name}</option>`).join('');
+            hostSelect.value = currentHost;
+
+            document.getElementById('matchPlayersContainer').innerHTML = state.players.map(name => `
+                <div class="flex items-center justify-between gap-2 p-1 bg-gray-50 rounded border">
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-medium flex-grow">
+                        <input type="checkbox" id="check-${name}" onchange="document.getElementById('score-${name}').disabled = !this.checked" class="rounded text-emerald-600">
+                        ${name}
+                    </label>
+                    <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-24 border rounded p-1 text-sm text-right disabled:bg-gray-200">
+                </div>
+            `).join('');
+
+            const leaderboardBody = document.getElementById('leaderboardBody');
+            const recordsContainer = document.getElementById('recordsContainer');
+
+            if (season) {
+                document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
+                const { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats } = calculateSeasonStats(state.currentSeasonKey);
+                
+                let playerData = state.players.map(name => {
+                    let played = matchCounts[name] || 0; let pts = totalSeasonPoints[name] || 0;
+                    let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
+                    return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= 0.40 };
+                });
+
+                let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
+                let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
+
+                leaderboardBody.innerHTML = qualified.map((p, i) => `
+                    <tr class="hover:bg-gray-50 font-medium">
+                        <td class="p-3 text-emerald-700 font-bold">${i + 1}.</td>
+                        <td class="p-3 font-semibold">${p.name}</td>
+                        <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
+                        <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
+                        <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
+                        <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
+                    </tr>
+                `).join('') + unqualified.map(p => `
+                    <tr class="bg-gray-50/50 text-gray-400 italic">
+                        <td class="p-3 text-center font-bold font-mono">-</td>
+                        <td class="p-3 font-medium text-gray-500">${p.name}</td>
+                        <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
+                        <td class="p-3 text-center text-amber-600 font-semibold">${Math.round(p.ratio * 100)}%</td>
+                        <td class="p-3 text-right text-gray-400">${p.pts} Pkt.</td>
+                        <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
+                    </tr>
+                `).join('');
+
+                if (!isHist) {
+                    let bestHostName = "-"; let bestHostAvg = -999;
+                    Object.keys(hostStats).forEach(name => {
+                        if (hostStats[name].count > 0) {
+                            let avg = hostStats[name].totalScore / hostStats[name].count;
+                            if (avg > bestHostAvg) { bestHostAvg = avg; bestHostName = name; }
+                        }
+                    });
+                    recordsContainer.innerHTML = `
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                            <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider">🏆 Sahnetag</p>
+                            <p class="text-lg font-bold text-emerald-900 mt-1">${maxWin.score > -999 ? `+${maxWin.score}` : '0'} Pkt.</p>
+                            <p class="text-xs text-emerald-800 mt-0.5"><b>${maxWin.player}</b> am ${maxWin.date}</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
+                            <p class="text-xs text-red-700 font-bold uppercase tracking-wider">📉 Seuchentag</p>
+                            <p class="text-lg font-bold text-red-900 mt-1">${maxLoss.score < 999 ? `${maxLoss.score}` : '0'} Pkt.</p>
+                            <p class="text-xs text-red-800 mt-0.5"><b>${maxLoss.player}</b> am ${maxLoss.date}</p>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">🏰 Festung (Heim-Schnitt)</p>
+                            <p class="text-lg font-bold text-amber-900 mt-1">${bestHostAvg > -999 ? `+${bestHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
+                            <p class="text-xs text-amber-800 mt-0.5">Vorne: <b>${bestHostName}</b> zu Hause</p>
+                        </div>
+                    `;
+                }
+            } else { leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Keine Daten.</td></tr>'; }
+
+            const { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg } = calculateAllTimeRecords();
+            document.getElementById('allTimeRecordsContainer').innerHTML = `
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">👑 Ewiger Sahnetag</p>
+                    <p class="text-xl font-black text-white mt-1">${globalMaxWin.score > -999 ? `+${globalMaxWin.score}` : '0'} Pkt.</p>
+                    <p class="text-xs text-slate-400 mt-0.5"><b>${globalMaxWin.player}</b> (${globalMaxWin.season})</p>
+                </div>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                    <p class="text-xs text-red-400 font-semibold uppercase tracking-wider">💀 Ewiger Seuchentag</p>
+                    <p class="text-xl font-black text-white mt-1">${globalMaxLoss.score < 999 ? `${globalMaxLoss.score}` : '0'} Pkt.</p>
+                    <p class="text-xs text-slate-400 mt-0.5"><b>${globalMaxLoss.player}</b> (${globalMaxLoss.season})</p>
+                </div>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🛡️ Ewige Festung</p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -999 ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${bestAllTimeHostName}</b></p>
+                </div>
+            `;
+
+            const historyContainer = document.getElementById('historyContainer');
+            if (season && season.matches) {
+                const matchesEntries = Object.entries(season.matches);
+                historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
+                    let displayScores = isHist ? match.scores : getPlacementScoresForMatch(match.scores);
+                    
+                    return `
+                        <div class="bg-gray-50 p-2 text-xs rounded border flex justify-between items-center hover:bg-gray-100 transition">
+                            <div class="overflow-hidden truncate mr-2">
+                                <span class="font-bold text-gray-600">${match.date}</span>
+                                ${!isHist ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium ml-2">🏠 ${match.host || 'Unbekannt'}</span>` : ''}
+                                <span class="text-gray-700 ml-2">(${Object.keys(displayScores).map(p => `${p}: ${displayScores[p]} Pkt.`).join(', ')})</span>
+                            </div>
+                            <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer" title="Abend löschen">
+                                🗑️
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            } else { historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>'; }
         }
     </script>
 </body>
