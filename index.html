@@ -16,17 +16,14 @@
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- LINKS -->
             <div class="space-y-6">
-                <!-- 1. ABEND -->
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold mb-3 border-b pb-2">1. Abend eintragen</h2>
                     <input id="matchDate" type="date" class="w-full border rounded p-2 mb-2">
                     <select id="hostSelect" class="w-full border rounded p-2 mb-2"><option value="">-- Gastgeber --</option></select>
                     <div id="matchPlayersContainer" class="space-y-1 mb-3 text-sm"></div>
-                    <button onclick="saveMatch()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Speichern</button>
+                    <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Abend speichern</button>
                 </div>
-                <!-- 2. SPIELER -->
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold mb-3 border-b pb-2">2. Spieler verwalten</h2>
                     <div class="flex gap-2 mb-3">
@@ -35,7 +32,6 @@
                     </div>
                     <div id="playerList" class="flex flex-wrap gap-2"></div>
                 </div>
-                <!-- 3. SAISON -->
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold border-b pb-2 mb-2">3. Saison</h2>
                     <select id="seasonSelect" onchange="changeSeasonView()" class="w-full border p-2 mb-3"></select>
@@ -43,11 +39,14 @@
                 </div>
             </div>
 
-            <!-- RECHTS -->
             <div class="md:col-span-2 space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2">🏆 Live Tabelle</h2>
-                    <table class="w-full text-left text-sm"><tbody id="leaderboardBody"></tbody></table>
+                    <table class="w-full text-left text-sm"><thead><tr class="text-gray-500 text-xs uppercase"><th>Platz</th><th>Spieler</th><th>Schnitt</th><th>Punkte</th></tr></thead><tbody id="leaderboardBody"></tbody></table>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">✨ Rekorde</h2>
+                    <div id="recordsContainer" class="grid grid-cols-2 gap-4"></div>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Abende</h2>
@@ -58,11 +57,7 @@
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4",
-            databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "doko-saisonverwaltung"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4", databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app", projectId: "doko-saisonverwaltung" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let state = { players: [], seasons: {}, currentSeasonKey: "" };
@@ -83,10 +78,14 @@
             document.getElementById('hostSelect').innerHTML = '<option value="">-- Gastgeber --</option>' + state.players.map(n => `<option value="${n}">${n}</option>`).join('');
             document.getElementById('matchPlayersContainer').innerHTML = state.players.map(n => `<div class="flex items-center gap-2"><input type="checkbox" id="check-${n}"><label>${n}</label><input type="number" id="score-${n}" class="w-16 border rounded p-0.5 text-right"></div>`).join('');
             
-            // Tabelle & Historie
             if (state.currentSeasonKey && state.seasons[state.currentSeasonKey].matches) {
                 const matches = state.seasons[state.currentSeasonKey].matches;
-                document.getElementById('historyContainer').innerHTML = Object.entries(matches).map(([id, m]) => `<div class="text-xs bg-gray-50 p-2 rounded"><b>${m.date}</b>: ${JSON.stringify(m.scores)}</div>`).join('');
+                document.getElementById('historyContainer').innerHTML = Object.entries(matches).reverse().map(([id, m]) => `<div class="text-xs bg-gray-50 p-2 rounded flex justify-between"><span><b>${m.date}</b> (${m.host})</span><span>${Object.values(m.scores).reduce((a,b)=>a+b,0)} Pkt</span></div>`).join('');
+                
+                // Einfache Tabellen-Logik
+                let stats = {};
+                Object.values(matches).forEach(m => Object.entries(m.scores).forEach(([n, s]) => { stats[n] = (stats[n] || 0) + s; }));
+                document.getElementById('leaderboardBody').innerHTML = Object.entries(stats).sort((a,b)=>b[1]-a[1]).map((p,i) => `<tr><td class="p-2 font-bold">${i+1}.</td><td class="p-2">${p[0]}</td><td class="p-2">-</td><td class="p-2">${p[1]}</td></tr>`).join('');
             }
         }
 
@@ -96,9 +95,10 @@
         function createNewSeason() { const k = "Saison " + new Date().getFullYear(); state.seasons[k] = { matches: {} }; state.currentSeasonKey = k; saveToCloud(); }
         function saveMatch() {
             const date = document.getElementById('matchDate').value;
+            const host = document.getElementById('hostSelect').value;
             let scores = {}; state.players.forEach(n => { if(document.getElementById('check-'+n).checked) scores[n] = parseInt(document.getElementById('score-'+n).value)||0; });
             if(!state.seasons[state.currentSeasonKey].matches) state.seasons[state.currentSeasonKey].matches = {};
-            state.seasons[state.currentSeasonKey].matches['m_'+Date.now()] = { date, scores };
+            state.seasons[state.currentSeasonKey].matches['m_'+Date.now()] = { date, host, scores };
             saveToCloud();
         }
     </script>
