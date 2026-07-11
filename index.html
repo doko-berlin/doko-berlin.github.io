@@ -95,6 +95,12 @@
                             </div>
                         </div>
 
+                        <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler &amp; echte Spielpunkte:</p>
+                        <div id="matchPlayersContainer" class="space-y-2"></div>
+                        <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
+                    </div>
+                </div>
+            </div>
 
             <div class="space-y-6 md:col-span-2">
                 <div class="bg-white p-6 rounded-2xl shadow-md">
@@ -443,11 +449,11 @@ const firebaseConfig = {
                 document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
             }
 
-document.getElementById('playerList').innerHTML = state.players.map(name => `
-                <span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-                    ${name}
-                    <button onclick="removePlayer('${name}')" class="text-emerald-600 hover:text-red-600 font-bold ml-1 cursor-pointer">×</button>
-                </span>
+            document.getElementById('playerList').innerHTML = state.players.map(name => `
+                <li class="flex justify-between items-center bg-gray-50 p-2 rounded border text-sm">
+                    <span>${name}</span>
+                    <button onclick="removePlayer('${name}')" class="text-red-500 font-bold font-mono cursor-pointer">×</button>
+                </li>
             `).join('');
 
             const seasonSelect = document.getElementById('seasonSelect');
