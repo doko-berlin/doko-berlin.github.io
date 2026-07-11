@@ -489,57 +489,63 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
                 </div>
             `).join('');
 
-            const leaderboardBody = document.getElementById('leaderboardBody');
-            const recordsContainer = document.getElementById('recordsContainer');
+const leaderboardBody = document.getElementById('leaderboardBody');
 
-            if (season) {
-                document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
-                const { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats } = calculateSeasonStats(state.currentSeasonKey);
-                
-                let playerData = state.players.map(name => {
-                    let played = matchCounts[name] || 0; let pts = totalSeasonPoints[name] || 0;
-                    let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
-                    return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= 0.40 };
-                });
+if (season) {
+    document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
+    const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(state.currentSeasonKey);
+    
+    let playerData = state.players.map(name => {
+        let played = matchCounts[name] || 0; 
+        let pts = totalSeasonPoints[name] || 0;
+        let avg = played > 0 ? (pts / played) : 0;
+        return { 
+            name, 
+            played, 
+            pts, 
+            ratio: totalMatchesCount > 0 ? (played / totalMatchesCount) : 0, 
+            avg: avg, 
+            inRating: (totalMatchesCount > 0 ? (played / totalMatchesCount) : 0) >= 0.40 
+        };
+    });
 
-                let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
-                let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
+    // Sortierung: Zuerst nach Schnitt, dann nach Teilnahmen
+    let qualified = playerData.filter(p => p.inRating && p.played > 0)
+                              .sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-// 1. Qualifizierte Spieler sortieren
-                let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
-                
-                // 2. Ränge mit "Geteilter Platz"-Logik berechnen
-                let rankedQualified = qualified.map((p, i) => {
-                    let rank = i + 1;
-                    // Wenn der Schnitt gleich dem Vorgänger ist, Rang vom Vorgänger übernehmen
-                    if (i > 0 && Math.abs(p.avg - qualified[i - 1].avg) < 0.0001) {
-                        rank = parseInt(document.querySelector(`#rank-${i-1}`)?.textContent) || rank;
-                    }
-                    return { ...p, rank };
-                });
+    // Rang-Logik (ohne HTML-ID Abhängigkeit)
+    let rankedQualified = [];
+    let currentRank = 1;
+    qualified.forEach((p, i) => {
+        if (i > 0 && p.avg.toFixed(2) !== qualified[i-1].avg.toFixed(2)) {
+            currentRank = i + 1;
+        }
+        rankedQualified.push({ ...p, rank: currentRank });
+    });
 
-                let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
+    let unqualified = playerData.filter(p => !p.inRating || p.played === 0)
+                               .sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-                // 3. Rendern
-                leaderboardBody.innerHTML = rankedQualified.map((p, i) => `
-                    <tr class="hover:bg-gray-50 font-medium">
-                        <td id="rank-${i}" class="p-3 text-emerald-700 font-bold">${p.rank}.</td>
-                        <td class="p-3 font-semibold">${p.name}</td>
-                        <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
-                        <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
-                        <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
-                        <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
-                    </tr>
-                `).join('') + unqualified.map(p => `
-                    <tr class="bg-gray-50/50 text-gray-400 italic">
-                        <td class="p-3 text-center font-bold font-mono">-</td>
-                        <td class="p-3 font-medium text-gray-500">${p.name}</td>
-                        <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
-                        <td class="p-3 text-center text-amber-600 font-semibold">${Math.round(p.ratio * 100)}%</td>
-                        <td class="p-3 text-right text-gray-400">${p.pts} Pkt.</td>
-                        <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
-                    </tr>
-                `).join('');
+    leaderboardBody.innerHTML = rankedQualified.map(p => `
+        <tr class="hover:bg-gray-50 font-medium">
+            <td class="p-3 text-emerald-700 font-bold">${p.rank}.</td>
+            <td class="p-3 font-semibold">${p.name}</td>
+            <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
+            <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
+            <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
+            <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
+        </tr>
+    `).join('') + unqualified.map(p => `
+        <tr class="bg-gray-50/50 text-gray-400 italic">
+            <td class="p-3 text-center font-bold font-mono">-</td>
+            <td class="p-3 font-medium text-gray-500">${p.name}</td>
+            <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
+            <td class="p-3 text-center text-amber-600 font-semibold">${Math.round(p.ratio * 100)}%</td>
+            <td class="p-3 text-right text-gray-400">${p.pts} Pkt.</td>
+            <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
+        </tr>
+    `).join('');
+}
 
                 if (!isHist) {
                     let bestHostName = "-"; let bestHostAvg = -999;
