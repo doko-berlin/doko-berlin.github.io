@@ -490,6 +490,8 @@ document.getElementById('playerList').innerHTML = state.players.map(name => `
             `).join('');
 
 const leaderboardBody = document.getElementById('leaderboardBody');
+const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+const isHist = season && season.isHistorical;
 
 if (season) {
     document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
@@ -509,11 +511,9 @@ if (season) {
         };
     });
 
-    // Sortierung: Zuerst nach Schnitt, dann nach Teilnahmen
     let qualified = playerData.filter(p => p.inRating && p.played > 0)
                               .sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-    // Rang-Logik (ohne HTML-ID Abhängigkeit)
     let rankedQualified = [];
     let currentRank = 1;
     qualified.forEach((p, i) => {
@@ -545,6 +545,9 @@ if (season) {
             <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
         </tr>
     `).join('');
+} else {
+    // Hier ist das "else", das vorher gefehlt hat und den Fehler verursachte
+    leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400">Keine Saison ausgewählt.</td></tr>';
 }
 
                 if (!isHist) {
