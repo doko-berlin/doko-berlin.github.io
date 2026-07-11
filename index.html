@@ -7,96 +7,51 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon" href="https://placehold.co/192x192/065f46/ffffff?text=Doko">
-    
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js');
-            });
-        }
-    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans p-4 md:p-8">
 
     <div class="max-w-5xl mx-auto space-y-6">
-        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl relative overflow-hidden">
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight">🂡 Doko-Saisonverwaltung 🂱</h1>
-            <span id="connectionStatus" class="absolute top-4 right-4 bg-yellow-500/90 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
+        <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-8 rounded-3xl shadow-xl">
+            <h1 class="text-3xl font-extrabold">🂡 Doko-Saisonverwaltung 🂱</h1>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- LINKE SPALTE: NEUE SORTIERUNG -->
-            <div class="space-y-6 md:col-span-1">
-                
+            <!-- LINKS -->
+            <div class="space-y-6">
                 <!-- 1. ABEND -->
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-3 border-b pb-2" id="formTitle">1. Abend eintragen</h2>
-                    <div id="inputForm" class="space-y-3">
-                        <div id="modernFormFields" class="space-y-3">
-                            <div class="bg-gray-50 p-2 rounded border">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
-                                <input id="matchDate" type="date" class="w-full bg-white border rounded p-1 text-sm">
-                            </div>
-                            <div class="bg-gray-50 p-2 rounded border">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">🏠 Gastgeber:</label>
-                                <select id="hostSelect" class="w-full bg-white border rounded p-1.5 text-sm">
-                                    <option value="">-- Bitte wählen --</option>
-                                </select>
-                            </div>
-                        </div>
-                        <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler & Spielpunkte:</p>
-                        <div id="matchPlayersContainer" class="space-y-2"></div>
-                        <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
-                    </div>
+                    <h2 class="text-xl font-semibold mb-3 border-b pb-2">1. Abend eintragen</h2>
+                    <input id="matchDate" type="date" class="w-full border rounded p-2 mb-2">
+                    <select id="hostSelect" class="w-full border rounded p-2 mb-2"><option value="">-- Gastgeber --</option></select>
+                    <div id="matchPlayersContainer" class="space-y-1 mb-3 text-sm"></div>
+                    <button onclick="saveMatch()" class="w-full bg-emerald-600 text-white py-2 rounded-lg font-bold">Speichern</button>
                 </div>
-
                 <!-- 2. SPIELER -->
                 <div class="bg-white p-6 rounded-2xl shadow-md">
                     <h2 class="text-xl font-semibold mb-3 border-b pb-2">2. Spieler verwalten</h2>
-                    <div class="flex gap-2 mb-4">
-                        <input id="newPlayerName" type="text" placeholder="Name..." class="border rounded-lg p-2 flex-grow text-sm">
-                        <button onclick="addPlayer()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">+</button>
+                    <div class="flex gap-2 mb-3">
+                        <input id="newPlayerName" type="text" class="border rounded p-2 flex-grow text-sm">
+                        <button onclick="addPlayer()" class="bg-emerald-600 text-white px-4 rounded">+</button>
                     </div>
                     <div id="playerList" class="flex flex-wrap gap-2"></div>
                 </div>
-
                 <!-- 3. SAISON -->
-                <div class="bg-white p-6 rounded-2xl shadow-md space-y-4">
-                    <h2 class="text-xl font-semibold border-b pb-2">3. Saison</h2>
-                    <select id="seasonSelect" onchange="changeSeasonView()" class="w-full bg-white border rounded p-2 text-sm font-medium"></select>
-                    <div class="pt-2 border-t space-y-2">
-                        <p class="text-xs text-gray-500 font-medium">Neue Saison:</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <select id="newSeasonHalf" class="bg-white border rounded p-1 text-xs">
-                                <option value="Erstes Halbjahr">1. HJ</option>
-                                <option value="Zweites Halbjahr">2. HJ</option>
-                            </select>
-                            <input id="newSeasonYear" type="number" value="2026" class="bg-white border rounded p-1 text-xs text-center">
-                        </div>
-                        <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold cursor-pointer">Anlegen</button>
-                    </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-xl font-semibold border-b pb-2 mb-2">3. Saison</h2>
+                    <select id="seasonSelect" onchange="changeSeasonView()" class="w-full border p-2 mb-3"></select>
+                    <button onclick="createNewSeason()" class="w-full bg-blue-600 text-white py-1 rounded text-sm">Neue Saison anlegen</button>
                 </div>
             </div>
 
-            <!-- RECHTE SPALTE -->
-            <div class="space-y-6 md:col-span-2">
+            <!-- RECHTS -->
+            <div class="md:col-span-2 space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <div class="flex justify-between items-center mb-4 border-b pb-2">
-                        <h2 id="tableTitle" class="text-xl font-semibold">🏆 Live Tabelle</h2>
-                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1 px-3 rounded-lg border shadow-sm cursor-pointer">Excel</button>
-                    </div>
-                    <table class="w-full text-left">
-                        <thead><tr class="bg-gray-50 text-gray-600 uppercase text-xs"><th class="p-3">Platz</th><th class="p-3">Spieler</th><th class="p-3">Punkte</th></tr></thead>
-                        <tbody id="leaderboardBody" class="divide-y text-sm"></tbody>
-                    </table>
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">🏆 Live Tabelle</h2>
+                    <table class="w-full text-left text-sm"><tbody id="leaderboardBody"></tbody></table>
                 </div>
                 <div class="bg-white p-6 rounded-2xl shadow-md">
-                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Eingetragene Abende</h2>
-                    <div id="historyContainer" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2">⏳ Abende</h2>
+                    <div id="historyContainer" class="space-y-2"></div>
                 </div>
             </div>
         </div>
@@ -105,14 +60,9 @@
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAR1ZKmXaPgm41yYTdM1hvMoEWajtMRaH4",
-            authDomain: "doko-saisonverwaltung.firebaseapp.com",
             databaseURL: "https://doko-saisonverwaltung-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "doko-saisonverwaltung",
-            storageBucket: "doko-saisonverwaltung.firebasestorage.app",
-            messagingSenderId: "133639961632",
-            appId: "1:133639961632:web:92413df663c371964bd045"
+            projectId: "doko-saisonverwaltung"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         let state = { players: [], seasons: {}, currentSeasonKey: "" };
@@ -121,43 +71,34 @@
             const data = s.val() || {};
             state.players = data.players || [];
             state.seasons = data.seasons || {};
-            if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
-                state.currentSeasonKey = Object.keys(state.seasons).sort().reverse()[0] || "";
-            }
-            document.getElementById('connectionStatus').textContent = "Live-Verbunden";
-            document.getElementById('connectionStatus').className = "absolute top-4 right-4 bg-emerald-500/90 text-[10px] px-2.5 py-1 rounded-full font-bold uppercase text-white";
+            if (!state.currentSeasonKey && Object.keys(state.seasons).length > 0) state.currentSeasonKey = Object.keys(state.seasons).sort().reverse()[0];
             render();
         });
 
         function saveToCloud() { db.ref('doko_v2_data').set({ players: state.players, seasons: state.seasons }); }
 
-        function addPlayer() {
-            const name = document.getElementById('newPlayerName').value.trim();
-            if (name && !state.players.includes(name)) { state.players.push(name); document.getElementById('newPlayerName').value = ''; saveToCloud(); }
-        }
-
-        function removePlayer(name) { if(confirm(`Löschen?`)) { state.players = state.players.filter(p => p !== name); saveToCloud(); } }
-
         function render() {
-            document.getElementById('playerList').innerHTML = state.players.map(n => `<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-semibold">${n}<button onclick="removePlayer('${n}')" class="text-emerald-600 hover:text-red-600 font-bold ml-1">×</button></span>`).join('');
+            document.getElementById('playerList').innerHTML = state.players.map(n => `<span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-xs font-bold">${n} <button onclick="removePlayer('${n}')" class="text-red-600">×</button></span>`).join('');
+            document.getElementById('seasonSelect').innerHTML = Object.keys(state.seasons).map(k => `<option value="${k}" ${k===state.currentSeasonKey?'selected':''}>${k}</option>`).join('');
+            document.getElementById('hostSelect').innerHTML = '<option value="">-- Gastgeber --</option>' + state.players.map(n => `<option value="${n}">${n}</option>`).join('');
+            document.getElementById('matchPlayersContainer').innerHTML = state.players.map(n => `<div class="flex items-center gap-2"><input type="checkbox" id="check-${n}"><label>${n}</label><input type="number" id="score-${n}" class="w-16 border rounded p-0.5 text-right"></div>`).join('');
             
-            const seasonSelect = document.getElementById('seasonSelect');
-            seasonSelect.innerHTML = Object.keys(state.seasons).map(k => `<option value="${k}" ${k===state.currentSeasonKey?'selected':''}>${k}</option>`).join('');
-            
-            const hostSelect = document.getElementById('hostSelect');
-            hostSelect.innerHTML = '<option value="">-- Gast --</option>' + state.players.map(n => `<option value="${n}">${n}</option>`).join('');
-            
-            document.getElementById('matchPlayersContainer').innerHTML = state.players.map(n => `<div class="flex items-center gap-2 p-1 bg-gray-50 rounded border"><input type="checkbox" id="check-${n}" onchange="document.getElementById('score-${n}').disabled = !this.checked"><label class="text-sm flex-grow">${n}</label><input type="number" id="score-${n}" disabled class="w-20 border rounded p-1 text-sm text-right"></div>`).join('');
+            // Tabelle & Historie
+            if (state.currentSeasonKey && state.seasons[state.currentSeasonKey].matches) {
+                const matches = state.seasons[state.currentSeasonKey].matches;
+                document.getElementById('historyContainer').innerHTML = Object.entries(matches).map(([id, m]) => `<div class="text-xs bg-gray-50 p-2 rounded"><b>${m.date}</b>: ${JSON.stringify(m.scores)}</div>`).join('');
+            }
         }
 
+        function addPlayer() { const n = document.getElementById('newPlayerName').value; if(n) { state.players.push(n); saveToCloud(); } }
+        function removePlayer(n) { state.players = state.players.filter(x => x !== n); saveToCloud(); }
+        function changeSeasonView() { state.currentSeasonKey = document.getElementById('seasonSelect').value; render(); }
+        function createNewSeason() { const k = "Saison " + new Date().getFullYear(); state.seasons[k] = { matches: {} }; state.currentSeasonKey = k; saveToCloud(); }
         function saveMatch() {
-            const host = document.getElementById('hostSelect').value;
             const date = document.getElementById('matchDate').value;
-            if(!host || !date) return alert("Fehlende Daten!");
-            let scores = {};
-            state.players.forEach(n => { if(document.getElementById(`check-${n}`).checked) scores[n] = parseInt(document.getElementById(`score-${n}`).value)||0; });
+            let scores = {}; state.players.forEach(n => { if(document.getElementById('check-'+n).checked) scores[n] = parseInt(document.getElementById('score-'+n).value)||0; });
             if(!state.seasons[state.currentSeasonKey].matches) state.seasons[state.currentSeasonKey].matches = {};
-            state.seasons[state.currentSeasonKey].matches['m_'+Date.now()] = { date, host, scores };
+            state.seasons[state.currentSeasonKey].matches['m_'+Date.now()] = { date, scores };
             saveToCloud();
         }
     </script>
