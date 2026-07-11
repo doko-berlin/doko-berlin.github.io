@@ -163,20 +163,30 @@
 
         let state = { players: [], seasons: {}, currentSeasonKey: "" };
 
-        db.ref('doko_v2_data').on('value', (snapshot) => {
+db.ref('doko_v2_data').on('value', (snapshot) => {
             const data = snapshot.val();
+            
+            // WICHTIG: Falls die Datenbank leer (null) ist, erstellen wir eine saubere Struktur
             if (data) {
                 state.players = data.players || [];
                 state.seasons = data.seasons || {};
-                if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
-                    const keys = Object.keys(state.seasons);
-                    if (keys.length > 0) {
-                        keys.sort((a, b) => b.localeCompare(a));
-                        state.currentSeasonKey = keys[0];
-                    } else { state.currentSeasonKey = ""; }
+            } else {
+                state.players = [];
+                state.seasons = {};
+            }
+
+            // Automatisch die aktuellste Saison auswählen, falls vorhanden
+            if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) {
+                const keys = Object.keys(state.seasons);
+                if (keys.length > 0) {
+                    keys.sort((a, b) => b.localeCompare(a));
+                    state.currentSeasonKey = keys[0];
+                } else { 
+                    state.currentSeasonKey = ""; 
                 }
-            } else { state.players = []; state.seasons = {}; state.currentSeasonKey = ""; }
+            }
             
+            // Status auf Grün setzen, da die Verbindung nachweislich steht!
             const status = document.getElementById('connectionStatus');
             status.textContent = "Live-Verbunden";
             status.className = "absolute top-4 right-4 bg-emerald-500/90 backdrop-blur-sm text-[10px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
@@ -187,7 +197,11 @@
         });
 
         function saveToCloud() {
-            db.ref('doko_v2_data').set({ players: state.players, seasons: state.seasons });
+            // Sichert ab, dass auch leere Arrays/Objekte sauber zu Firebase übertragen werden
+            db.ref('doko_v2_data').set({ 
+                players: state.players || [], 
+                seasons: state.seasons || {} 
+            });
         }
 
         function addPlayer() {
