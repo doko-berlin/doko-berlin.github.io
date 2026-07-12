@@ -32,8 +32,7 @@
     <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
             <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2">Spieler Name</h2>
-            <div id="playerModalContent" class="space-y-4">
-                </div>
+            <div id="playerModalContent" class="space-y-4"></div>
             <button onclick="closePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
         </div>
     </div>
@@ -56,8 +55,16 @@
                         </div>
                     </div>
 
+                    <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 p-1 rounded-lg">
+                        <button type="button" id="modeSimpleBtn" onclick="setEntryMode('simple')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">📝 Nur Endergebnis</button>
+                        <button type="button" id="modeDetailedBtn" onclick="setEntryMode('detailed')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">🎮 Spiel für Spiel</button>
+                    </div>
+
                     <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
                     <div id="matchPlayersContainer" class="space-y-2"></div>
+
+                    <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200"></div>
+
                     <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
                 </div>
             </div>
@@ -147,13 +154,37 @@
         </div>
 
         <div class="space-y-6">
+
+            <div id="liveMatchViewer" class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 md:p-6 rounded-2xl shadow-md border border-amber-200 hidden">
+                <div class="flex items-center gap-2 mb-4 border-b border-amber-200/60 pb-3">
+                    <div class="w-3.5 h-3.5 bg-red-500 rounded-full animate-pulse shadow-sm border border-red-200"></div>
+                    <h2 class="text-xl font-bold text-amber-900">🔴 LIVE: Laufender Abend</h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <p class="text-sm font-bold text-amber-800 uppercase tracking-wider">Zwischenstand</p>
+                        <div id="liveViewerTotals" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="text-sm font-bold text-amber-800 uppercase tracking-wider">📋 Bisherige Spiele (<span id="liveViewerCount">0</span>)</p>
+                        <div id="liveViewerGames" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
+                    </div>
+                </div>
+            </div>
             
             <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
                 <div class="flex justify-between items-center mb-4 border-b pb-3 flex-wrap gap-2">
                     <h2 id="tableTitle" class="text-xl font-bold text-slate-900">🏆 Live Saison-Tabelle</h2>
-                    <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
-                        📊 Excel-Export
-                    </button>
+                    <div class="flex gap-2">
+                        <label id="blitztabelleToggleContainer" class="hidden items-center gap-1.5 cursor-pointer bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold py-1.5 px-3 rounded-lg border border-amber-300 shadow-sm transition">
+                            <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
+                            ⚡ Blitztabelle
+                        </label>
+                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                            📊 Excel-Export
+                        </button>
+                    </div>
                 </div>
                 <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
                     <table class="w-full text-left border-collapse min-w-[550px]">
@@ -161,16 +192,16 @@
                             <tr class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider border-b border-gray-100">
                                 <th class="p-3 w-16">Platz</th>
                                 <th class="p-3">Spieler</th>
+                                <th class="p-3 text-right">Schnitt</th>
                                 <th class="p-3 text-center">Teilnahmen</th>
                                 <th class="p-3 text-center">Quote</th>
                                 <th class="p-3 text-right">Saison-Pkt</th>
-                                <th class="p-3 text-right">Schnitt</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardBody" class="divide-y divide-gray-100 text-sm"></tbody>
                     </table>
                 </div>
-                <p class="text-[11px] text-gray-500 mt-3 italic">⚠️ Klicke auf einen Namen für Details. Unter 40 % Teilnahmequote ohne Wertung.</p>
+                <p id="tableHint" class="text-[11px] text-gray-500 mt-3 italic"></p>
             </div>
 
             <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
@@ -216,11 +247,60 @@
 
         let state = { seasons: {}, currentSeasonKey: "" };
         let courseChartInstance = null;
+        let isBlitztabelleActive = false;
+        let editingMatchId = null;
 
-        // --- SPIELER DETAILS MODAL FUNKTIONEN ---
+        let entryMode = 'simple';
+        let detailedOrder = [];
+        let detailedGames = [];
+
+        const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit'];
+        const SOLO_KINDS = ['pflicht', 'lust'];
+
+        function makeEmptyGame() {
+            return {
+                sittingOut: [],
+                points: {},
+                solo: {},
+                soloKind: {},
+                soloType: {},
+                hochzeit: {},
+                armut: {},
+                trumpfabgabe: {}
+            };
+        }
+
+        function normalizeGame(game) {
+            const g = game || {};
+            return {
+                sittingOut: Array.isArray(g.sittingOut) ? g.sittingOut : [],
+                points: g.points || {},
+                solo: g.solo || {},
+                soloKind: g.soloKind || {},
+                soloType: g.soloType || {},
+                hochzeit: g.hochzeit || {},
+                armut: g.armut || {},
+                trumpfabgabe: g.trumpfabgabe || {}
+            };
+        }
+
+        function updateLiveDraft() {
+            if (editingMatchId) return;
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (!season || season.status === "abgeschlossen") return;
+
+            season.liveDraft = {
+                entryMode: entryMode,
+                detailedOrder: detailedOrder,
+                detailedGames: detailedGames
+            };
+            saveToCloud();
+        }
+
         function openPlayerDetails(playerName) {
             const season = state.seasons[state.currentSeasonKey];
-            if (!season || !season.matches || season.isHistorical) return; // HISTORISCH: Keine Details
+            if (!season || !season.matches || season.isHistorical) return;
 
             let history = [];
             Object.keys(season.matches).forEach(key => {
@@ -230,7 +310,6 @@
                 }
             });
 
-            // Sortierung nach Punkten
             history.sort((a, b) => b.score - a.score);
 
             const modalContent = document.getElementById('playerModalContent');
@@ -275,18 +354,13 @@
             document.getElementById('playerDetailsModal').classList.add('hidden');
         }
 
-        // --- ALTE FUNKTIONEN ---
-
         function sortSeasonsChronologically(keys) {
             return keys.sort((a, b) => {
                 const partsA = a.split(' ');
                 const partsB = b.split(' ');
                 const yearA = parseInt(partsA[partsA.length - 1]) || 0;
                 const yearB = parseInt(partsB[partsB.length - 1]) || 0;
-                
-                if (yearA !== yearB) {
-                    return yearB - yearA;
-                }
+                if (yearA !== yearB) return yearB - yearA;
                 const isSecondHalfA = a.includes('Zweites') ? 1 : 0;
                 const isSecondHalfB = b.includes('Zweites') ? 1 : 0;
                 return isSecondHalfB - isSecondHalfA;
@@ -307,6 +381,10 @@
                 drawer.classList.add('translate-x-full');
                 setTimeout(() => {
                     modal.classList.add('hidden');
+                    editingMatchId = null;
+                    document.getElementById('saveMatchBtn').textContent = "Abend speichern";
+                    document.getElementById('matchDate').value = "";
+                    render();
                 }, 300);
             }
         }
@@ -324,18 +402,32 @@
             return dateStr;
         }
 
+        function parseGermanDateToYMD(dateStr) {
+            if (!dateStr || typeof dateStr !== 'string' || dateStr.includes('Alter Abend')) return '';
+            const parts = dateStr.split('.');
+            if (parts.length === 3) {
+                const day = parts[0].padStart(2, '0');
+                const month = parts[1].padStart(2, '0');
+                const year = parts[2];
+                return `${year}-${month}-${day}`;
+            }
+            return '';
+        }
+
+        function toggleBlitztabelle() {
+            const toggle = document.getElementById('blitztabelleToggle');
+            isBlitztabelleActive = toggle ? toggle.checked : false;
+            render();
+        }
+
         db.ref('doko_v2_data').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && data.seasons) {
                 state.seasons = data.seasons;
-                
                 Object.keys(state.seasons).forEach(key => {
                     if (!state.seasons[key].players) {
-                        if (data.players && data.players.length > 0) {
-                            state.seasons[key].players = [...data.players];
-                        } else {
-                            state.seasons[key].players = [];
-                        }
+                        if (data.players && data.players.length > 0) state.seasons[key].players = [...data.players];
+                        else state.seasons[key].players = [];
                     }
                 });
             } else {
@@ -347,11 +439,24 @@
                 if (keys.length > 0) {
                     sortSeasonsChronologically(keys);
                     state.currentSeasonKey = keys[0];
-                } else { 
-                    state.currentSeasonKey = ""; 
+                } else {
+                    state.currentSeasonKey = "";
                 }
             }
-            
+
+            if (!editingMatchId && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
+                const live = state.seasons[state.currentSeasonKey].liveDraft;
+                if (live) {
+                    entryMode = live.entryMode || 'simple';
+                    detailedOrder = live.detailedOrder || [];
+                    detailedGames = (live.detailedGames || []).map(normalizeGame);
+                } else {
+                    entryMode = 'simple';
+                    detailedOrder = [];
+                    detailedGames = [];
+                }
+            }
+
             const status = document.getElementById('connectionStatus');
             status.textContent = "Live-Verbunden";
             status.className = "absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
@@ -362,8 +467,8 @@
         });
 
         function saveToCloud() {
-            db.ref('doko_v2_data').set({ 
-                seasons: state.seasons 
+            db.ref('doko_v2_data').set({
+                seasons: state.seasons
             });
         }
 
@@ -388,7 +493,7 @@
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
 
-            if(confirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
+            if (confirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
                 season.players = (season.players || []).filter(p => p !== name);
                 saveToCloud();
             }
@@ -398,7 +503,6 @@
             const half = document.getElementById('newSeasonHalf').value;
             const year = parseInt(document.getElementById('newSeasonYear').value);
             const isHistorical = document.getElementById('newSeasonIsHistorical').checked;
-            
             if (!year || year < 1900 || year > 2100) return alert("Ungültiges Jahr!");
             const seasonKey = `${half} ${year}`;
             if (state.seasons[seasonKey]) return alert("Existiert bereits!");
@@ -411,6 +515,16 @@
 
         function changeSeasonView(selectId) {
             state.currentSeasonKey = document.getElementById(selectId).value;
+            const live = state.seasons[state.currentSeasonKey]?.liveDraft;
+            if (live) {
+                entryMode = live.entryMode || 'simple';
+                detailedOrder = live.detailedOrder || [];
+                detailedGames = (live.detailedGames || []).map(normalizeGame);
+            } else {
+                entryMode = 'simple';
+                detailedOrder = [];
+                detailedGames = [];
+            }
             render();
         }
 
@@ -443,7 +557,6 @@
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
-            
             if (confirm("Möchtest du diesen Abend wirklich unwiderruflich löschen?")) {
                 if (season.matches && season.matches[matchId]) {
                     delete season.matches[matchId];
@@ -452,11 +565,75 @@
             }
         }
 
+        function editMatch(matchId) {
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            const match = season.matches[matchId];
+            if (!match) return;
+
+            editingMatchId = matchId;
+            const dateInput = document.getElementById('matchDate');
+            if (dateInput) dateInput.value = parseGermanDateToYMD(match.date);
+
+            if (match.mode === 'detailed' && match.games) {
+                entryMode = 'detailed';
+                detailedOrder = match.order ? [...match.order] : Object.keys(match.scores || {});
+                detailedGames = (match.games || []).map(normalizeGame);
+            } else {
+                entryMode = 'simple';
+                detailedOrder = [];
+                detailedGames = [];
+            }
+
+            toggleAdminModal(true);
+            render();
+
+            setTimeout(() => {
+                Object.keys(match.scores || {}).forEach(name => {
+                    const cb = document.getElementById(`check-${name}`);
+                    if (cb) {
+                        cb.checked = true;
+                        cb.dispatchEvent(new Event('change'));
+                        const scoreInput = document.getElementById(`score-${name}`);
+                        if (scoreInput) scoreInput.value = match.scores[name];
+                    }
+                });
+
+                if (match.host) {
+                    const hCb = document.getElementById(`host-${match.host}`);
+                    if (hCb) {
+                        hCb.checked = true;
+                        handleHostChange(match.host);
+                    }
+                }
+
+                if (match.jokers) {
+                    Object.keys(match.jokers).forEach(name => {
+                        if (match.jokers[name]) {
+                            const jCb = document.getElementById(`joker-${name}`);
+                            if (jCb) {
+                                jCb.disabled = false;
+                                jCb.checked = true;
+                                jCb.dispatchEvent(new Event('change'));
+                            }
+                        }
+                    });
+                }
+
+                if (match.mode === 'detailed' && match.games && match.games.length > 0) {
+                    detailedGames = match.games.map(normalizeGame);
+                    renderDetailedSection();
+                }
+
+                document.getElementById('saveMatchBtn').textContent = "Änderungen speichern";
+            }, 100);
+        }
+
         function getPlacementScoresForMatch(matchScores) {
             let participants = Object.keys(matchScores).map(name => ({ name, realScore: matchScores[name] }));
             let totalPlayersAtAbend = participants.length;
             participants.sort((a, b) => b.realScore - a.realScore);
-
             let placementScores = {};
             participants.forEach((p) => {
                 let tieIndex = participants.findIndex(x => x.realScore === p.realScore);
@@ -466,21 +643,26 @@
         }
 
         function calculateSeasonStats(seasonKey) {
-            let totalSeasonPoints = {}; let matchCounts = {};       
+            let totalSeasonPoints = {};
+            let matchCounts = {};
             let maxWin = { score: -999, player: "-", date: "-", season: "" };
             let maxLoss = { score: 999, player: "-", date: "-", season: "" };
-            let hostStats = {}; 
+            let hostStats = {};
 
             const season = state.seasons[seasonKey];
             const seasonPlayers = season ? (season.players || []) : [];
 
-            seasonPlayers.forEach(p => { 
-                totalSeasonPoints[p] = 0; matchCounts[p] = 0; hostStats[p] = { totalScore: 0, count: 0 };
+            seasonPlayers.forEach(p => {
+                totalSeasonPoints[p] = 0;
+                matchCounts[p] = 0;
+                hostStats[p] = { totalScore: 0, count: 0 };
             });
 
             if (!season || !season.matches) return { totalSeasonPoints, matchCounts, totalMatchesCount: 0, maxWin, maxLoss, hostStats };
 
-            const matchesEntries = Object.entries(season.matches);
+            let matchesEntries = Object.entries(season.matches);
+            let totalMatchesCount = matchesEntries.length;
+
             matchesEntries.forEach(([id, match]) => {
                 if (!match.scores) return;
 
@@ -496,7 +678,8 @@
                         if (score > maxWin.score) maxWin = { score: score, player: name, date: match.date, season: seasonKey };
                         if (score < maxLoss.score) maxLoss = { score: score, player: name, date: match.date, season: seasonKey };
                         if (match.host && match.host === name && hostStats[name]) {
-                            hostStats[name].totalScore += score; hostStats[name].count++;
+                            hostStats[name].totalScore += score;
+                            hostStats[name].count++;
                         }
                     });
 
@@ -507,15 +690,25 @@
                 }
             });
 
-            return { totalSeasonPoints, matchCounts, totalMatchesCount: matchesEntries.length, maxWin, maxLoss, hostStats };
+            if (isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0 && !season.isHistorical) {
+                let currentTotals = computeDetailedTotals();
+                let placements = getPlacementScoresForMatch(currentTotals);
+                Object.keys(placements).forEach(name => {
+                    if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += placements[name];
+                    if (matchCounts[name] !== undefined) matchCounts[name]++;
+                });
+                totalMatchesCount++;
+            }
+
+            return { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats };
         }
 
         function calculateAllTimeRecords() {
             let globalMaxWin = { score: -999, player: "-", date: "-", season: "-" };
             let globalMaxLoss = { score: 999, player: "-", date: "-", season: "-" };
-            let globalHostStats = {}; 
-
+            let globalHostStats = {};
             let allUniquePlayers = new Set();
+
             Object.values(state.seasons).forEach(s => {
                 if (s.players) s.players.forEach(p => allUniquePlayers.add(p));
             });
@@ -533,21 +726,332 @@
                         if (score > globalMaxWin.score) globalMaxWin = { score, player: name, date: match.date, season: sKey };
                         if (score < globalMaxLoss.score) globalMaxLoss = { score, player: name, date: match.date, season: sKey };
                         if (match.host && match.host === name && globalHostStats[name]) {
-                            globalHostStats[name].totalScore += score; globalHostStats[name].count++;
+                            globalHostStats[name].totalScore += score;
+                            globalHostStats[name].count++;
                         }
                     });
                 });
             });
 
-            let bestAllTimeHostName = "-"; let bestAllTimeHostAvg = -999;
+            let bestAllTimeHostName = "-";
+            let bestAllTimeHostAvg = -999;
             Object.keys(globalHostStats).forEach(name => {
                 if (globalHostStats[name].count > 0) {
                     let avg = globalHostStats[name].totalScore / globalHostStats[name].count;
-                    if (avg > bestAllTimeHostAvg) { bestAllTimeHostAvg = avg; bestAllTimeHostName = name; }
+                    if (avg > bestAllTimeHostAvg) {
+                        bestAllTimeHostAvg = avg;
+                        bestAllTimeHostName = name;
+                    }
                 }
             });
 
             return { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg };
+        }
+
+        function setEntryMode(mode) {
+            if (mode === entryMode) return;
+            if (detailedOrder.length > 0 || detailedGames.length > 0) {
+                if (!confirm('Beim Wechsel des Eingabe-Modus gehen bereits erfasste Einzelspiele für diesen Abend verloren. Fortfahren?')) return;
+            }
+            entryMode = mode;
+            detailedOrder = [];
+            detailedGames = [];
+            updateLiveDraft();
+            render();
+        }
+
+        function updateModeToggleUI() {
+            const simpleBtn = document.getElementById('modeSimpleBtn');
+            const detailedBtn = document.getElementById('modeDetailedBtn');
+            const section = document.getElementById('detailedGameSection');
+            if (!simpleBtn || !detailedBtn || !section) return;
+
+            const activeCls = ['bg-emerald-600', 'text-white', 'shadow'];
+            const inactiveCls = ['bg-transparent', 'text-gray-500'];
+            simpleBtn.classList.remove(...activeCls, ...inactiveCls);
+            detailedBtn.classList.remove(...activeCls, ...inactiveCls);
+            simpleBtn.classList.add(...(entryMode === 'simple' ? activeCls : inactiveCls));
+            detailedBtn.classList.add(...(entryMode === 'detailed' ? activeCls : inactiveCls));
+
+            if (entryMode === 'detailed') {
+                section.classList.remove('hidden');
+                renderDetailedSection();
+            } else {
+                section.classList.add('hidden');
+                section.innerHTML = '';
+            }
+        }
+
+        function getCheckedSeasonPlayers() {
+            if (!state.currentSeasonKey) return [];
+            const season = state.seasons[state.currentSeasonKey];
+            const seasonPlayers = season ? (season.players || []) : [];
+            return seasonPlayers.filter(name => {
+                const cb = document.getElementById(`check-${name}`);
+                return cb && cb.checked;
+            });
+        }
+
+        function initDetailedOrder() {
+            const checked = getCheckedSeasonPlayers();
+            if (checked.length < 4 || checked.length > 7) {
+                return alert('Bitte wähle zwischen 4 und 7 Teilnehmer für diesen Abend aus, bevor du die Reihenfolge festlegst!');
+            }
+            if (detailedGames.length > 0) {
+                if (!confirm('Die Reihenfolge neu festzulegen löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) return;
+            }
+            detailedOrder = [...checked];
+            detailedGames = [];
+            updateLiveDraft();
+            renderDetailedSection();
+        }
+
+        function moveOrderPlayer(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= detailedOrder.length) return;
+            [detailedOrder[index], detailedOrder[newIndex]] = [detailedOrder[newIndex], detailedOrder[index]];
+            updateLiveDraft();
+            if (isBlitztabelleActive) render();
+            else renderDetailedSection();
+        }
+
+        function computeSittingOut(gameIndex) {
+            const n = detailedOrder.length;
+            const k = n - 4;
+            if (k <= 0) return [];
+            const out = [];
+            for (let i = 0; i < k; i++) out.push(detailedOrder[(gameIndex * k + i) % n]);
+            return out;
+        }
+
+        function computeDetailedTotals() {
+            let totals = {};
+            detailedOrder.forEach(name => totals[name] = 0);
+            detailedGames.forEach(game => {
+                Object.keys(game.points || {}).forEach(name => {
+                    if (totals[name] !== undefined) totals[name] += game.points[name];
+                });
+            });
+            return totals;
+        }
+
+        function toggleSittingOutInDraft(name) {
+            const cb = document.getElementById(`sitout-${name}`);
+            const wrap = document.getElementById(`gamepointwrap-${name}`);
+            const soloWrap = document.getElementById(`gamesolowrap-${name}`);
+            const typeWrap = document.getElementById(`gamesolotypewrap-${name}`);
+            const kindWrap = document.getElementById(`gamesolokindwrap-${name}`);
+            const hochzeitWrap = document.getElementById(`gamehochzeitwrap-${name}`);
+            const armutWrap = document.getElementById(`gamearmutwrap-${name}`);
+            const trumpfabgabeWrap = document.getElementById(`gametrumpfabgabewrap-${name}`);
+            if (!cb || !wrap) return;
+            const hidden = cb.checked;
+            wrap.classList.toggle('hidden', hidden);
+            if (soloWrap) soloWrap.classList.toggle('hidden', hidden);
+            if (typeWrap) typeWrap.classList.toggle('hidden', hidden);
+            if (kindWrap) kindWrap.classList.toggle('hidden', hidden);
+            if (hochzeitWrap) hochzeitWrap.classList.toggle('hidden', hidden);
+            if (armutWrap) armutWrap.classList.toggle('hidden', hidden);
+            if (trumpfabgabeWrap) trumpfabgabeWrap.classList.toggle('hidden', hidden);
+        }
+
+        function addGameRound() {
+            const suggestedOut = computeSittingOut(detailedGames.length);
+            let points = {};
+            let solo = {};
+            let soloKind = {};
+            let soloType = {};
+            let hochzeit = {};
+            let armut = {};
+            let trumpfabgabe = {};
+
+            detailedOrder.forEach(name => {
+                const sitCb = document.getElementById(`sitout-${name}`);
+                const isSittingOut = sitCb ? sitCb.checked : suggestedOut.includes(name);
+                if (!isSittingOut) {
+                    const input = document.getElementById(`gamepoint-${name}`);
+                    const val = input ? parseInt(input.value) : NaN;
+                    points[name] = isNaN(val) ? 0 : val;
+
+                    const soloCb = document.getElementById(`gamesolo-${name}`);
+                    const soloKindEl = document.getElementById(`gamesolokind-${name}`);
+                    const soloTypeEl = document.getElementById(`gamesolotype-${name}`);
+                    const hochzeitCb = document.getElementById(`gamehochzeit-${name}`);
+                    const armutCb = document.getElementById(`gamearmut-${name}`);
+                    const trumpfabgabeCb = document.getElementById(`gametrumpfabgabe-${name}`);
+
+                    if (soloCb && soloCb.checked) {
+                        solo[name] = true;
+                        soloKind[name] = soloKindEl ? soloKindEl.value : 'pflicht';
+                        soloType[name] = soloTypeEl ? soloTypeEl.value : 'Damen';
+                    }
+                    if (hochzeitCb && hochzeitCb.checked) hochzeit[name] = true;
+                    if (armutCb && armutCb.checked) armut[name] = true;
+                    if (trumpfabgabeCb && trumpfabgabeCb.checked) trumpfabgabe[name] = true;
+                }
+            });
+
+            const activeCount = Object.keys(points).length;
+            if (activeCount !== 4) {
+                return alert(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeCount}). Bitte die „aussetzen"-Auswahl prüfen.`);
+            }
+
+            detailedGames.push({
+                sittingOut: detailedOrder.filter(name => points[name] === undefined),
+                points,
+                solo,
+                soloKind,
+                soloType,
+                hochzeit,
+                armut,
+                trumpfabgabe
+            });
+
+            updateLiveDraft();
+            if (isBlitztabelleActive) render();
+            else renderDetailedSection();
+        }
+
+        function deleteGame(index) {
+            if (!confirm(`Spiel ${index + 1} wirklich löschen?`)) return;
+            detailedGames.splice(index, 1);
+            updateLiveDraft();
+            if (isBlitztabelleActive) render();
+            else renderDetailedSection();
+        }
+
+        function renderDetailedSection() {
+            const section = document.getElementById('detailedGameSection');
+            if (!section) return;
+
+            if (detailedOrder.length === 0) {
+                section.innerHTML = `
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 space-y-2">
+                        <p>Wähle oben die Teilnehmer des Abends aus (Häkchen) und lege dann die Sitz-/Spielreihenfolge fest. Bei mehr als 4 Teilnehmern bestimmt sie, wer reihum aussetzt.</p>
+                        <button onclick="initDetailedOrder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">🔀 Reihenfolge festlegen</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const totals = computeDetailedTotals();
+            const nextGameIndex = detailedGames.length;
+            const suggestedOut = computeSittingOut(nextGameIndex);
+
+            const orderHtml = detailedOrder.map((name, i) => `
+                <div class="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1">
+                    <span class="text-xs font-semibold text-gray-700">${i + 1}. ${name}</span>
+                    <div class="flex gap-1">
+                        <button onclick="moveOrderPlayer(${i}, -1)" ${i === 0 ? 'disabled' : ''} class="text-gray-500 disabled:opacity-20 hover:text-emerald-700 px-1 cursor-pointer disabled:cursor-not-allowed">▲</button>
+                        <button onclick="moveOrderPlayer(${i}, 1)" ${i === detailedOrder.length - 1 ? 'disabled' : ''} class="text-gray-500 disabled:opacity-20 hover:text-emerald-700 px-1 cursor-pointer disabled:cursor-not-allowed">▼</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const gamesListHtml = detailedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : detailedGames.map((g, idx) => `
+                <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="font-bold text-gray-700">Spiel ${idx + 1}</span>
+                        <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        ${detailedOrder.map(name => {
+                            if (g.points[name] === undefined) {
+                                return `<span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-400 border border-gray-200">${name} (aus)</span>`;
+                            }
+                            const val = g.points[name];
+                            const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
+                            const soloText = g.solo && g.solo[name] ? ` | Solo: ${g.soloKind?.[name] || ''} ${g.soloType?.[name] || ''}` : '';
+                            const extras = [];
+                            if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
+                            if (g.armut && g.armut[name]) extras.push('Armut');
+                            if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
+                            const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
+                            return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${soloText}${extraText}</span>`;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            const totalsHtml = detailedOrder.map(name => {
+                const val = totals[name] || 0;
+                const cls = val > 0 ? 'text-emerald-700' : (val < 0 ? 'text-red-700' : 'text-gray-600');
+                return `
+                    <div class="flex justify-between items-center bg-gray-50 rounded px-2 py-1 border border-gray-200">
+                        <span class="text-xs font-semibold text-gray-700">${name}</span>
+                        <span class="text-xs font-mono font-bold ${cls}">${val > 0 ? '+' : ''}${val}</span>
+                    </div>
+                `;
+            }).join('');
+
+            const newRoundHtml = `
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2">
+                    <p class="text-xs font-bold text-amber-800">➕ Spiel ${nextGameIndex + 1} erfassen</p>
+                    ${detailedOrder.length > 4 ? '<p class="text-[10px] text-amber-700">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>' : ''}
+                    <div class="space-y-2">
+                        ${detailedOrder.map(name => {
+                            const isOut = suggestedOut.includes(name);
+                            return `
+                                <div class="bg-white border border-amber-100 rounded-lg p-2 space-y-2">
+                                    <div class="flex items-center gap-2">
+                                        ${detailedOrder.length > 4 ? `
+                                        <label class="flex items-center gap-1 text-[10px] text-gray-600 shrink-0 w-16 cursor-pointer">
+                                            <input type="checkbox" id="sitout-${name}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${name}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
+                                        </label>
+                                        ` : `<input type="checkbox" id="sitout-${name}" class="hidden">`}
+                                        <span class="text-xs font-semibold text-gray-700 w-20 truncate">${name}</span>
+                                        <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow">
+                                            <input type="number" id="gamepoint-${name}" value="0" class="w-full border border-gray-300 rounded p-1 text-xs text-right bg-white">
+                                        </span>
+                                    </div>
+                                    <div id="gamesolowrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamesolo-${name}" onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
+                                        <span id="gamesolokindwrap-${name}" class="hidden">
+                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 rounded p-1 text-[10px] bg-white">
+                                                <option value="pflicht">Pflichtsolo</option>
+                                                <option value="lust">Lustsolo</option>
+                                            </select>
+                                        </span>
+                                        <span id="gamesolotypewrap-${name}" class="hidden">
+                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 rounded p-1 text-[10px] bg-white">
+                                                ${SOLO_TYPES.map(t => `<option value="${t}">${t}</option>`).join('')}
+                                            </select>
+                                        </span>
+                                    </div>
+                                    <div id="gameextraswrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamehochzeit-${name}" class="rounded text-emerald-600 w-3 h-3"> Hochzeit</label>
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamearmut-${name}" class="rounded text-emerald-600 w-3 h-3"> Armut</label>
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gametrumpfabgabe-${name}" class="rounded text-emerald-600 w-3 h-3"> Trumpfabgabe</label>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">Spiel speichern</button>
+                </div>
+            `;
+
+            section.innerHTML = `
+                <div class="space-y-2">
+                    <p class="text-xs font-bold text-gray-600">🔀 Reihenfolge (bestimmt Aussetzer bei &gt;4 Spielern)</p>
+                    <div class="space-y-1">${orderHtml}</div>
+                    <button onclick="initDetailedOrder()" class="text-[10px] text-blue-600 hover:underline cursor-pointer">Reihenfolge &amp; Spiele zurücksetzen</button>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs font-bold text-gray-600">📋 Erfasste Spiele (${detailedGames.length})</p>
+                    <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">${gamesListHtml}</div>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-xs font-bold text-gray-600">Zwischenstand</p>
+                    <div class="grid grid-cols-2 gap-1.5">${totalsHtml}</div>
+                </div>
+                ${newRoundHtml}
+            `;
+        }
+
+        function toggleGameLog(matchId) {
+            const el = document.getElementById(`gamelog-${matchId}`);
+            if (el) el.classList.toggle('hidden');
         }
 
         function saveMatch() {
@@ -555,16 +1059,18 @@
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return alert("Saison ist abgeschlossen!");
 
-            let matchScores = {}; let matchJokers = {}; let count = 0; let formattedDate = "-"; let host = ""; let timestamp = Date.now();
+            let matchScores = {};
+            let matchJokers = {};
+            let count = 0;
+            let formattedDate = "-";
+            let host = "";
+            let timestamp = Date.now();
 
             const rawDate = document.getElementById('matchDate').value;
-
             const seasonPlayers = season.players || [];
             seasonPlayers.forEach(name => {
                 const hostRadio = document.getElementById(`host-${name}`);
-                if (hostRadio && hostRadio.checked) {
-                    host = name;
-                }
+                if (hostRadio && hostRadio.checked) host = name;
             });
 
             if (!season.isHistorical) {
@@ -593,18 +1099,27 @@
             }
 
             let doubleJokerError = false;
-            
-            seasonPlayers.forEach(name => {
-                const checkbox = document.getElementById(`check-${name}`);
-                const input = document.getElementById('score-' + name);
-                const jokerCheckbox = document.getElementById(`joker-${name}`);
-                if (checkbox && checkbox.checked) {
-                    matchScores[name] = parseInt(input.value) || 0;
+            const useDetailedMode = entryMode === 'detailed' && !season.isHistorical;
+            let detailedGamesForSave = null;
+            let detailedOrderForSave = null;
+
+            if (useDetailedMode) {
+                if (detailedOrder.length === 0) return alert("Bitte lege zuerst die Reihenfolge der Teilnehmer fest!");
+                if (detailedGames.length === 0) return alert("Bitte erfasse mindestens ein Spiel des Abends, oder wechsle in den Modus „Nur Endergebnis“!");
+                const checkedNow = getCheckedSeasonPlayers();
+                const sameSet = checkedNow.length === detailedOrder.length && checkedNow.every(n => detailedOrder.includes(n));
+                if (!sameSet) return alert("Die ausgewählten Teilnehmer stimmen nicht mehr mit der festgelegten Reihenfolge überein. Bitte Reihenfolge neu festlegen.");
+
+                matchScores = computeDetailedTotals();
+                count = detailedOrder.length;
+
+                detailedOrder.forEach(name => {
+                    const jokerCheckbox = document.getElementById(`joker-${name}`);
                     if (jokerCheckbox && jokerCheckbox.checked) {
                         let alreadyUsed = false;
                         if (season.matches) {
-                            Object.values(season.matches).forEach(m => {
-                                if (m.jokers && m.jokers[name]) alreadyUsed = true;
+                            Object.entries(season.matches).forEach(([mId, m]) => {
+                                if (mId !== editingMatchId && m.jokers && m.jokers[name]) alreadyUsed = true;
                             });
                         }
                         if (alreadyUsed) {
@@ -613,56 +1128,87 @@
                         }
                         matchJokers[name] = true;
                     }
-                    count++;
-                }
-            });
+                });
+
+                detailedGamesForSave = detailedGames.map(normalizeGame);
+                detailedOrderForSave = detailedOrder;
+            } else {
+                seasonPlayers.forEach(name => {
+                    const checkbox = document.getElementById(`check-${name}`);
+                    const input = document.getElementById('score-' + name);
+                    const jokerCheckbox = document.getElementById(`joker-${name}`);
+                    if (checkbox && checkbox.checked) {
+                        matchScores[name] = parseInt(input.value) || 0;
+                        if (jokerCheckbox && jokerCheckbox.checked) {
+                            let alreadyUsed = false;
+                            if (season.matches) {
+                                Object.entries(season.matches).forEach(([mId, m]) => {
+                                    if (mId !== editingMatchId && m.jokers && m.jokers[name]) alreadyUsed = true;
+                                });
+                            }
+                            if (alreadyUsed) {
+                                alert(`Fehler: ${name} hat sein „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`);
+                                doubleJokerError = true;
+                            }
+                            matchJokers[name] = true;
+                        }
+                        count++;
+                    }
+                });
+            }
 
             if (doubleJokerError) return;
             if (count < 4 || count > 7) return alert("4 bis 7 Spieler erlaubt!");
             if (host && !matchScores.hasOwnProperty(host)) return alert("Der Gastgeber muss mitgespielt haben!");
 
-            const matchId = 'match_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const matchId = editingMatchId ? editingMatchId : 'match_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
             if (!season.matches) season.matches = {};
-            season.matches[matchId] = { date: formattedDate, host, scores: matchScores, jokers: matchJokers, timestamp };
+            season.matches[matchId] = {
+                date: formattedDate,
+                host,
+                scores: matchScores,
+                jokers: matchJokers,
+                timestamp,
+                mode: useDetailedMode ? 'detailed' : 'simple',
+                ...(useDetailedMode ? { order: detailedOrderForSave, games: detailedGamesForSave } : {})
+            };
+
+            if (!editingMatchId) delete season.liveDraft;
 
             document.getElementById('matchDate').value = "";
+            editingMatchId = null;
+            document.getElementById('saveMatchBtn').textContent = "Abend speichern";
+            entryMode = 'simple';
+            detailedOrder = [];
+            detailedGames = [];
             saveToCloud();
         }
 
         function updateSeasonCourseChart(season) {
             const ctx = document.getElementById('saisonVerlaufChart');
             if (!ctx) return;
-            
             if (courseChartInstance) {
                 courseChartInstance.destroy();
                 courseChartInstance = null;
             }
-
-            if (!season || !season.matches || Object.keys(season.matches).length === 0) {
-                return;
-            }
+            if (!season || !season.matches || Object.keys(season.matches).length === 0) return;
 
             const sortedMatches = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             const seasonPlayers = season.players || [];
-            
             let rankHistory = {};
             seasonPlayers.forEach(p => { rankHistory[p] = []; });
             let labels = [];
 
             sortedMatches.forEach((match, index) => {
                 labels.push(`Abend ${index + 1} (${padDateString(match.date)})`);
-
-                let participants = Object.keys(match.scores || {}).map(name => ({
-                    name,
-                    score: match.scores[name]
-                }));
-
+                let participants = Object.keys(match.scores || {}).map(name => ({ name, score: match.scores[name] }));
                 participants.sort((a, b) => b.score - a.score);
 
                 let eveningRanks = {};
                 let lastScore = null;
                 let lastRank = 0;
-                
+
                 participants.forEach((p, idx) => {
                     if (lastScore === null || Math.abs(p.score - lastScore) > 0.0001) {
                         lastRank = idx + 1;
@@ -672,28 +1218,23 @@
                 });
 
                 seasonPlayers.forEach(name => {
-                    if (eveningRanks[name] !== undefined) {
-                        rankHistory[name].push(eveningRanks[name]);
-                    } else {
-                        rankHistory[name].push(null);
-                    }
+                    if (eveningRanks[name] !== undefined) rankHistory[name].push(eveningRanks[name]);
+                    else rankHistory[name].push(null);
                 });
             });
 
             const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
-            
-            let datasets = seasonPlayers.map((name, i) => {
-                return {
-                    label: name,
-                    data: rankHistory[name],
-                    borderColor: colors[i % colors.length],
-                    backgroundColor: colors[i % colors.length],
-                    tension: 0.1,
-                    spanGaps: false,
-                    borderWidth: 3,
-                    pointRadius: 5
-                };
-            }).filter(ds => ds.data.some(val => val !== null));
+
+            let datasets = seasonPlayers.map((name, i) => ({
+                label: name,
+                data: rankHistory[name],
+                borderColor: colors[i % colors.length],
+                backgroundColor: colors[i % colors.length],
+                tension: 0.1,
+                spanGaps: false,
+                borderWidth: 3,
+                pointRadius: 5
+            })).filter(ds => ds.data.some(val => val !== null));
 
             courseChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -726,7 +1267,7 @@
             const seasonPlayers = seasonObj ? (seasonObj.players || []) : [];
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Platz;Spieler;Teilnahmen;Quote;Saison-Punkte;Schnitt\r\n";
+            csvContent += "Platz;Spieler;Schnitt;Teilnahmen;Quote;Saison-Punkte\r\n";
 
             const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(season);
 
@@ -743,13 +1284,16 @@
 
             let sortedData = playerData.sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-            let lastAvgExp=null,lastRankExp=0;
+            let lastAvgExp = null, lastRankExp = 0;
             sortedData.forEach((p, index) => {
-                if(p.inRating && p.played>0){
-                    if(lastAvgExp===null || Math.abs(parseFloat(p.avg)-lastAvgExp)>0.0001){lastRankExp=index+1;lastAvgExp=parseFloat(p.avg);}
+                if (p.inRating && p.played > 0) {
+                    if (lastAvgExp === null || Math.abs(parseFloat(p.avg) - lastAvgExp) > 0.0001) {
+                        lastRankExp = index + 1;
+                        lastAvgExp = parseFloat(p.avg);
+                    }
                 }
                 let rank = p.inRating && p.played > 0 ? `${lastRankExp}.` : "-";
-                let row = `${rank};${p.name};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts};${p.avg}`;
+                let row = `${rank};${p.name};${p.avg};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts}`;
                 csvContent += row + "\r\n";
             });
 
@@ -765,11 +1309,11 @@
 
         function handleHostChange(selectedName) {
             const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
-            if(!season) return;
+            if (!season) return;
             (season.players || []).forEach(name => {
                 const label = document.getElementById(`host-label-${name}`);
-                if(label) {
-                    if(name === selectedName) {
+                if (label) {
+                    if (name === selectedName) {
                         label.classList.remove('bg-gray-100', 'text-gray-600', 'border-gray-200');
                         label.classList.add('bg-amber-100', 'text-amber-800', 'border-amber-300');
                     } else {
@@ -787,8 +1331,8 @@
 
             let seasonJokers = {};
             if (season && !isHist && season.matches) {
-                Object.values(season.matches).forEach(m => {
-                    if (m.jokers) {
+                Object.entries(season.matches).forEach(([mId, m]) => {
+                    if (m.jokers && mId !== editingMatchId) {
                         Object.keys(m.jokers).forEach(pName => {
                             if (m.jokers[pName]) seasonJokers[pName] = true;
                         });
@@ -797,10 +1341,20 @@
             }
 
             if (season) {
-                document.getElementById('formTitle').textContent = isHist ? "Alten Abend eintragen" : "Abend eintragen";
-                document.getElementById('modernFormFields').style.display = "block"; 
-                document.getElementById('pointsLabel').innerHTML = "Spieler / Status am Ende des Abends:";
+                document.getElementById('formTitle').textContent = editingMatchId ? "Abend bearbeiten" : (isHist ? "Alten Abend eintragen" : "Abend eintragen");
+                document.getElementById('modernFormFields').style.display = "block";
                 document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
+
+                const modeToggle = document.getElementById('entryModeToggle');
+                if (isHist) {
+                    modeToggle.classList.add('hidden');
+                    entryMode = 'simple';
+                } else {
+                    modeToggle.classList.remove('hidden');
+                }
+                document.getElementById('pointsLabel').innerHTML = (entryMode === 'detailed' && !isHist)
+                    ? "Teilnehmer für diesen Abend auswählen:"
+                    : "Spieler / Status am Ende des Abends:";
             }
 
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
@@ -813,17 +1367,17 @@
             const seasonKeys = Object.keys(state.seasons);
             sortSeasonsChronologically(seasonKeys);
 
-            const adminOptionsHtml = seasonKeys.length === 0 
+            const adminOptionsHtml = seasonKeys.length === 0
                 ? '<option value="">-- Keine Saison vorhanden --</option>'
                 : seasonKeys.map(key => `<option value="${key}">${key} ${state.seasons[key].isHistorical ? '(Historisch)' : ''} (${state.seasons[key].status})</option>`).join('');
-            
-            const mainOptionsHtml = seasonKeys.length === 0 
+
+            const mainOptionsHtml = seasonKeys.length === 0
                 ? '<option value="">-- Keine Saison vorhanden --</option>'
                 : seasonKeys.map(key => `<option value="${key}">${key}</option>`).join('');
-            
+
             const seasonSelect = document.getElementById('seasonSelect');
             const mainSeasonSelect = document.getElementById('mainSeasonSelect');
-            
+
             seasonSelect.innerHTML = adminOptionsHtml;
             mainSeasonSelect.innerHTML = mainOptionsHtml;
 
@@ -857,21 +1411,24 @@
                             <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 flex-grow truncate">
                                 <input type="checkbox" id="check-${name}" onchange="
                                     const isChecked = this.checked;
-                                    document.getElementById('score-${name}').disabled = !isChecked; 
+                                    document.getElementById('score-${name}').disabled = !isChecked;
                                     const jb = document.getElementById('joker-${name}'); if(jb) { jb.disabled = !isChecked || ${hasUsedJokerAlready}; if(!isChecked) jb.checked = false; }
                                     const hb = document.getElementById('host-${name}'); hb.disabled = !isChecked; if(!isChecked) { hb.checked = false; handleHostChange(''); }
                                 " class="rounded text-emerald-600">
                                 ${name}
                             </label>
-                            
-                            <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
+
+                            <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' && !isHist ? 'hidden' : ''}">
+                                <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
+                            </span>
+                            <span id="detailedSumDisplay-${name}" class="${entryMode === 'detailed' && !isHist ? '' : 'hidden'} text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-2 py-1.5 min-w-[3.25rem] text-center">Σ 0</span>
                         </div>
-                        
+
                         <div class="flex gap-2 justify-end pt-1 border-t border-gray-200/50">
                             <label id="host-label-${name}" class="flex items-center gap-1 text-[10px] text-gray-600 bg-gray-100 border-gray-200 opacity-40 rounded border px-2 py-0.5 font-bold cursor-not-allowed select-none transition" title="Mitspieler aktivieren, um ihn als Host zu wählen">
                                 <input type="radio" name="matchHost" id="host-${name}" disabled onchange="handleHostChange('${name}')" class="text-amber-600 focus:ring-amber-500 w-3 h-3"> 🏠 Host
                             </label>
-                            
+
                             ${isHist ? '' : `
                             <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed' : 'text-red-600 bg-red-50 border-red-200 opacity-40 cursor-not-allowed'} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"'}>
                                 <input type="checkbox" id="joker-${name}" disabled onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
@@ -909,16 +1466,91 @@
                 }
             });
 
+            updateModeToggleUI();
+
+            const liveViewer = document.getElementById('liveMatchViewer');
+            const blitzContainer = document.getElementById('blitztabelleToggleContainer');
+
+            if (entryMode === 'detailed' && detailedGames.length > 0 && !editingMatchId) {
+                liveViewer.classList.remove('hidden');
+
+                const totals = computeDetailedTotals();
+                const liveViewerTotals = document.getElementById('liveViewerTotals');
+
+                let sortedPlayers = detailedOrder.map(name => ({ name, score: totals[name] || 0 }))
+                    .sort((a, b) => b.score - a.score);
+
+                liveViewerTotals.innerHTML = sortedPlayers.map(p => {
+                    const cls = p.score > 0 ? 'text-emerald-700' : (p.score < 0 ? 'text-red-700' : 'text-gray-600');
+                    return `<div class="flex justify-between items-center bg-white rounded px-3 py-2 border border-amber-100 shadow-sm">
+                                <span class="text-sm font-bold text-gray-700">${p.name}</span>
+                                <span class="text-sm font-mono font-bold ${cls}">${p.score > 0 ? '+' : ''}${p.score}</span>
+                            </div>`;
+                }).join('');
+
+                document.getElementById('liveViewerCount').textContent = detailedGames.length;
+
+                const liveViewerGames = document.getElementById('liveViewerGames');
+                const reversedGames = [...detailedGames].reverse();
+                const totalGames = detailedGames.length;
+
+                liveViewerGames.innerHTML = reversedGames.map((g, revIdx) => {
+                    const idx = totalGames - 1 - revIdx;
+                    return `
+                    <div class="bg-white border border-amber-100 rounded-lg p-2 text-xs shadow-sm">
+                        <div class="font-bold text-amber-900 mb-1">Spiel ${idx + 1}</div>
+                        <div class="flex flex-wrap gap-1.5">
+                            ${detailedOrder.map(name => {
+                                if (g.points[name] === undefined) {
+                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-50 text-gray-400 border border-gray-100">${name} (aus)</span>`;
+                                }
+                                const val = g.points[name];
+                                const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
+                                const extras = [];
+                                if (g.solo && g.solo[name]) extras.push(`Solo ${g.soloKind?.[name] || ''} ${g.soloType?.[name] || ''}`.trim());
+                                if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
+                                if (g.armut && g.armut[name]) extras.push('Armut');
+                                if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
+                                const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
+                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono font-semibold">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
+                            }).join('')}
+                        </div>
+                    </div>`;
+                }).join('');
+
+                if (blitzContainer && !isHist) {
+                    blitzContainer.classList.remove('hidden');
+                    blitzContainer.classList.add('flex');
+                }
+            } else {
+                liveViewer.classList.add('hidden');
+                if (blitzContainer) {
+                    blitzContainer.classList.add('hidden');
+                    blitzContainer.classList.remove('flex');
+                    isBlitztabelleActive = false;
+                    const bToggle = document.getElementById('blitztabelleToggle');
+                    if (bToggle) bToggle.checked = false;
+                }
+            }
+
             const leaderboardBody = document.getElementById('leaderboardBody');
             const recordsContainer = document.getElementById('recordsContainer');
+            const tableHint = document.getElementById('tableHint');
 
             if (season) {
                 document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
-                
+
+                if (tableHint) {
+                    tableHint.textContent = isHist
+                        ? "⚠️ Unter 40 % Teilnahmequote ohne Wertung."
+                        : "⚠️ Klicke auf einen Namen für Details. Unter 40 % Teilnahmequote ohne Wertung.";
+                }
+
                 const { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats } = calculateSeasonStats(state.currentSeasonKey);
-                
+
                 let playerData = seasonPlayers.map(name => {
-                    let played = matchCounts[name] || 0; let pts = totalSeasonPoints[name] || 0;
+                    let played = matchCounts[name] || 0;
+                    let pts = totalSeasonPoints[name] || 0;
                     let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
                     return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= 0.40 };
                 });
@@ -926,14 +1558,13 @@
                 let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
                 let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
 
-                let lastAvg=null,lastRank=0;
-                
+                let lastAvg = null, lastRank = 0;
+
                 const mapRow = (p, isQ) => {
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
                     const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 text-red-700 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
-                    
-                    // --- NEU: LOGIK FÜR KLICKBARE SPIELER ---
-                    const playerNameContent = isHist 
+
+                    const playerNameContent = isHist
                         ? `<span class="text-emerald-700 font-bold">${p.name}</span>`
                         : `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 decoration-2 underline-offset-2">${p.name}</button>`;
 
@@ -945,18 +1576,17 @@
                                 ${playerNameContent}
                                 ${jokerBadge}
                             </td>
+                            <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
                             <td class="p-3 text-center text-gray-600">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-emerald-600 font-bold">${Math.round(p.ratio * 100)}%</td>
                             <td class="p-3 text-right text-gray-500">${p.pts} Pkt.</td>
-                            <td class="p-3 text-right font-bold text-emerald-700 text-base">${p.avg.toFixed(2)}</td>
                         </tr>
                         `;
                     } else {
-                        // Unqualifiziert
-                        const playerNameContentUnqual = isHist 
+                        const playerNameContentUnqual = isHist
                             ? `<span class="text-gray-500">${p.name}</span>`
                             : `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left">${p.name}</button>`;
-                        
+
                         return `
                         <tr class="bg-gray-50/50 text-gray-400 italic">
                             <td class="p-3 text-center font-bold font-mono">-</td>
@@ -964,26 +1594,33 @@
                                 ${playerNameContentUnqual}
                                 ${jokerBadge}
                             </td>
+                            <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
                             <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-amber-600 font-semibold">${Math.round(p.ratio * 100)}%</td>
                             <td class="p-3 text-right text-gray-400">${p.pts} Pkt.</td>
-                            <td class="p-3 text-right font-semibold text-gray-500">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
                         </tr>
                         `;
                     }
                 };
 
                 leaderboardBody.innerHTML = qualified.map((p, i) => {
-                    if(lastAvg===null || Math.abs(p.avg-lastAvg)>0.0001){lastRank=i+1;lastAvg=p.avg;}
+                    if (lastAvg === null || Math.abs(p.avg - lastAvg) > 0.0001) {
+                        lastRank = i + 1;
+                        lastAvg = p.avg;
+                    }
                     return mapRow(p, true);
                 }).join('') + unqualified.map(p => mapRow(p, false)).join('');
 
                 if (!isHist) {
-                    let bestHostName = "-"; let bestHostAvg = -999;
+                    let bestHostName = "-";
+                    let bestHostAvg = -999;
                     Object.keys(hostStats).forEach(name => {
                         if (hostStats[name].count > 0) {
                             let avg = hostStats[name].totalScore / hostStats[name].count;
-                            if (avg > bestHostAvg) { bestHostAvg = avg; bestHostName = name; }
+                            if (avg > bestHostAvg) {
+                                bestHostAvg = avg;
+                                bestHostName = name;
+                            }
                         }
                     });
                     recordsContainer.innerHTML = `
@@ -1004,7 +1641,9 @@
                         </div>
                     `;
                 }
-            } else { leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Keine Daten.</td></tr>'; }
+            } else {
+                leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Keine Daten.</td></tr>';
+            }
 
             const { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg } = calculateAllTimeRecords();
             document.getElementById('allTimeRecordsContainer').innerHTML = `
@@ -1029,71 +1668,96 @@
             if (season && season.matches) {
                 const matchesEntries = Object.entries(season.matches);
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
-                    
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
                     let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 font-bold bg-red-50 px-1 rounded border border-red-200 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
+                    let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 font-bold bg-blue-50 px-1 rounded border border-blue-200 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
 
-let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
-    name: pName,
-    score: match.scores[pName]
-})).sort((a, b) => b.score - a.score);
+                    let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
+                        name: pName,
+                        score: match.scores[pName]
+                    })).sort((a, b) => b.score - a.score);
 
-let currentRank = 1;
-sortedEveningPlayers.forEach((p, idx) => {
-    if (idx > 0 && p.score < sortedEveningPlayers[idx - 1].score) {
-        currentRank = idx + 1;
-    }
-    p.rank = currentRank;
-});
+                    let currentRank = 1;
+                    sortedEveningPlayers.forEach((p, idx) => {
+                        if (idx > 0 && p.score < sortedEveningPlayers[idx - 1].score) currentRank = idx + 1;
+                        p.rank = currentRank;
+                    });
 
-return `
-    <div class="bg-gray-50 rounded-xl border border-gray-200 text-xs shadow-sm overflow-hidden">
-        <div class="p-3 bg-slate-100 flex justify-between items-center border-b border-gray-200">
-            <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
-                <span class="font-bold text-gray-700 text-sm">${padDateString(match.date)}</span>
-                ${match.host ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200">🏠 ${match.host}</span>` : ''}
-                ${jokerInfo}
-            </div>
-            <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend löschen">
-                🗑️
-            </button>
-        </div>
-        <div class="p-3 bg-white">
-            <p class="font-bold text-gray-500 text-[10px] uppercase tracking-wider mb-2">Ergebnisse an diesem Abend (nach Platzierung):</p>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                ${sortedEveningPlayers.map((playerObj) => {
-                    const p = playerObj.name;
-                    const score = playerObj.score;
-                    const scoreClass = score >= 0 ? 'text-emerald-600' : 'text-red-600';
-                    const prefix = score > 0 ? '+' : '';
-                    
-                    const rankNum = playerObj.rank;
-                    let rankBadgeClass = "bg-slate-200 text-slate-700"; 
-                    if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-950 font-black shadow-xs";
-                    if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 font-extrabold";
-                    if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
-                    
                     return `
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between">
-                            <div class="flex justify-between items-center gap-1">
-                                <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
+                        <div class="bg-gray-50 rounded-xl border border-gray-200 text-xs shadow-sm overflow-hidden">
+                            <div class="p-3 bg-slate-100 flex justify-between items-center border-b border-gray-200">
+                                <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
+                                    <span class="font-bold text-gray-700 text-sm">${padDateString(match.date)}</span>
+                                    ${match.host ? `<span class="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200">🏠 ${match.host}</span>` : ''}
+                                    ${jokerInfo}
+                                    ${modeBadge}
+                                </div>
+                                <div class="flex gap-1 shrink-0">
+                                    <button onclick="editMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-blue-500 hover:text-blue-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend bearbeiten">✏️</button>
+                                    <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend löschen">🗑️</button>
+                                </div>
                             </div>
-                            ${isHist ? '' : `
-                            <div class="mt-1">
-                                <span class="${scoreClass} font-bold block text-xs">
-                                    ${prefix}${score} Spieltagspunkte
-                                </span>
+                            <div class="p-3 bg-white">
+                                <p class="font-bold text-gray-500 text-[10px] uppercase tracking-wider mb-2">Ergebnisse an diesem Abend (nach Platzierung):</p>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    ${sortedEveningPlayers.map((playerObj) => {
+                                        const p = playerObj.name;
+                                        const score = playerObj.score;
+                                        const scoreClass = score >= 0 ? 'text-emerald-600' : 'text-red-600';
+                                        const prefix = score > 0 ? '+' : '';
+                                        const rankNum = playerObj.rank;
+                                        let rankBadgeClass = "bg-slate-200 text-slate-700";
+                                        if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-950 font-black shadow-xs";
+                                        if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 font-extrabold";
+                                        if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
+
+                                        return `
+                                            <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between">
+                                                <div class="flex justify-between items-center gap-1">
+                                                    <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
+                                                    <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
+                                                </div>
+                                                ${isHist ? '' : `
+                                                <div class="mt-1">
+                                                    <span class="${scoreClass} font-bold block text-xs">${prefix}${score} Spieltagspunkte</span>
+                                                </div>
+                                                `}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                ${(!isHist && match.mode === 'detailed' && match.games && match.games.length > 0) ? `
+                                <button onclick="toggleGameLog('${id}')" class="mt-2 text-[10px] text-blue-600 hover:underline cursor-pointer">📋 Spielverlauf anzeigen (${match.games.length} Spiele)</button>
+                                <div id="gamelog-${id}" class="hidden mt-2 space-y-1">
+                                    ${match.games.map((g, idx) => {
+                                        const gm = normalizeGame(g);
+                                        const order = match.order || Object.keys(gm.points || {});
+                                        return `
+                                            <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center gap-1.5">
+                                                <span class="font-bold text-gray-600 shrink-0">Spiel ${idx + 1}:</span>
+                                                ${order.map(pName => {
+                                                    if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
+                                                    const v = gm.points[pName];
+                                                    const extras = [];
+                                                    if (gm.solo && gm.solo[pName]) extras.push(`Solo ${gm.soloKind?.[pName] || ''} ${gm.soloType?.[pName] || ''}`.trim());
+                                                    if (gm.hochzeit && gm.hochzeit[pName]) extras.push('Hochzeit');
+                                                    if (gm.armut && gm.armut[pName]) extras.push('Armut');
+                                                    if (gm.trumpfabgabe && gm.trumpfabgabe[pName]) extras.push('Trumpfabgabe');
+                                                    const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
+                                                    return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
+                                                }).join(' · ')}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                                ` : ''}
                             </div>
-                            `}
                         </div>
                     `;
-                }).join('')}
-            </div>
-        </div>
-    </div>
-`;                }).join('');
-            } else { historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>'; }
+                }).join('');
+            } else {
+                historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>';
+            }
 
             updateSeasonCourseChart(season);
         }
