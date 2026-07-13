@@ -182,7 +182,6 @@
                     </div>
                 </div>
 
-                <!-- Live-Statistiken Bereich -->
                 <div class="mt-6 border-t border-amber-200/60 pt-4">
                     <button onclick="toggleLiveStats()" id="toggleLiveStatsBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer">
                         📊 Live-Statistiken dieses Abends einblenden
@@ -241,7 +240,7 @@
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
                 <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4" id="allTimeRecordsContainer"></div>
             </div>
 
         </div>
@@ -272,7 +271,6 @@
         let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
         let detailedGames = [];
 
-        // Globale Variablen für neue Statistiken
         let eveningCharts = {};
         let liveStatsExpanded = false;
         let expandedMatchStats = {};
@@ -289,7 +287,7 @@
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
         // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
         function hasPlayedPflichtsolo(name) {
-            return detailedGames.some(g => g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
+            return detailedGames.some(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
         }
 
         function makeEmptyGame() {
@@ -307,6 +305,12 @@
 
         function normalizeGame(game) {
             const g = game || {};
+            if (g.isRoundMarker) {
+                return {
+                    isRoundMarker: true,
+                    roundNumber: g.roundNumber
+                };
+            }
             return {
                 sittingOut: Array.isArray(g.sittingOut) ? g.sittingOut : [],
                 points: g.points || {},
@@ -330,13 +334,13 @@
             });
 
             games.forEach(g => {
+                if (g.isRoundMarker) return; // Überspringen
                 const gm = normalizeGame(g);
                 order.forEach(p1 => {
                     if (gm.points[p1] === undefined) return;
                     order.forEach(p2 => {
                         if (p1 === p2) return;
                         if (gm.points[p2] === undefined) return;
-                        // Falls die Punkte exakt identisch sind, waren sie in dieser Runde Kooperationspartner
                         if (gm.points[p1] === gm.points[p2]) {
                             matrix[p1][p2].sum += gm.points[p1];
                             matrix[p1][p2].count += 1;
@@ -361,8 +365,8 @@
             let matrixHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700">🤝 Kooperations-Matrix (Ø Punkte als Partner | Anzahl)</p>
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                        <table class="w-full text-left border-collapse text-[10px] bg-white min-w-[320px]">
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
+                        <table class="w-full text-left border-collapse text-[10px] min-w-[320px]">
                             <thead>
                                 <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
                                     <th class="p-2 font-bold border-r border-slate-200">Spieler</th>
@@ -400,6 +404,7 @@
             });
 
             games.forEach(g => {
+                if (g.isRoundMarker) return; // Überspringen
                 const gm = normalizeGame(g);
                 order.forEach(p => {
                     if (gm.solo && gm.solo[p] === true) {
@@ -414,8 +419,8 @@
             let soloHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700">🃏 Soloquote</p>
-                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
-                        <table class="w-full text-left border-collapse text-[10px] bg-white min-w-[320px]">
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl bg-white">
+                        <table class="w-full text-left border-collapse text-[10px] min-w-[320px]">
                             <thead>
                                 <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
                                     <th class="p-2 font-bold border-r border-slate-200">Spieler</th>
@@ -478,8 +483,11 @@
             let currentSum = {};
             order.forEach(p => currentSum[p] = 0);
 
-            games.forEach((g, idx) => {
-                labels.push(`Spiel ${idx + 1}`);
+            let realGameCount = 1;
+            games.forEach((g) => {
+                if (g.isRoundMarker) return; // Runden-Marker im Chart überspringen
+                labels.push(`Spiel ${realGameCount}`);
+                realGameCount++;
                 const gm = normalizeGame(g);
                 order.forEach(p => {
                     const pts = gm.points[p] !== undefined ? gm.points[p] : 0;
@@ -528,7 +536,6 @@
             });
         }
 
-        // Toggles für Statistiken
         function toggleLiveStats() {
             liveStatsExpanded = !liveStatsExpanded;
             const btn = document.getElementById('toggleLiveStatsBtn');
@@ -580,6 +587,22 @@
                     delete eveningCharts[matchId];
                 }
             }
+        }
+
+        function getNextRoundNumber() {
+            const markers = detailedGames.filter(g => g.isRoundMarker);
+            return markers.length + 2; // Da Start automatisch "Runde 1" ist, fügt der erste manuelle Button "Runde 2" ein
+        }
+
+        function startNewRound() {
+            const nextNum = getNextRoundNumber();
+            detailedGames.push({
+                isRoundMarker: true,
+                roundNumber: nextNum
+            });
+            updateLiveDraft();
+            if (isBlitztabelleActive) render();
+            else renderDetailedSection();
         }
         // ==========================================
 
@@ -1043,37 +1066,77 @@
         }
 
         function calculateAllTimeRecords() {
-            let globalMaxWin = { score: -999, player: "-", date: "-", season: "-" };
-            let globalMaxLoss = { score: 999, player: "-", date: "-", season: "-" };
             let globalHostStats = {};
+            let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
+            let globalTagessiege = {}; // { player: 0 }
+            let globalTotalPoints = {}; // { player: 0 }
             let allUniquePlayers = new Set();
 
             Object.values(state.seasons).forEach(s => {
                 if (s.players) s.players.forEach(p => allUniquePlayers.add(p));
             });
 
-            allUniquePlayers.forEach(p => { globalHostStats[p] = { totalScore: 0, count: 0 }; });
+            allUniquePlayers.forEach(p => {
+                globalHostStats[p] = { totalScore: 0, count: 0 };
+                globalSoloStats[p] = { played: 0, won: 0 };
+                globalTagessiege[p] = 0;
+                globalTotalPoints[p] = 0;
+            });
 
             Object.keys(state.seasons).forEach(sKey => {
                 const season = state.seasons[sKey];
-                if (season.isHistorical || !season.matches) return;
+                if (!season.matches) return;
+
+                const isHist = season.isHistorical;
 
                 Object.values(season.matches).forEach(match => {
                     if (!match.scores) return;
-                    Object.keys(match.scores).forEach(name => {
-                        let score = match.scores[name];
-                        if (score > globalMaxWin.score) globalMaxWin = { score, player: name, date: match.date, season: sKey };
-                        if (score < globalMaxLoss.score) globalMaxLoss = { score, player: name, date: match.date, season: sKey };
-                        if (match.host && match.host === name && globalHostStats[name]) {
-                            globalHostStats[name].totalScore += score;
-                            globalHostStats[name].count++;
-                        }
-                    });
+
+                    // 1. Tagessieg calculation
+                    let sortedEvening = Object.keys(match.scores).map(p => ({ name: p, score: match.scores[p] })).sort((a,b) => b.score - a.score);
+                    if (sortedEvening.length > 0) {
+                        let maxScore = sortedEvening[0].score;
+                        sortedEvening.forEach(p => {
+                            if (p.score === maxScore && globalTagessiege[p.name] !== undefined) {
+                                globalTagessiege[p.name]++;
+                            }
+                        });
+                    }
+
+                    // 2. Host & Total points calculations (Nur Spieltagspunkte, keine Platzierungspunkte aus historischen Saisons)
+                    if (!isHist) {
+                        Object.keys(match.scores).forEach(name => {
+                            let score = match.scores[name];
+                            if (globalTotalPoints[name] !== undefined) {
+                                globalTotalPoints[name] += score;
+                            }
+                            if (match.host && match.host === name && globalHostStats[name]) {
+                                globalHostStats[name].totalScore += score;
+                                globalHostStats[name].count++;
+                            }
+                        });
+                    }
+
+                    // Solos (detailed games)
+                    if (match.mode === 'detailed' && match.games) {
+                        match.games.forEach(g => {
+                            if (g.isRoundMarker) return;
+                            allUniquePlayers.forEach(p => {
+                                if (g.solo && g.solo[p] === true) {
+                                    globalSoloStats[p].played++;
+                                    if (g.points && g.points[p] !== undefined && g.points[p] > 0) {
+                                        globalSoloStats[p].won++;
+                                    }
+                                }
+                            });
+                        });
+                    }
                 });
             });
 
+            // Find best All-Time Host (Ewige Festung)
             let bestAllTimeHostName = "-";
-            let bestAllTimeHostAvg = -999;
+            let bestAllTimeHostAvg = -Infinity;
             Object.keys(globalHostStats).forEach(name => {
                 if (globalHostStats[name].count > 0) {
                     let avg = globalHostStats[name].totalScore / globalHostStats[name].count;
@@ -1084,7 +1147,49 @@
                 }
             });
 
-            return { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg };
+            // Find Ewiger Solo-Meister
+            let bestSoloPlayer = "-";
+            let bestSoloCount = 0;
+            let bestSoloQuote = 0;
+            Object.keys(globalSoloStats).forEach(p => {
+                if (globalSoloStats[p].played > bestSoloCount) {
+                    bestSoloCount = globalSoloStats[p].played;
+                    bestSoloPlayer = p;
+                    bestSoloQuote = globalSoloStats[p].played > 0 ? Math.round((globalSoloStats[p].won / globalSoloStats[p].played) * 100) : 0;
+                }
+            });
+
+            // Find Tagessieg-König
+            let bestTagessiegPlayer = "-";
+            let maxTagessiege = 0;
+            Object.keys(globalTagessiege).forEach(p => {
+                if (globalTagessiege[p] > maxTagessiege) {
+                    maxTagessiege = globalTagessiege[p];
+                    bestTagessiegPlayer = p;
+                }
+            });
+
+            // Find Punktesammelgott
+            let bestPointsPlayer = "-";
+            let maxTotalPoints = -Infinity;
+            Object.keys(globalTotalPoints).forEach(p => {
+                if (globalTotalPoints[p] > maxTotalPoints) {
+                    maxTotalPoints = globalTotalPoints[p];
+                    bestPointsPlayer = p;
+                }
+            });
+
+            return {
+                bestAllTimeHostName,
+                bestAllTimeHostAvg,
+                bestSoloPlayer,
+                bestSoloCount,
+                bestSoloQuote,
+                bestTagessiegPlayer,
+                maxTagessiege,
+                bestPointsPlayer,
+                maxTotalPoints
+            };
         }
 
         function setEntryMode(mode) {
@@ -1210,6 +1315,7 @@
             let totals = {};
             detailedOrder.forEach(name => totals[name] = 0);
             detailedGames.forEach(game => {
+                if (game.isRoundMarker) return; // Überspringen
                 Object.keys(game.points || {}).forEach(name => {
                     if (totals[name] !== undefined) totals[name] += game.points[name];
                 });
@@ -1291,7 +1397,7 @@
         }
 
         function deleteGame(index) {
-            if (!confirm(`Spiel ${index + 1} wirklich löschen?`)) return;
+            if (!confirm(`Dieses Element wirklich löschen?`)) return;
             detailedGames.splice(index, 1);
             updateLiveDraft();
             if (isBlitztabelleActive) render();
@@ -1316,35 +1422,48 @@
             }
 
             const totals = computeDetailedTotals();
-            const nextGameIndex = detailedGames.length;
-            const suggestedOut = computeSittingOut(nextGameIndex);
+            const nextGameIndex = detailedGames.filter(g => !g.isRoundMarker).length;
+            const suggestedOut = computeSittingOut(detailedGames.length);
 
-            const gamesListHtml = detailedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : detailedGames.map((g, idx) => `
-                <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-bold text-gray-700">Spiel ${idx + 1}</span>
-                        <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+            let detailedGameNum = 1;
+            const gamesListHtml = detailedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : detailedGames.map((g, idx) => {
+                if (g.isRoundMarker) {
+                    return `
+                        <div class="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-lg p-2 text-xs text-indigo-900 font-bold">
+                            <span class="flex items-center gap-1">Runde ${g.roundNumber}</span>
+                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde löschen">🗑️</button>
+                        </div>
+                    `;
+                }
+                const html = `
+                    <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-gray-700">Spiel ${detailedGameNum}</span>
+                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                            ${detailedOrder.map(name => {
+                                if (g.points[name] === undefined) {
+                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-400 border border-gray-200">${name} (aus)</span>`;
+                                }
+                                const val = g.points[name];
+                                const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
+                                
+                                const extras = [];
+                                if (g.solo && g.solo[name]) extras.push(`Solo ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}`.trim());
+                                if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
+                                if (g.armut && g.armut[name]) extras.push('Armut');
+                                if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
+                                const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
+                                
+                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
+                            }).join('')}
+                        </div>
                     </div>
-                    <div class="flex flex-wrap gap-1">
-                        ${detailedOrder.map(name => {
-                            if (g.points[name] === undefined) {
-                                return `<span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-400 border border-gray-200">${name} (aus)</span>`;
-                            }
-                            const val = g.points[name];
-                            const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
-                            
-                            const extras = [];
-                            if (g.solo && g.solo[name]) extras.push(`Solo ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}`.trim());
-                            if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
-                            if (g.armut && g.armut[name]) extras.push('Armut');
-                            if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
-                            const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
-                            
-                            return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
-                        }).join('')}
-                    </div>
-                </div>
-            `).join('');
+                `;
+                detailedGameNum++;
+                return html;
+            }).join('');
 
             const totalsHtml = detailedOrder.map(name => {
                 const val = totals[name] || 0;
@@ -1400,13 +1519,16 @@
                             `;
                         }).join('')}
                     </div>
-                    <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">Spiel speichern</button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">Spiel speichern</button>
+                        <button onclick="startNewRound()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">🏁 Neue Runde</button>
+                    </div>
                 </div>
             `;
 
             section.innerHTML = `
                 <div class="space-y-2">
-                    <p class="text-xs font-bold text-gray-600">📋 Erfasste Spiele (${detailedGames.length})</p>
+                    <p class="text-xs font-bold text-gray-600">📋 Erfasste Spiele (${detailedGames.filter(g => !g.isRoundMarker).length})</p>
                     <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">${gamesListHtml}</div>
                 </div>
                 <div class="space-y-2">
@@ -1419,7 +1541,7 @@
 
         function initMainPlayersSortable() {
             const listEl = document.getElementById('matchPlayersContainer');
-            if (!listEl || typeof Sortable === 'undefined') return;
+            if (!listEl) return;
             
             if (listEl.sortable) {
                 listEl.sortable.destroy();
@@ -1557,13 +1679,12 @@
             detailedOrder = [];
             detailedGames = [];
             
-            // Statistik-Variablen zurücksetzen
             liveStatsExpanded = false;
             const liveStatsCont = document.getElementById('liveStatsContainer');
             if (liveStatsCont) liveStatsCont.classList.add('hidden');
             const liveStatsB = document.getElementById('toggleLiveStatsBtn');
             if (liveStatsB) liveStatsB.textContent = "📊 Live-Statistiken dieses Abends einblenden";
-            
+
             saveToCloud();
         }
 
@@ -1779,7 +1900,6 @@
                 statusContainer.innerHTML = '';
             }
 
-            // matchPlayersContainer HTML ohne detailedSumDisplay (Gesamt-Spielpunktzahl entfernt)
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
                 let isChecked = false;
@@ -1849,17 +1969,24 @@
                             </div>`;
                 }).join('');
 
-                document.getElementById('liveViewerCount').textContent = detailedGames.length;
+                const actualGamesCount = detailedGames.filter(g => !g.isRoundMarker).length;
+                document.getElementById('liveViewerCount').textContent = actualGamesCount;
 
                 const liveViewerGames = document.getElementById('liveViewerGames');
-                const reversedGames = [...detailedGames].reverse();
-                const totalGames = detailedGames.length;
-
-                liveViewerGames.innerHTML = reversedGames.map((g, revIdx) => {
-                    const idx = totalGames - 1 - revIdx;
-                    return `
+                
+                let gameNumber = 1;
+                const gamesHtmlArray = detailedGames.map((g, idx) => {
+                    if (g.isRoundMarker) {
+                        return `
+                        <div class="relative flex py-2 items-center">
+                            <div class="flex-grow border-t border-indigo-300"></div>
+                            <span class="flex-shrink mx-4 text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100/80 px-2.5 py-0.5 rounded border border-indigo-200 shadow-sm">Runde ${g.roundNumber}</span>
+                            <div class="flex-grow border-t border-indigo-300"></div>
+                        </div>`;
+                    }
+                    const html = `
                     <div class="bg-white border border-amber-100 rounded-lg p-2 text-xs shadow-sm">
-                        <div class="font-bold text-amber-900 mb-1">Spiel ${idx + 1}</div>
+                        <div class="font-bold text-amber-900 mb-1">Spiel ${gameNumber}</div>
                         <div class="flex flex-wrap gap-1.5">
                             ${detailedOrder.map(name => {
                                 if (g.points[name] === undefined) {
@@ -1877,9 +2004,13 @@
                             }).join('')}
                         </div>
                     </div>`;
-                }).join('');
+                    gameNumber++;
+                    return html;
+                });
 
-                // Live-Statistiken rendern, falls ausgeklappt
+                const reversedGamesHtml = [...gamesHtmlArray].reverse();
+                liveViewerGames.innerHTML = reversedGamesHtml.join('');
+
                 if (liveStatsExpanded) {
                     renderLiveStats();
                 }
@@ -1912,7 +2043,7 @@
                         : "⚠️ Klicke auf einen Namen für Details. Unter 40 % Teilnahmequote ohne Wertung.";
                 }
 
-                const { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats } = calculateSeasonStats(state.currentSeasonKey);
+                const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(state.currentSeasonKey);
 
                 let playerData = seasonPlayers.map(name => {
                     let played = matchCounts[name] || 0;
@@ -1978,32 +2109,100 @@
                 }).join('') + unqualified.map(p => mapRow(p, false)).join('');
 
                 if (!isHist) {
-                    let bgHostName = "-";
-                    let bgHostAvg = -999;
-                    Object.keys(hostStats).forEach(name => {
-                        if (hostStats[name].count > 0) {
-                            let avg = hostStats[name].totalScore / hostStats[name].count;
-                            if (avg > bgHostAvg) {
-                                bgHostAvg = avg;
-                                bgHostName = name;
+                    // Berechnung der Saison-Rekorde
+                    let weddings = {};
+                    let poverties = {};
+                    let longestStreaks = {};
+                    seasonPlayers.forEach(p => {
+                        weddings[p] = 0;
+                        poverties[p] = 0;
+                        longestStreaks[p] = 0;
+                    });
+
+                    if (season.matches) {
+                        Object.values(season.matches).forEach(match => {
+                            if (match.mode === 'detailed' && match.games) {
+                                match.games.forEach(g => {
+                                    if (g.isRoundMarker) return;
+                                    if (g.hochzeit) {
+                                        Object.keys(g.hochzeit).forEach(p => {
+                                            if (weddings[p] !== undefined) weddings[p]++;
+                                        });
+                                    }
+                                    if (g.armut) {
+                                        Object.keys(g.armut).forEach(p => {
+                                            if (poverties[p] !== undefined) poverties[p]++;
+                                        });
+                                    }
+                                });
                             }
+                        });
+
+                        const sortedMatchesForStreak = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                        seasonPlayers.forEach(player => {
+                            let currentStreak = 0;
+                            let maxStreak = 0;
+                            sortedMatchesForStreak.forEach(match => {
+                                if (match.mode === 'detailed' && match.games) {
+                                    match.games.forEach(g => {
+                                        if (g.isRoundMarker) return;
+                                        if (g.points && g.points[player] !== undefined) {
+                                            if (g.points[player] >= 0) {
+                                                currentStreak++;
+                                                if (currentStreak > maxStreak) maxStreak = currentStreak;
+                                            } else {
+                                                currentStreak = 0;
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            longestStreaks[player] = maxStreak;
+                        });
+                    }
+
+                    let bestWeddingPlayer = "-";
+                    let maxWeddings = 0;
+                    Object.keys(weddings).forEach(p => {
+                        if (weddings[p] > maxWeddings) {
+                            maxWeddings = weddings[p];
+                            bestWeddingPlayer = p;
                         }
                     });
+
+                    let bestPovertyPlayer = "-";
+                    let maxPoverties = 0;
+                    Object.keys(poverties).forEach(p => {
+                        if (poverties[p] > maxPoverties) {
+                            maxPoverties = poverties[p];
+                            bestPovertyPlayer = p;
+                        }
+                    });
+
+                    let bestStreakPlayer = "-";
+                    let maxStreakValue = 0;
+                    Object.keys(longestStreaks).forEach(p => {
+                        if (longestStreaks[p] > maxStreakValue) {
+                            maxStreakValue = longestStreaks[p];
+                            bestStreakPlayer = p;
+                        }
+                    });
+
                     recordsContainer.innerHTML = `
                         <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
-                            <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider">🏆 Sahnetag</p>
-                            <p class="text-lg font-bold text-emerald-900 mt-1">${maxWin.score > -999 ? `+${maxWin.score}` : '0'} Pkt.</p>
-                            <p class="text-xs text-emerald-800 mt-0.5"><b>${maxWin.player}</b> am ${padDateString(maxWin.date)}</p>
-                        </div>
-                        <div class="bg-red-50 p-4 rounded-xl border border-red-200">
-                            <p class="text-xs text-red-700 font-bold uppercase tracking-wider">📉 Seuchentag</p>
-                            <p class="text-lg font-bold text-red-900 mt-1">${maxLoss.score < 999 ? `${maxLoss.score}` : '0'} Pkt.</p>
-                            <p class="text-xs text-red-800 mt-0.5"><b>${maxLoss.player}</b> am ${padDateString(maxLoss.date)}</p>
+                            <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider">💍 Hochzeits-König</p>
+                            <p class="text-lg font-bold text-emerald-900 mt-1">${maxWeddings > 0 ? `${maxWeddings} Hochzeiten` : '0 Hochzeiten'}</p>
+                            <p class="text-xs text-emerald-800 mt-0.5">Vorne: <b>${bestWeddingPlayer}</b></p>
                         </div>
                         <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">🏰 Festung (Heim-Schnitt)</p>
-                            <p class="text-lg font-bold text-amber-900 mt-1">${bgHostAvg > -999 ? `+${bgHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
-                            <p class="text-xs text-amber-800 mt-0.5">Vorne: <b>${bgHostName}</b> zu Hause</p>
+                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">🗑️ Armer Schlucker</p>
+                            <p class="text-lg font-bold text-amber-900 mt-1">${maxPoverties > 0 ? `${maxPoverties} Armut-Spiele` : '0 Spiele'}</p>
+                            <p class="text-xs text-amber-800 mt-0.5">Meiste Armut: <b>${bestPovertyPlayer}</b></p>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
+                            <p class="text-xs text-indigo-700 font-bold uppercase tracking-wider">🔥 Siegesserie (Spiele)</p>
+                            <p class="text-lg font-bold text-indigo-900 mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Spiele'}</p>
+                            <p class="text-xs text-indigo-800 mt-0.5">Längste Serie: <b>${bestStreakPlayer}</b></p>
                         </div>
                     `;
                 }
@@ -2011,22 +2210,38 @@
                 leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 italic">Keine Daten.</td></tr>';
             }
 
-            const { globalMaxWin, globalMaxLoss, bestAllTimeHostName, bestAllTimeHostAvg } = calculateAllTimeRecords();
+            const {
+                bestAllTimeHostName,
+                bestAllTimeHostAvg,
+                bestSoloPlayer,
+                bestSoloCount,
+                bestSoloQuote,
+                bestTagessiegPlayer,
+                maxTagessiege,
+                bestPointsPlayer,
+                maxTotalPoints
+            } = calculateAllTimeRecords();
+
             document.getElementById('allTimeRecordsContainer').innerHTML = `
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
-                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">👑 Ewiger Sahnetag</p>
-                    <p class="text-xl font-black text-white mt-1">${globalMaxWin.score > -999 ? `+${globalMaxWin.score}` : '0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5"><b>${globalMaxWin.player}</b> (${globalMaxWin.season})</p>
+                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Ewiger Solo-Meister</p>
+                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} Soli` : '0 Soli'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${bestSoloPlayer}</b> (${bestSoloQuote}% gewonnen)</p>
                 </div>
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
-                    <p class="text-xs text-red-400 font-semibold uppercase tracking-wider">💀 Ewiger Seuchentag</p>
-                    <p class="text-xl font-black text-white mt-1">${globalMaxLoss.score < 999 ? `${globalMaxLoss.score}` : '0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5"><b>${globalMaxLoss.player}</b> (${globalMaxLoss.season})</p>
-                </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
-                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🛡️ Ewige Festung</p>
-                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -999 ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
+                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Ewige Festung</p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${bestAllTimeHostName}</b></p>
+                </div>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                    <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
+                    <p class="text-xl font-black text-white mt-1">${maxTagessiege > 0 ? `${maxTagessiege} Siege` : '0 Siege'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${bestTagessiegPlayer}</b></p>
+                </div>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktesammelgott</p>
+                    <p class="text-xl font-black text-white mt-1">${maxTotalPoints > -Infinity ? `${maxTotalPoints > 0 ? '+' : ''}${maxTotalPoints}` : '0'} Pkt.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${bestPointsPlayer}</b></p>
                 </div>
             `;
 
@@ -2060,7 +2275,7 @@
                                 </div>
                                 <div class="flex gap-1 shrink-0">
                                     <button onclick="editMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-blue-500 hover:text-blue-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend bearbeiten">✏️</button>
-                                    <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend löschen">🗑️</button>
+                                    <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend loeschen">🗑️</button>
                                 </div>
                             </div>
                             <div class="p-3 bg-white">
@@ -2094,41 +2309,52 @@
                                 </div>
                                 ${(!isHist && match.mode === 'detailed' && match.games && match.games.length > 0) ? `
                                 <div class="flex flex-wrap gap-2.5 mt-3 items-center">
-                                    <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.length} Spiele)</button>
+                                    <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.filter(g => !g.isRoundMarker).length} Spiele)</button>
                                     <span class="text-gray-300">|</span>
                                     <button onclick="toggleMatchStats('${id}')" id="toggleStatsBtn-${id}" class="text-[10px] text-indigo-600 hover:underline cursor-pointer flex items-center gap-0.5 font-bold">📊 Statistiken einblenden</button>
                                 </div>
                                 <div id="gamelog-${id}" class="hidden mt-2 space-y-1">
-                                    ${match.games.map((g, idx) => {
-                                        const gm = normalizeGame(g);
-                                        const order = match.order || Object.keys(gm.points || {});
-                                        return `
-                                            <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center gap-1.5">
-                                                <span class="font-bold text-gray-600 shrink-0">Spiel ${idx + 1}:</span>
-                                                ${order.map(pName => {
-                                                    if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
-                                                    const v = gm.points[pName];
-                                                    const extras = [];
-                                                    if (gm.solo && gm.solo[pName]) extras.push(`Solo ${soloKindLabel(gm.soloKind?.[pName])} ${gm.soloType?.[pName] || ''}`.trim());
-                                                    if (gm.hochzeit && gm.hochzeit[pName]) extras.push('Hochzeit');
-                                                    if (gm.armut && gm.armut[pName]) extras.push('Armut');
-                                                    if (gm.trumpfabgabe && gm.trumpfabgabe[pName]) extras.push('Trumpfabgabe');
-                                                    const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
-                                                    return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
-                                                }).join(' · ')}
-                                            </div>
-                                        `;
-                                    }).join('')}
+                                    ${(() => {
+                                        let gameNum = 1;
+                                        return match.games.map((g, idx) => {
+                                            if (g.isRoundMarker) {
+                                                return `
+                                                <div class="relative flex py-1.5 items-center">
+                                                    <div class="flex-grow border-t border-indigo-200"></div>
+                                                    <span class="flex-shrink mx-3 text-indigo-700 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 shadow-sm">Runde ${g.roundNumber}</span>
+                                                    <div class="flex-grow border-t border-indigo-200"></div>
+                                                </div>`;
+                                            }
+                                            const gm = normalizeGame(g);
+                                            const order = match.order || Object.keys(gm.points || {});
+                                            const html = `
+                                                <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center gap-1.5">
+                                                    <span class="font-bold text-gray-600 shrink-0">Spiel ${gameNum}:</span>
+                                                    ${order.map(pName => {
+                                                        if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
+                                                        const v = gm.points[pName];
+                                                        const extras = [];
+                                                        if (gm.solo && gm.solo[pName]) extras.push(`Solo ${soloKindLabel(gm.soloKind?.[pName])} ${gm.soloType?.[pName] || ''}`.trim());
+                                                        if (gm.hochzeit && gm.hochzeit[pName]) extras.push('Hochzeit');
+                                                        if (gm.armut && gm.armut[pName]) extras.push('Armut');
+                                                        if (gm.trumpfabgabe && gm.trumpfabgabe[pName]) extras.push('Trumpfabgabe');
+                                                        const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
+                                                        return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
+                                                    }).join(' · ')}
+                                                </div>
+                                            `;
+                                            gameNum++;
+                                            return html;
+                                        }).join('');
+                                    })()}
                                 </div>
-                                <div id="statscontainer-${id}" class="${expandedMatchStats[id] ? '' : 'hidden'} mt-3 space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                                </div>
+                                <div id="statscontainer-${id}" class="${expandedMatchStats[id] ? '' : 'hidden'} mt-3 space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200"></div>
                                 ` : ''}
                             </div>
                         </div>
                     `;
                 }).join('');
 
-                // Wiederherstellung und Initialisierung bereits geöffneter Diagramme nach dem Neuzeichnen
                 Object.keys(expandedMatchStats).forEach(matchId => {
                     if (expandedMatchStats[matchId]) {
                         const container = document.getElementById(`statscontainer-${matchId}`);
@@ -2144,7 +2370,6 @@
                         }
                     }
                 });
-
             } else {
                 historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>';
             }
