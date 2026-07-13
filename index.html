@@ -10,6 +10,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -49,9 +50,17 @@
                 <h2 class="text-lg font-semibold mb-3 border-b pb-2 text-emerald-800" id="formTitle">Abend eintragen</h2>
                 <div id="inputForm" class="space-y-3">
                     <div id="modernFormFields" class="space-y-3">
-                        <div class="bg-gray-50 p-2 rounded border border-gray-200">
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
-                            <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white border border-gray-300 rounded p-1 text-sm">
+                        <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">📅 Spieldatum:</label>
+                                <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white border border-gray-300 rounded p-1 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">🏠 Gastgeber (Host):</label>
+                                <select id="matchHostSelect" onchange="updateLiveDraft()" class="w-full bg-white border border-gray-300 rounded p-1 text-sm font-medium">
+                                    <option value="">-- Gastgeber wählen --</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -61,6 +70,7 @@
                     </div>
 
                     <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
+                    <p class="text-[10px] text-gray-400 -mt-1 font-medium select-none" id="dragHint">💡 Spieler per Drag &amp; Drop (⠿) in die gewünschte Sitzreihenfolge ziehen.</p>
                     <div id="matchPlayersContainer" class="space-y-2"></div>
 
                     <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200"></div>
@@ -171,6 +181,14 @@
                         <div id="liveViewerGames" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
                     </div>
                 </div>
+
+                <!-- Live-Statistiken Bereich -->
+                <div class="mt-6 border-t border-amber-200/60 pt-4">
+                    <button onclick="toggleLiveStats()" id="toggleLiveStatsBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer">
+                        📊 Live-Statistiken dieses Abends einblenden
+                    </button>
+                    <div id="liveStatsContainer" class="hidden mt-4 space-y-4"></div>
+                </div>
             </div>
             
             <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60">
@@ -251,8 +269,13 @@
         let editingMatchId = null;
 
         let entryMode = 'simple';
-        let detailedOrder = [];
+        let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
         let detailedGames = [];
+
+        // Globale Variablen für neue Statistiken
+        let eveningCharts = {};
+        let liveStatsExpanded = false;
+        let expandedMatchStats = {};
 
         const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit'];
         const SOLO_KINDS = ['pflicht', 'lust'];
@@ -261,6 +284,12 @@
             if (kind === 'lust') return 'Lust';
             if (kind === 'pflicht') return 'Pflicht';
             return kind || '';
+        }
+
+        // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
+        // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
+        function hasPlayedPflichtsolo(name) {
+            return detailedGames.some(g => g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
         }
 
         function makeEmptyGame() {
@@ -290,6 +319,270 @@
             };
         }
 
+        // === STATISTIKEN: BERECHNUNGEN & HTML GENERIERUNG ===
+        function calculateCooperationMatrix(order, games) {
+            const matrix = {};
+            order.forEach(p1 => {
+                matrix[p1] = {};
+                order.forEach(p2 => {
+                    matrix[p1][p2] = { sum: 0, count: 0 };
+                });
+            });
+
+            games.forEach(g => {
+                const gm = normalizeGame(g);
+                order.forEach(p1 => {
+                    if (gm.points[p1] === undefined) return;
+                    order.forEach(p2 => {
+                        if (p1 === p2) return;
+                        if (gm.points[p2] === undefined) return;
+                        // Falls die Punkte exakt identisch sind, waren sie in dieser Runde Kooperationspartner
+                        if (gm.points[p1] === gm.points[p2]) {
+                            matrix[p1][p2].sum += gm.points[p1];
+                            matrix[p1][p2].count += 1;
+                        }
+                    });
+                });
+            });
+
+            return matrix;
+        }
+
+        function renderEveningStatsComponent(containerId, canvasId, order, games, chartKey) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (!order || order.length === 0 || !games || games.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 italic p-3 bg-slate-50 border border-slate-200 rounded-lg">Keine Spieldaten für Statistiken vorhanden.</p>`;
+                return;
+            }
+
+            const matrix = calculateCooperationMatrix(order, games);
+            let matrixHtml = `
+                <div class="space-y-1.5">
+                    <p class="text-xs font-bold text-slate-700">🤝 Kooperations-Matrix (Ø Punkte als Partner | Anzahl)</p>
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse text-[10px] bg-white min-w-[320px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                    <th class="p-2 font-bold border-r border-slate-200">Spieler</th>
+                                    ${order.map(p => `<th class="p-2 font-bold text-center border-r border-slate-200">${p}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${order.map(p1 => `
+                                    <tr class="border-b border-slate-100 hover:bg-slate-50">
+                                        <td class="p-2 font-bold bg-slate-50 text-slate-700 border-r border-slate-200">${p1}</td>
+                                        ${order.map(p2 => {
+                                            if (p1 === p2) {
+                                                return `<td class="p-2 text-center text-gray-300 bg-gray-50/50 border-r border-slate-200">-</td>`;
+                                            }
+                                            const cell = matrix[p1][p2];
+                                            if (cell.count === 0) {
+                                                return `<td class="p-2 text-center text-gray-400 border-r border-slate-200">-</td>`;
+                                            }
+                                            const avg = cell.sum / cell.count;
+                                            const colorCls = avg > 0 ? 'text-emerald-600 font-semibold' : (avg < 0 ? 'text-red-600 font-semibold' : 'text-slate-500');
+                                            const sign = avg > 0 ? '+' : '';
+                                            return `<td class="p-2 text-center border-r border-slate-200 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 font-normal">(${cell.count})</span></td>`;
+                                        }).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            const soloStats = {};
+            order.forEach(p => {
+                soloStats[p] = { played: 0, won: 0 };
+            });
+
+            games.forEach(g => {
+                const gm = normalizeGame(g);
+                order.forEach(p => {
+                    if (gm.solo && gm.solo[p] === true) {
+                        soloStats[p].played += 1;
+                        if (gm.points[p] !== undefined && gm.points[p] > 0) {
+                            soloStats[p].won += 1;
+                        }
+                    }
+                });
+            });
+
+            let soloHtml = `
+                <div class="space-y-1.5">
+                    <p class="text-xs font-bold text-slate-700">🃏 Soloquote</p>
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-left border-collapse text-[10px] bg-white min-w-[320px]">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                    <th class="p-2 font-bold border-r border-slate-200">Spieler</th>
+                                    <th class="p-2 font-bold text-center border-r border-slate-200">Gespielt</th>
+                                    <th class="p-2 font-bold text-center border-r border-slate-200">Gewonnen</th>
+                                    <th class="p-2 font-bold text-center">Quote</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${order.map(p => {
+                                    const stat = soloStats[p];
+                                    const quote = stat.played > 0 ? Math.round((stat.won / stat.played) * 100) : null;
+                                    const quoteStr = quote !== null ? `${quote}%` : '-';
+                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-semibold') : 'text-gray-400';
+                                    return `
+                                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                                            <td class="p-2 font-bold text-slate-700 border-r border-slate-200">${p}</td>
+                                            <td class="p-2 text-center text-slate-600 border-r border-slate-200">${stat.played}</td>
+                                            <td class="p-2 text-center text-slate-600 border-r border-slate-200">${stat.won}</td>
+                                            <td class="p-2 text-center ${quoteCls}">${quoteStr}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            let chartHtml = `
+                <div class="space-y-1.5">
+                    <p class="text-xs font-bold text-slate-700">📈 Verlauf des Abends (Kumulierte Gesamtpunkte)</p>
+                    <div class="relative w-full border border-slate-200 rounded-xl bg-white p-2" style="height: 220px;">
+                        <canvas id="${canvasId}"></canvas>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${matrixHtml}
+                    ${soloHtml}
+                </div>
+                <div class="mt-4">
+                    ${chartHtml}
+                </div>
+            `;
+
+            if (eveningCharts[chartKey]) {
+                eveningCharts[chartKey].destroy();
+                eveningCharts[chartKey] = null;
+            }
+
+            const labels = ['Start'];
+            const cumulativePoints = {};
+            order.forEach(p => {
+                cumulativePoints[p] = [0];
+            });
+
+            let currentSum = {};
+            order.forEach(p => currentSum[p] = 0);
+
+            games.forEach((g, idx) => {
+                labels.push(`Spiel ${idx + 1}`);
+                const gm = normalizeGame(g);
+                order.forEach(p => {
+                    const pts = gm.points[p] !== undefined ? gm.points[p] : 0;
+                    currentSum[p] += pts;
+                    cumulativePoints[p].push(currentSum[p]);
+                });
+            });
+
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+
+            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
+
+            const datasets = order.map((name, i) => ({
+                label: name,
+                data: cumulativePoints[name],
+                borderColor: colors[i % colors.length],
+                backgroundColor: colors[i % colors.length],
+                tension: 0.1,
+                spanGaps: true,
+                borderWidth: 2.5,
+                pointRadius: 4
+            }));
+
+            eveningCharts[chartKey] = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            title: { display: true, text: 'Gesamtpunkte', font: { size: 10 } },
+                            ticks: { font: { size: 9 } }
+                        },
+                        x: {
+                            title: { display: true, text: 'Spiele', font: { size: 10 } },
+                            ticks: { font: { size: 9 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 10 } } },
+                        tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.raw > 0 ? '+' : ''}${context.raw} Pkt.` } }
+                    }
+                }
+            });
+        }
+
+        // Toggles für Statistiken
+        function toggleLiveStats() {
+            liveStatsExpanded = !liveStatsExpanded;
+            const btn = document.getElementById('toggleLiveStatsBtn');
+            const container = document.getElementById('liveStatsContainer');
+            if (!btn || !container) return;
+            if (liveStatsExpanded) {
+                btn.textContent = "📊 Live-Statistiken dieses Abends ausblenden";
+                container.classList.remove('hidden');
+                renderLiveStats();
+            } else {
+                btn.textContent = "📊 Live-Statistiken dieses Abends einblenden";
+                container.classList.add('hidden');
+                if (eveningCharts['live']) {
+                    eveningCharts['live'].destroy();
+                    delete eveningCharts['live'];
+                }
+            }
+        }
+
+        function renderLiveStats() {
+            if (!liveStatsExpanded) return;
+            renderEveningStatsComponent('liveStatsContainer', 'liveEveningCourseChart', detailedOrder, detailedGames, 'live');
+        }
+
+        function toggleMatchStats(matchId) {
+            const container = document.getElementById(`statscontainer-${matchId}`);
+            const btn = document.getElementById(`toggleStatsBtn-${matchId}`);
+            if (!container || !btn) return;
+
+            const isHidden = container.classList.contains('hidden');
+            if (isHidden) {
+                container.classList.remove('hidden');
+                btn.textContent = "📊 Statistiken ausblenden";
+                expandedMatchStats[matchId] = true;
+
+                const season = state.seasons[state.currentSeasonKey];
+                if (season && season.matches && season.matches[matchId]) {
+                    const match = season.matches[matchId];
+                    const order = match.order || Object.keys(match.scores || {});
+                    const games = match.games || [];
+                    renderEveningStatsComponent(`statscontainer-${matchId}`, `eveningCourseChart-${matchId}`, order, games, matchId);
+                }
+            } else {
+                container.classList.add('hidden');
+                btn.textContent = "📊 Statistiken einblenden";
+                expandedMatchStats[matchId] = false;
+                if (eveningCharts[matchId]) {
+                    eveningCharts[matchId].destroy();
+                    delete eveningCharts[matchId];
+                }
+            }
+        }
+        // ==========================================
+
         function updateLiveDraft() {
             if (editingMatchId) return;
             if (!state.currentSeasonKey) return;
@@ -297,11 +590,8 @@
             if (!season || season.status === "abgeschlossen") return;
 
             const dateInput = document.getElementById('matchDate');
-            let host = '';
-            (season.players || []).forEach(name => {
-                const hostRadio = document.getElementById(`host-${name}`);
-                if (hostRadio && hostRadio.checked) host = name;
-            });
+            const hostSelect = document.getElementById('matchHostSelect');
+            const host = hostSelect ? hostSelect.value : '';
 
             season.liveDraft = {
                 entryMode: entryMode,
@@ -324,23 +614,19 @@
             const dateInput = document.getElementById('matchDate');
             if (dateInput && live.matchDate) dateInput.value = live.matchDate;
 
-            if (entryMode === 'detailed' && detailedOrder.length > 0) {
-                detailedOrder.forEach(name => {
+            const hostSelect = document.getElementById('matchHostSelect');
+            if (hostSelect && live.host) {
+                hostSelect.value = live.host;
+            }
+
+            if (live.detailedOrder && live.detailedOrder.length > 0) {
+                live.detailedOrder.forEach(name => {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb && !cb.checked) {
                         cb.checked = true;
                         cb.dispatchEvent(new Event('change'));
                     }
                 });
-            }
-
-            if (live.host) {
-                const hostRadio = document.getElementById(`host-${live.host}`);
-                if (hostRadio) {
-                    hostRadio.disabled = false;
-                    hostRadio.checked = true;
-                    handleHostChange(live.host);
-                }
             }
         }
 
@@ -433,6 +719,8 @@
                     document.getElementById('saveMatchBtn').textContent = "Abend speichern";
                     if (!hasActiveDraft) {
                         document.getElementById('matchDate').value = "";
+                        const hostSelect = document.getElementById('matchHostSelect');
+                        if (hostSelect) hostSelect.value = "";
                     }
                     render();
                 }, 300);
@@ -626,6 +914,9 @@
             const dateInput = document.getElementById('matchDate');
             if (dateInput) dateInput.value = parseGermanDateToYMD(match.date);
 
+            const hostSelect = document.getElementById('matchHostSelect');
+            if (hostSelect && match.host) hostSelect.value = match.host;
+
             if (match.mode === 'detailed' && match.games) {
                 entryMode = 'detailed';
                 detailedOrder = match.order ? [...match.order] : Object.keys(match.scores || {});
@@ -640,6 +931,12 @@
             render();
 
             setTimeout(() => {
+                const seasonPlayers = season.players || [];
+                seasonPlayers.forEach(name => {
+                    const cb = document.getElementById(`check-${name}`);
+                    if (cb) cb.checked = false;
+                });
+
                 Object.keys(match.scores || {}).forEach(name => {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb) {
@@ -649,14 +946,6 @@
                         if (scoreInput) scoreInput.value = match.scores[name];
                     }
                 });
-
-                if (match.host) {
-                    const hCb = document.getElementById(`host-${match.host}`);
-                    if (hCb) {
-                        hCb.checked = true;
-                        handleHostChange(match.host);
-                    }
-                }
 
                 if (match.jokers) {
                     Object.keys(match.jokers).forEach(name => {
@@ -814,6 +1103,7 @@
             const simpleBtn = document.getElementById('modeSimpleBtn');
             const detailedBtn = document.getElementById('modeDetailedBtn');
             const section = document.getElementById('detailedGameSection');
+            const dragHint = document.getElementById('dragHint');
             if (!simpleBtn || !detailedBtn || !section) return;
 
             const activeCls = ['bg-emerald-600', 'text-white', 'shadow'];
@@ -825,44 +1115,86 @@
 
             if (entryMode === 'detailed') {
                 section.classList.remove('hidden');
+                if (dragHint) dragHint.classList.remove('hidden');
                 renderDetailedSection();
             } else {
                 section.classList.add('hidden');
+                if (dragHint) dragHint.classList.add('hidden');
                 section.innerHTML = '';
             }
         }
 
-        function getCheckedSeasonPlayers() {
-            if (!state.currentSeasonKey) return [];
-            const season = state.seasons[state.currentSeasonKey];
-            const seasonPlayers = season ? (season.players || []) : [];
-            return seasonPlayers.filter(name => {
+        function togglePlayerSelected(name, checked) {
+            if (entryMode === 'detailed' && detailedGames.length > 0) {
+                if (!confirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
+                    const cb = document.getElementById(`check-${name}`);
+                    if (cb) cb.checked = !checked;
+                    return;
+                }
+                detailedGames = [];
+            }
+
+            const scoreInput = document.getElementById(`score-${name}`);
+            if (scoreInput) scoreInput.disabled = !checked;
+
+            const simpleJoker = document.getElementById(`joker-${name}`);
+            if (simpleJoker) {
+                let seasonJokers = {};
+                if (state.currentSeasonKey) {
+                    const season = state.seasons[state.currentSeasonKey];
+                    if (season && season.matches) {
+                        Object.entries(season.matches).forEach(([mId, m]) => {
+                            if (m.jokers && mId !== editingMatchId) {
+                                Object.keys(m.jokers).forEach(pName => {
+                                    if (m.jokers[pName]) seasonJokers[pName] = true;
+                                });
+                            }
+                        });
+                    }
+                }
+                simpleJoker.disabled = !checked || !!seasonJokers[name];
+                if (!checked) simpleJoker.checked = false;
+                
+                const label = document.getElementById(`joker-label-${name}`);
+                if (label) {
+                    if (checked && !seasonJokers[name]) {
+                        label.classList.remove('opacity-40', 'cursor-not-allowed');
+                        label.classList.add('cursor-pointer');
+                    } else {
+                        label.classList.remove('cursor-pointer', 'opacity-100');
+                        label.classList.add('opacity-40', 'cursor-not-allowed');
+                    }
+                }
+            }
+
+            rebuildDetailedOrder();
+            updateLiveDraft();
+            render();
+        }
+
+        function rebuildDetailedOrder() {
+            const listEl = document.getElementById('matchPlayersContainer');
+            if (!listEl) return;
+            const checkedNames = [];
+            Array.from(listEl.children).forEach(el => {
+                const name = el.dataset.name;
                 const cb = document.getElementById(`check-${name}`);
-                return cb && cb.checked;
+                if (cb && cb.checked) {
+                    checkedNames.push(name);
+                }
             });
+            detailedOrder = checkedNames;
         }
 
-        function initDetailedOrder() {
-            const checked = getCheckedSeasonPlayers();
-            if (checked.length < 4 || checked.length > 7) {
-                return alert('Bitte wähle zwischen 4 und 7 Teilnehmer für diesen Abend aus, bevor du die Reihenfolge festlegst!');
+        function reorderDetailedPlayers(newOrder) {
+            if (state.currentSeasonKey) {
+                const season = state.seasons[state.currentSeasonKey];
+                if (season) {
+                    const remaining = (season.players || []).filter(p => !newOrder.includes(p));
+                    season.players = [...newOrder, ...remaining];
+                    saveToCloud();
+                }
             }
-            if (detailedGames.length > 0) {
-                if (!confirm('Die Reihenfolge neu festzulegen löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) return;
-            }
-            detailedOrder = [...checked];
-            detailedGames = [];
-            updateLiveDraft();
-            renderDetailedSection();
-        }
-
-        function moveOrderPlayer(index, direction) {
-            const newIndex = index + direction;
-            if (newIndex < 0 || newIndex >= detailedOrder.length) return;
-            [detailedOrder[index], detailedOrder[newIndex]] = [detailedOrder[newIndex], detailedOrder[index]];
-            updateLiveDraft();
-            if (isBlitztabelleActive) render();
-            else renderDetailedSection();
         }
 
         function computeSittingOut(gameIndex) {
@@ -891,18 +1223,14 @@
             const soloWrap = document.getElementById(`gamesolowrap-${name}`);
             const typeWrap = document.getElementById(`gamesolotypewrap-${name}`);
             const kindWrap = document.getElementById(`gamesolokindwrap-${name}`);
-            const hochzeitWrap = document.getElementById(`gamehochzeitwrap-${name}`);
-            const armutWrap = document.getElementById(`gamearmutwrap-${name}`);
-            const trumpfabgabeWrap = document.getElementById(`gametrumpfabgabewrap-${name}`);
+            const extrasWrap = document.getElementById(`gameextraswrap-${name}`);
             if (!cb || !wrap) return;
             const hidden = cb.checked;
             wrap.classList.toggle('hidden', hidden);
             if (soloWrap) soloWrap.classList.toggle('hidden', hidden);
             if (typeWrap) typeWrap.classList.toggle('hidden', hidden);
             if (kindWrap) kindWrap.classList.toggle('hidden', hidden);
-            if (hochzeitWrap) hochzeitWrap.classList.toggle('hidden', hidden);
-            if (armutWrap) armutWrap.classList.toggle('hidden', hidden);
-            if (trumpfabgabeWrap) trumpfabgabeWrap.classList.toggle('hidden', hidden);
+            if (extrasWrap) extrasWrap.classList.toggle('hidden', hidden);
         }
 
         function addGameRound() {
@@ -974,11 +1302,14 @@
             const section = document.getElementById('detailedGameSection');
             if (!section) return;
 
-            if (detailedOrder.length === 0) {
+            const activeCount = detailedOrder.length;
+            const countOk = activeCount >= 4 && activeCount <= 7;
+
+            if (!countOk) {
                 section.innerHTML = `
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-800 space-y-2">
-                        <p>Wähle oben die Teilnehmer des Abends aus (Häkchen) und lege dann die Sitz-/Spielreihenfolge fest. Bei mehr als 4 Teilnehmern bestimmt sie, wer reihum aussetzt.</p>
-                        <button onclick="initDetailedOrder()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">🔀 Reihenfolge festlegen</button>
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800 space-y-1">
+                        <p class="font-bold">⚠️ Zu wenige/viele Teilnehmer ausgewählt</p>
+                        <p>Bitte wähle oben in der Liste genau 4 bis 7 aktive Spieler aus, um die Spiel-für-Spiel-Eingabe zu nutzen.</p>
                     </div>
                 `;
                 return;
@@ -987,16 +1318,6 @@
             const totals = computeDetailedTotals();
             const nextGameIndex = detailedGames.length;
             const suggestedOut = computeSittingOut(nextGameIndex);
-
-            const orderHtml = detailedOrder.map((name, i) => `
-                <div class="flex items-center justify-between gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1">
-                    <span class="text-xs font-semibold text-gray-700">${i + 1}. ${name}</span>
-                    <div class="flex gap-1">
-                        <button onclick="moveOrderPlayer(${i}, -1)" ${i === 0 ? 'disabled' : ''} class="text-gray-500 disabled:opacity-20 hover:text-emerald-700 px-1 cursor-pointer disabled:cursor-not-allowed">▲</button>
-                        <button onclick="moveOrderPlayer(${i}, 1)" ${i === detailedOrder.length - 1 ? 'disabled' : ''} class="text-gray-500 disabled:opacity-20 hover:text-emerald-700 px-1 cursor-pointer disabled:cursor-not-allowed">▼</button>
-                    </div>
-                </div>
-            `).join('');
 
             const gamesListHtml = detailedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : detailedGames.map((g, idx) => `
                 <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
@@ -1011,13 +1332,15 @@
                             }
                             const val = g.points[name];
                             const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
-                            const soloText = g.solo && g.solo[name] ? ` | Solo: ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}` : '';
+                            
                             const extras = [];
+                            if (g.solo && g.solo[name]) extras.push(`Solo ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}`.trim());
                             if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
                             if (g.armut && g.armut[name]) extras.push('Armut');
                             if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
                             const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
-                            return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${soloText}${extraText}</span>`;
+                            
+                            return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
                         }).join('')}
                     </div>
                 </div>
@@ -1035,7 +1358,7 @@
             }).join('');
 
             const newRoundHtml = `
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 space-y-2">
+                <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-2">
                     <p class="text-xs font-bold text-amber-800">➕ Spiel ${nextGameIndex + 1} erfassen</p>
                     ${detailedOrder.length > 4 ? '<p class="text-[10px] text-amber-700">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>' : ''}
                     <div class="space-y-2">
@@ -1071,7 +1394,7 @@
                                     <div id="gameextraswrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamehochzeit-${name}" class="rounded text-emerald-600 w-3 h-3"> Hochzeit</label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamearmut-${name}" class="rounded text-emerald-600 w-3 h-3"> Armut</label>
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gametrumpfabgabe-${name}" class="rounded text-emerald-600 w-3 h-3"> Trumpfabgabe</label>
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gametrumpfabgabe-${name}" class="rounded text-emerald-600 w-3 h-3"> Abgabe</label>
                                     </div>
                                 </div>
                             `;
@@ -1083,11 +1406,6 @@
 
             section.innerHTML = `
                 <div class="space-y-2">
-                    <p class="text-xs font-bold text-gray-600">🔀 Reihenfolge (bestimmt Aussetzer bei &gt;4 Spielern)</p>
-                    <div class="space-y-1">${orderHtml}</div>
-                    <button onclick="initDetailedOrder()" class="text-[10px] text-blue-600 hover:underline cursor-pointer">Reihenfolge &amp; Spiele zurücksetzen</button>
-                </div>
-                <div class="space-y-2">
                     <p class="text-xs font-bold text-gray-600">📋 Erfasste Spiele (${detailedGames.length})</p>
                     <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1">${gamesListHtml}</div>
                 </div>
@@ -1097,6 +1415,24 @@
                 </div>
                 ${newRoundHtml}
             `;
+        }
+
+        function initMainPlayersSortable() {
+            const listEl = document.getElementById('matchPlayersContainer');
+            if (!listEl || typeof Sortable === 'undefined') return;
+            
+            if (listEl.sortable) {
+                listEl.sortable.destroy();
+            }
+
+            listEl.sortable = Sortable.create(listEl, {
+                handle: '.drag-handle',
+                animation: 150,
+                onEnd: function() {
+                    const newOrder = Array.from(listEl.children).map(el => el.dataset.name);
+                    reorderDetailedPlayers(newOrder);
+                }
+            });
         }
 
         function toggleGameLog(matchId) {
@@ -1113,15 +1449,11 @@
             let matchJokers = {};
             let count = 0;
             let formattedDate = "-";
-            let host = "";
             let timestamp = Date.now();
 
             const rawDate = document.getElementById('matchDate').value;
-            const seasonPlayers = season.players || [];
-            seasonPlayers.forEach(name => {
-                const hostRadio = document.getElementById(`host-${name}`);
-                if (hostRadio && hostRadio.checked) host = name;
-            });
+            const hostSelect = document.getElementById('matchHostSelect');
+            const host = hostSelect ? hostSelect.value : '';
 
             if (!season.isHistorical) {
                 if (!rawDate || !host) return alert("Datum und Gastgeber fehlen!");
@@ -1154,28 +1486,14 @@
             let detailedOrderForSave = null;
 
             if (useDetailedMode) {
-                if (detailedOrder.length === 0) return alert("Bitte lege zuerst die Reihenfolge der Teilnehmer fest!");
+                if (detailedOrder.length === 0) return alert("Bitte wähle mindestens 4 Teilnehmer aus!");
                 if (detailedGames.length === 0) return alert("Bitte erfasse mindestens ein Spiel des Abends, oder wechsle in den Modus „Nur Endergebnis“!");
-                const checkedNow = getCheckedSeasonPlayers();
-                const sameSet = checkedNow.length === detailedOrder.length && checkedNow.every(n => detailedOrder.includes(n));
-                if (!sameSet) return alert("Die ausgewählten Teilnehmer stimmen nicht mehr mit der festgelegten Reihenfolge überein. Bitte Reihenfolge neu festlegen.");
-
                 matchScores = computeDetailedTotals();
                 count = detailedOrder.length;
 
                 detailedOrder.forEach(name => {
                     const jokerCheckbox = document.getElementById(`joker-${name}`);
                     if (jokerCheckbox && jokerCheckbox.checked) {
-                        let alreadyUsed = false;
-                        if (season.matches) {
-                            Object.entries(season.matches).forEach(([mId, m]) => {
-                                if (mId !== editingMatchId && m.jokers && m.jokers[name]) alreadyUsed = true;
-                            });
-                        }
-                        if (alreadyUsed) {
-                            alert(`Fehler: ${name} hat sein „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`);
-                            doubleJokerError = true;
-                        }
                         matchJokers[name] = true;
                     }
                 });
@@ -1183,6 +1501,7 @@
                 detailedGamesForSave = detailedGames.map(normalizeGame);
                 detailedOrderForSave = detailedOrder;
             } else {
+                const seasonPlayers = season.players || [];
                 seasonPlayers.forEach(name => {
                     const checkbox = document.getElementById(`check-${name}`);
                     const input = document.getElementById('score-' + name);
@@ -1190,22 +1509,25 @@
                     if (checkbox && checkbox.checked) {
                         matchScores[name] = parseInt(input.value) || 0;
                         if (jokerCheckbox && jokerCheckbox.checked) {
-                            let alreadyUsed = false;
-                            if (season.matches) {
-                                Object.entries(season.matches).forEach(([mId, m]) => {
-                                    if (mId !== editingMatchId && m.jokers && m.jokers[name]) alreadyUsed = true;
-                                });
-                            }
-                            if (alreadyUsed) {
-                                alert(`Fehler: ${name} hat sein „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`);
-                                doubleJokerError = true;
-                            }
                             matchJokers[name] = true;
                         }
                         count++;
                     }
                 });
             }
+
+            Object.keys(matchJokers).forEach(name => {
+                let alreadyUsed = false;
+                if (season.matches) {
+                    Object.entries(season.matches).forEach(([mId, m]) => {
+                        if (mId !== editingMatchId && m.jokers && m.jokers[name]) alreadyUsed = true;
+                    });
+                }
+                if (alreadyUsed) {
+                    alert(`Fehler: ${name} hat das „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`);
+                    doubleJokerError = true;
+                }
+            });
 
             if (doubleJokerError) return;
             if (count < 4 || count > 7) return alert("4 bis 7 Spieler erlaubt!");
@@ -1227,11 +1549,21 @@
             if (!editingMatchId) delete season.liveDraft;
 
             document.getElementById('matchDate').value = "";
+            const hSelect = document.getElementById('matchHostSelect');
+            if (hSelect) hSelect.value = "";
             editingMatchId = null;
             document.getElementById('saveMatchBtn').textContent = "Abend speichern";
             entryMode = 'simple';
             detailedOrder = [];
             detailedGames = [];
+            
+            // Statistik-Variablen zurücksetzen
+            liveStatsExpanded = false;
+            const liveStatsCont = document.getElementById('liveStatsContainer');
+            if (liveStatsCont) liveStatsCont.classList.add('hidden');
+            const liveStatsB = document.getElementById('toggleLiveStatsBtn');
+            if (liveStatsB) liveStatsB.textContent = "📊 Live-Statistiken dieses Abends einblenden";
+            
             saveToCloud();
         }
 
@@ -1357,24 +1689,6 @@
             document.body.removeChild(link);
         }
 
-        function handleHostChange(selectedName) {
-            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
-            if (!season) return;
-            (season.players || []).forEach(name => {
-                const label = document.getElementById(`host-label-${name}`);
-                if (label) {
-                    if (name === selectedName) {
-                        label.classList.remove('bg-gray-100', 'text-gray-600', 'border-gray-200');
-                        label.classList.add('bg-amber-100', 'text-amber-800', 'border-amber-300');
-                    } else {
-                        label.classList.remove('bg-amber-100', 'text-amber-800', 'border-amber-300');
-                        label.classList.add('bg-gray-100', 'text-gray-600', 'border-gray-200');
-                    }
-                }
-            });
-            updateLiveDraft();
-        }
-
         function render() {
             const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
             const isHist = season && season.isHistorical;
@@ -1415,6 +1729,17 @@
                 </span>
             `).join('');
 
+            const hostSelect = document.getElementById('matchHostSelect');
+            if (hostSelect) {
+                const currentVal = hostSelect.value;
+                hostSelect.innerHTML = '<option value="">-- Gastgeber wählen --</option>' + seasonPlayers.map(p => `<option value="${p}">${p}</option>`).join('');
+                if (currentVal && seasonPlayers.includes(currentVal)) {
+                    hostSelect.value = currentVal;
+                } else if (season && season.liveDraft && season.liveDraft.host) {
+                    hostSelect.value = season.liveDraft.host;
+                }
+            }
+
             const seasonKeys = Object.keys(state.seasons);
             sortSeasonsChronologically(seasonKeys);
 
@@ -1454,71 +1779,52 @@
                 statusContainer.innerHTML = '';
             }
 
+            // matchPlayersContainer HTML ohne detailedSumDisplay (Gesamt-Spielpunktzahl entfernt)
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
+                let isChecked = false;
+                if (entryMode === 'detailed') {
+                    isChecked = detailedOrder.includes(name);
+                } else {
+                    if (editingMatchId) {
+                        const match = season.matches[editingMatchId];
+                        isChecked = match && match.scores && match.scores[name] !== undefined;
+                    } else {
+                        isChecked = detailedOrder.includes(name);
+                    }
+                }
+
                 return `
-                    <div class="flex flex-col gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200">
+                    <div class="flex flex-col gap-2 p-2.5 bg-gray-50 rounded-xl border border-gray-200" data-name="${name}">
                         <div class="flex items-center justify-between gap-2">
-                            <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 flex-grow truncate">
-                                <input type="checkbox" id="check-${name}" onchange="
-                                    const isChecked = this.checked;
-                                    document.getElementById('score-${name}').disabled = !isChecked;
-                                    const jb = document.getElementById('joker-${name}'); if(jb) { jb.disabled = !isChecked || ${hasUsedJokerAlready}; if(!isChecked) jb.checked = false; }
-                                    const hb = document.getElementById('host-${name}'); hb.disabled = !isChecked; if(!isChecked) { hb.checked = false; handleHostChange(''); }
-                                " class="rounded text-emerald-600">
-                                ${name}
-                            </label>
+                            <div class="flex items-center gap-2 flex-grow truncate">
+                                <span class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 select-none px-1 text-sm" title="Ziehen zum Sortieren">⠿</span>
+                                <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 flex-grow truncate">
+                                    <input type="checkbox" id="check-${name}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${name}', this.checked)" class="rounded text-emerald-600">
+                                    ${name}
+                                </label>
+                            </div>
 
                             <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' && !isHist ? 'hidden' : ''}">
-                                <input type="number" id="score-${name}" disabled placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
+                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
                             </span>
-                            <span id="detailedSumDisplay-${name}" class="${entryMode === 'detailed' && !isHist ? '' : 'hidden'} text-xs font-mono font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-2 py-1.5 min-w-[3.25rem] text-center">Σ 0</span>
                         </div>
 
-                        <div class="flex gap-2 justify-end pt-1 border-t border-gray-200/50">
-                            <label id="host-label-${name}" class="flex items-center gap-1 text-[10px] text-gray-600 bg-gray-100 border-gray-200 opacity-40 rounded border px-2 py-0.5 font-bold cursor-not-allowed select-none transition" title="Mitspieler aktivieren, um ihn als Host zu wählen">
-                                <input type="radio" name="matchHost" id="host-${name}" disabled onchange="handleHostChange('${name}')" class="text-amber-600 focus:ring-amber-500 w-3 h-3"> 🏠 Host
+                        ${isHist ? '' : `
+                        <div id="simpleJokerWrap-${name}" class="flex gap-2 justify-end pt-1 border-t border-gray-200/50">
+                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed' : 'text-red-600 bg-red-50 border-red-200 ' + (isChecked ? 'opacity-100' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                                <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                             </label>
-
-                            ${isHist ? '' : `
-                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed' : 'text-red-600 bg-red-50 border-red-200 opacity-40 cursor-not-allowed'} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"'}>
-                                <input type="checkbox" id="joker-${name}" disabled onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
-                            </label>
-                            `}
                         </div>
+                        `}
                     </div>
                 `;
             }).join('');
 
-            seasonPlayers.forEach(name => {
-                const cb = document.getElementById(`check-${name}`);
-                if (cb) {
-                    cb.addEventListener('change', function() {
-                        const hostLabel = document.getElementById(`host-label-${name}`);
-                        const jokerLabel = document.getElementById(`joker-label-${name}`);
-                        if (this.checked) {
-                            if (hostLabel) hostLabel.classList.remove('opacity-40', 'cursor-not-allowed');
-                            if (hostLabel) hostLabel.classList.add('cursor-pointer');
-                            if (jokerLabel && !seasonJokers[name]) {
-                                jokerLabel.classList.remove('opacity-40', 'cursor-not-allowed');
-                                jokerLabel.classList.add('cursor-pointer');
-                            }
-                        } else {
-                            if (hostLabel) {
-                                hostLabel.classList.remove('cursor-pointer');
-                                hostLabel.classList.add('opacity-40', 'cursor-not-allowed');
-                            }
-                            if (jokerLabel) {
-                                jokerLabel.classList.remove('cursor-pointer', 'opacity-100');
-                                jokerLabel.classList.add('opacity-40', 'cursor-not-allowed');
-                            }
-                        }
-                    });
-                }
-            });
-
+            rebuildDetailedOrder();
             updateModeToggleUI();
             restoreFormState();
+            initMainPlayersSortable();
 
             const liveViewer = document.getElementById('liveMatchViewer');
             const blitzContainer = document.getElementById('blitztabelleToggleContainer');
@@ -1534,8 +1840,11 @@
 
                 liveViewerTotals.innerHTML = sortedPlayers.map(p => {
                     const cls = p.score > 0 ? 'text-emerald-700' : (p.score < 0 ? 'text-red-700' : 'text-gray-600');
+                    const playedPflicht = hasPlayedPflichtsolo(p.name);
+                    const badgeCls = playedPflicht ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-600';
+                    const badgeTitle = playedPflicht ? 'Pflichtsolo bereits gespielt' : 'Pflichtsolo noch offen';
                     return `<div class="flex justify-between items-center bg-white rounded px-3 py-2 border border-amber-100 shadow-sm">
-                                <span class="text-sm font-bold text-gray-700">${p.name}</span>
+                                <span class="text-sm font-bold text-gray-700 flex items-center gap-1.5">${p.name}<span class="inline-flex items-center justify-center w-4 h-4 rounded-[3px] text-[10px] font-bold leading-none ${badgeCls}" title="${badgeTitle}">P</span></span>
                                 <span class="text-sm font-mono font-bold ${cls}">${p.score > 0 ? '+' : ''}${p.score}</span>
                             </div>`;
                 }).join('');
@@ -1569,6 +1878,11 @@
                         </div>
                     </div>`;
                 }).join('');
+
+                // Live-Statistiken rendern, falls ausgeklappt
+                if (liveStatsExpanded) {
+                    renderLiveStats();
+                }
 
                 if (blitzContainer && !isHist) {
                     blitzContainer.classList.remove('hidden');
@@ -1664,14 +1978,14 @@
                 }).join('') + unqualified.map(p => mapRow(p, false)).join('');
 
                 if (!isHist) {
-                    let bestHostName = "-";
-                    let bestHostAvg = -999;
+                    let bgHostName = "-";
+                    let bgHostAvg = -999;
                     Object.keys(hostStats).forEach(name => {
                         if (hostStats[name].count > 0) {
                             let avg = hostStats[name].totalScore / hostStats[name].count;
-                            if (avg > bestHostAvg) {
-                                bestHostAvg = avg;
-                                bestHostName = name;
+                            if (avg > bgHostAvg) {
+                                bgHostAvg = avg;
+                                bgHostName = name;
                             }
                         }
                     });
@@ -1688,8 +2002,8 @@
                         </div>
                         <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
                             <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">🏰 Festung (Heim-Schnitt)</p>
-                            <p class="text-lg font-bold text-amber-900 mt-1">${bestHostAvg > -999 ? `+${bestHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
-                            <p class="text-xs text-amber-800 mt-0.5">Vorne: <b>${bestHostName}</b> zu Hause</p>
+                            <p class="text-lg font-bold text-amber-900 mt-1">${bgHostAvg > -999 ? `+${bgHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
+                            <p class="text-xs text-amber-800 mt-0.5">Vorne: <b>${bgHostName}</b> zu Hause</p>
                         </div>
                     `;
                 }
@@ -1779,7 +2093,11 @@
                                     }).join('')}
                                 </div>
                                 ${(!isHist && match.mode === 'detailed' && match.games && match.games.length > 0) ? `
-                                <button onclick="toggleGameLog('${id}')" class="mt-2 text-[10px] text-blue-600 hover:underline cursor-pointer">📋 Spielverlauf anzeigen (${match.games.length} Spiele)</button>
+                                <div class="flex flex-wrap gap-2.5 mt-3 items-center">
+                                    <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.length} Spiele)</button>
+                                    <span class="text-gray-300">|</span>
+                                    <button onclick="toggleMatchStats('${id}')" id="toggleStatsBtn-${id}" class="text-[10px] text-indigo-600 hover:underline cursor-pointer flex items-center gap-0.5 font-bold">📊 Statistiken einblenden</button>
+                                </div>
                                 <div id="gamelog-${id}" class="hidden mt-2 space-y-1">
                                     ${match.games.map((g, idx) => {
                                         const gm = normalizeGame(g);
@@ -1802,11 +2120,31 @@
                                         `;
                                     }).join('')}
                                 </div>
+                                <div id="statscontainer-${id}" class="${expandedMatchStats[id] ? '' : 'hidden'} mt-3 space-y-4 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                </div>
                                 ` : ''}
                             </div>
                         </div>
                     `;
                 }).join('');
+
+                // Wiederherstellung und Initialisierung bereits geöffneter Diagramme nach dem Neuzeichnen
+                Object.keys(expandedMatchStats).forEach(matchId => {
+                    if (expandedMatchStats[matchId]) {
+                        const container = document.getElementById(`statscontainer-${matchId}`);
+                        const btn = document.getElementById(`toggleStatsBtn-${matchId}`);
+                        if (container && btn) {
+                            btn.textContent = "📊 Statistiken ausblenden";
+                            const match = season.matches[matchId];
+                            if (match) {
+                                const order = match.order || Object.keys(match.scores || {});
+                                const games = match.games || [];
+                                renderEveningStatsComponent(`statscontainer-${matchId}`, `eveningCourseChart-${matchId}`, order, games, matchId);
+                            }
+                        }
+                    }
+                });
+
             } else {
                 historyContainer.innerHTML = '<p class="text-gray-400 text-sm italic">Keine Abende.</p>';
             }
