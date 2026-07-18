@@ -38,6 +38,58 @@
         </div>
     </div>
 
+    <!-- All-Time stats Detail Modal -->
+    <div id="allTimeStatsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeAllTimeModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onclick="event.stopPropagation()">
+            <h2 id="allTimeModalTitle" class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2">Kachel Titel</h2>
+            <div class="overflow-y-auto max-h-[350px] pr-1" id="allTimeModalContent"></div>
+            <button onclick="closeAllTimeModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+        </div>
+    </div>
+
+    <!-- What's New Modal -->
+    <div id="whatsNewModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+            <h2 class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
+            <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
+                
+                <!-- Version 1.1 -->
+                <div class="border-l-2 border-emerald-500 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-800">Version 1.1</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 space-y-1.5 mt-2">
+                        <li><strong>Live-Ansicht:</strong> Umstellung auf eine tabellarische Ergebnis-Matrix. Die kumulierten Gesamtpunkte stehen dauerhaft in der obersten Zeile.</li>
+                        <li><strong>Pflichtsolos:</strong> Status-Badge hinter den Spielernamen im Tabellenkopf platziert. Anzeige des Solo-Typs direkt bei den Punkten im jeweiligen Spiel.</li>
+                        <li><strong>Anpassungen Ergebnis-Eingabe:</strong> Tracking der Sonderspiele (Hochzeit, Armut, Abgabe) entfernt. Einführung der Option „Ansage“ pro Spieler und Spiel sowie des neuen Solos „hängen gelassen“.</li>
+                        <li><strong>Historische Saisons:</strong> Beschränkung auf Endergebnis-Eingabe. Wahlmöglichkeit zwischen Spieltagspunkten (mit Nullsummenprüfung) oder Platzierungspunkten.</li>
+                        <li><strong>Tabellen-Logik:</strong> Einheitliche Berechnung von Schnitt und Saisonpunkten auf Basis von Platzierungspunkten für alle Saison-Typen.</li>
+                        <li><strong>Ewige Bestenliste:</strong> Kacheln sind anklickbar und öffnen eine Rangliste aller Spieler. Neue Statistik „Ansagekönig“ hinzugefügt.</li>
+                        <li><strong>Validierung &amp; UX:</strong> Nullsummenprüfung für Einzelspiele und Endergebnisse. Sicherheitsabfragen vor dem Speichern und Löschen von Abenden integriert.</li>
+                        <li><strong>Automatisierung &amp; GUI:</strong> Vollautomatisches Runden-Tracking für 4 bis 7 Spieler sowie kleinere GUI-Änderungen.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.0 -->
+                <div class="border-l-2 border-slate-300 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-500">Version 1.0</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 font-bold px-1.5 py-0.5 rounded">14.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 space-y-1.5 mt-2">
+                        <li><strong>Basis-Release</strong> der Doko-Saisonverwaltung.</li>
+                        <li>Zentrale Verwaltung von Saisons, Spielern und Abenden.</li>
+                        <li>Berechnung von Saison-Tabellen, Bestenlisten und grafischen Verläufen.</li>
+                        <li>Unterstützung für variable Spieleranzahlen (4–7 Personen).</li>
+                    </ul>
+                </div>
+
+            </div>
+            <button onclick="closeWhatsNewModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+        </div>
+    </div>
+
     <div id="adminModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="if(event.target === this) toggleAdminModal(false)">
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
@@ -67,6 +119,10 @@
                     <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 p-1 rounded-lg">
                         <button type="button" id="modeSimpleBtn" onclick="setEntryMode('simple')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">📝 Nur Endergebnis</button>
                         <button type="button" id="modeDetailedBtn" onclick="setEntryMode('detailed')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">🎮 Spiel für Spiel</button>
+                    </div>
+
+                    <div id="historicalPointTypeContainer" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 p-1 rounded-lg">
+                        <!-- Wird dynamisch befüllt -->
                     </div>
 
                     <p class="text-xs font-semibold text-gray-500 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
@@ -111,7 +167,7 @@
                     </div>
                     <div class="flex items-center gap-2 pt-1">
                         <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
-                        <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Platzierungspunkte)</label>
+                        <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Endergebnis)</label>
                     </div>
                     <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
                 </div>
@@ -125,6 +181,7 @@
     <div class="max-w-5xl mx-auto space-y-6">
         <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
+            <button onclick="openWhatsNewModal()" class="absolute top-3 left-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm cursor-pointer transition">✨ What's new?</button>
             <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight flex items-center justify-center gap-3 md:gap-4 text-white">
                 <svg class="w-7 h-10 md:w-8 md:h-12 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)] shrink-0 select-none bg-white rounded-md" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
                     <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
@@ -166,20 +223,27 @@
         <div class="space-y-6">
 
             <div id="liveMatchViewer" class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 md:p-6 rounded-2xl shadow-md border border-amber-200 hidden">
-                <div class="flex items-center gap-2 mb-4 border-b border-amber-200/60 pb-3">
-                    <div class="w-3.5 h-3.5 bg-red-500 rounded-full animate-pulse shadow-sm border border-red-200"></div>
-                    <h2 class="text-xl font-bold text-amber-900">LIVE: Laufender Abend</h2>
+                <div class="flex items-center justify-between mb-4 border-b border-amber-200/60 pb-3 flex-wrap gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3.5 h-3.5 bg-red-500 rounded-full animate-pulse shadow-sm border border-red-200"></div>
+                        <h2 class="text-xl font-bold text-amber-900">LIVE: Laufender Abend</h2>
+                    </div>
+                    <span class="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200 shadow-sm">
+                        Spiele: <span id="liveViewerCount">0</span>
+                    </span>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <p class="text-sm font-bold text-amber-800 uppercase tracking-wider">Zwischenstand</p>
-                        <div id="liveViewerTotals" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <p class="text-sm font-bold text-amber-800 uppercase tracking-wider">📋 Bisherige Spiele (<span id="liveViewerCount">0</span>)</p>
-                        <div id="liveViewerGames" class="space-y-2 max-h-60 overflow-y-auto pr-2"></div>
-                    </div>
+                <div class="overflow-x-auto border border-amber-200 rounded-xl bg-white shadow-sm">
+                    <table class="w-full text-left border-collapse text-sm min-w-[600px]">
+                        <thead>
+                            <tr class="bg-amber-100/50 text-amber-950 border-b border-amber-200 font-bold" id="liveTableHeader">
+                                <!-- Wird dynamisch befüllt -->
+                            </tr>
+                        </thead>
+                        <tbody id="liveTableBody" class="divide-y divide-amber-100">
+                            <!-- Wird dynamisch befüllt -->
+                        </tbody>
+                    </table>
                 </div>
 
                 <div class="mt-6 border-t border-amber-200/60 pt-4">
@@ -235,12 +299,12 @@
 
             <div class="bg-white p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60" id="recordsBox">
                 <h2 class="text-xl font-bold mb-4 border-b pb-3 text-slate-900">✨ Saison-Rekorde</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4" id="recordsContainer"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="recordsContainer"></div>
             </div>
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
                 <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4" id="allTimeRecordsContainer"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4" id="allTimeRecordsContainer"></div>
             </div>
 
         </div>
@@ -275,7 +339,7 @@
         let liveStatsExpanded = false;
         let expandedMatchStats = {};
 
-        const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit'];
+        const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit', 'hängen gelassen'];
         const SOLO_KINDS = ['pflicht', 'lust'];
 
         function soloKindLabel(kind) {
@@ -284,10 +348,218 @@
             return kind || '';
         }
 
+        // Steuerung Changelog Modal
+        function openWhatsNewModal() {
+            document.getElementById('whatsNewModal').classList.remove('hidden');
+        }
+        function closeWhatsNewModal() {
+            document.getElementById('whatsNewModal').classList.add('hidden');
+        }
+
+        function showAllTimeDetail(metricType) {
+            const records = calculateAllTimeRecords();
+            let title = '';
+            let listHtml = '';
+            let sortedList = [];
+
+            if (metricType === 'solo') {
+                title = '🃏 Ewiger Solo-Meister';
+                sortedList = Object.keys(records.globalSoloStats)
+                    .map(player => {
+                        const stats = records.globalSoloStats[player];
+                        const quote = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
+                        return { player, value: stats.played, detail: `${quote}% gewonnen, ${stats.won} Siege` };
+                    })
+                    .filter(item => item.value > 0)
+                    .sort((a, b) => b.value - a.value || b.detail.localeCompare(a.detail));
+            } else if (metricType === 'host') {
+                title = '🏰 Ewige Festung (Heim-Schnitt)';
+                sortedList = Object.keys(records.globalHostStats)
+                    .map(player => {
+                        const stats = records.globalHostStats[player];
+                        const avg = stats.count > 0 ? (stats.totalScore / stats.count) : -Infinity;
+                        return { player, value: avg, rawVal: avg, detail: `${stats.count} Abende gehostet` };
+                    })
+                    .filter(item => item.rawVal !== -Infinity)
+                    .sort((a, b) => b.rawVal - a.rawVal);
+            } else if (metricType === 'tagessiege') {
+                title = '👑 Tagessieg-König';
+                sortedList = Object.keys(records.globalTagessiege)
+                    .map(player => {
+                        const count = records.globalTagessiege[player] || 0;
+                        return { player, value: count, detail: 'Mal Tagessieger geworden' };
+                    })
+                    .filter(item => item.value > 0)
+                    .sort((a, b) => b.value - a.value);
+            } else if (metricType === 'totalPoints') {
+                title = '⚡ Punktesammelgott';
+                sortedList = Object.keys(records.globalTotalPoints)
+                    .map(player => {
+                        const pts = records.globalTotalPoints[player] || 0;
+                        return { player, value: pts, detail: 'Punkte gesamt' };
+                    })
+                    .filter(item => item.value !== 0)
+                    .sort((a, b) => b.value - a.value);
+            } else if (metricType === 'ansagen') {
+                title = '📢 Ewiger Ansagekönig';
+                sortedList = Object.keys(records.globalAnsagen)
+                    .map(player => {
+                        const count = records.globalAnsagen[player] || 0;
+                        return { player, value: count, detail: 'Ansagen gesamt' };
+                    })
+                    .filter(item => item.value > 0)
+                    .sort((a, b) => b.value - a.value);
+            }
+
+            if (sortedList.length === 0) {
+                listHtml = `<p class="text-xs text-gray-500 italic text-center p-4">Noch keine Daten vorhanden.</p>`;
+            } else {
+                listHtml = `
+                    <div class="space-y-2">
+                        ${sortedList.map((item, index) => {
+                            let valStr = '';
+                            if (metricType === 'host') {
+                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt.`;
+                            } else if (metricType === 'totalPoints') {
+                                valStr = `${item.value > 0 ? '+' : ''}${item.value} Pkt.`;
+                            } else if (metricType === 'solo') {
+                                valStr = `${item.value} Soli`;
+                            } else if (metricType === 'tagessiege') {
+                                valStr = `${item.value} Tagessiege`;
+                            } else if (metricType === 'ansagen') {
+                                valStr = `${item.value} Ansagen`;
+                            }
+
+                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-950 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-500'));
+                            
+                            return `
+                                <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100 hover:bg-slate-100/50 transition">
+                                    <div class="flex items-center gap-3 truncate mr-2">
+                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${index + 1}</span>
+                                        <div class="truncate">
+                                            <p class="font-bold text-slate-800 truncate">${item.player}</p>
+                                            <p class="text-[10px] text-slate-400 font-medium">${item.detail}</p>
+                                        </div>
+                                    </div>
+                                    <div class="shrink-0 text-right">
+                                        <span class="font-mono text-sm font-black text-slate-700">${valStr}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            document.getElementById('allTimeModalTitle').textContent = title;
+            document.getElementById('allTimeModalContent').innerHTML = listHtml;
+            document.getElementById('allTimeStatsModal').classList.remove('hidden');
+        }
+
+        function closeAllTimeModal() {
+            document.getElementById('allTimeStatsModal').classList.add('hidden');
+        }
+
+        function changeMatchPointType(type) {
+            render();
+        }
+
+        // Berechnet den nächsten Geber-Index basierend auf dem Pflichtsolo-Automatismus (für 4-7 Spieler)
+        function getNextDealerIndex(order, games) {
+            const N = order ? order.length : 0;
+            if (N < 4 || N > 7) return -1;
+            const gamesOnly = (games || []).filter(g => !g.isRoundMarker);
+            let currentDealerIdx = 0;
+            gamesOnly.forEach(g => {
+                const gm = normalizeGame(g);
+                let isPflichtSolo = false;
+                if (gm.solo && gm.soloKind) {
+                    Object.keys(gm.solo).forEach(pName => {
+                        if (gm.solo[pName] && gm.soloKind[pName] === 'pflicht') {
+                            isPflichtSolo = true;
+                        }
+                    });
+                }
+                if (!isPflichtSolo) {
+                    currentDealerIdx = (currentDealerIdx + 1) % N;
+                }
+            });
+            return currentDealerIdx;
+        }
+
+        // Verarbeitet die Spieleliste für die Anzeige und berechnet dynamisch Runden und Geber (für 4-7 Spieler)
+        function processGamesList(order, games) {
+            const N = order ? order.length : 0;
+            if (N < 4 || N > 7) {
+                return games || [];
+            }
+
+            const gamesOnly = (games || []).filter(g => !g.isRoundMarker);
+            
+            let currentDealerIdx = 0;
+            let nonPflichtCount = 0;
+            let processedList = [];
+            let lastRoundNum = 0;
+
+            gamesOnly.forEach((g, idx) => {
+                const gm = normalizeGame(g);
+                const roundNum = Math.floor(nonPflichtCount / N) + 1;
+                
+                if (roundNum !== lastRoundNum) {
+                    processedList.push({
+                        isRoundMarker: true,
+                        roundNumber: roundNum
+                    });
+                    lastRoundNum = roundNum;
+                }
+
+                const gameCopy = {
+                    ...gm,
+                    _dealerIdx: currentDealerIdx,
+                    _dealerName: order[currentDealerIdx],
+                    _roundNumber: roundNum,
+                    _indexInGamesOnly: idx
+                };
+
+                processedList.push(gameCopy);
+
+                let isPflichtSolo = false;
+                if (gm.solo && gm.soloKind) {
+                    Object.keys(gm.solo).forEach(pName => {
+                        if (gm.solo[pName] && gm.soloKind[pName] === 'pflicht') {
+                            isPflichtSolo = true;
+                        }
+                    });
+                }
+
+                if (!isPflichtSolo) {
+                    currentDealerIdx = (currentDealerIdx + 1) % N;
+                    nonPflichtCount++;
+                }
+            });
+
+            const nextRoundNum = Math.floor(nonPflichtCount / N) + 1;
+            if (processedList.length === 0 || lastRoundNum !== nextRoundNum) {
+                processedList.push({
+                    isRoundMarker: true,
+                    roundNumber: nextRoundNum,
+                    isVirtualPlaceholder: true
+                });
+            }
+
+            return processedList;
+        }
+
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
         // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
         function hasPlayedPflichtsolo(name) {
             return detailedGames.some(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
+        }
+
+        // Gibt den Typ des gespielten Pflichtsolos zurück (z.B. 'Damen'), oder null falls noch offen.
+        function getPlayedPflichtsoloType(name) {
+            const playedGame = detailedGames.find(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
+            return playedGame ? (playedGame.soloType?.[name] || 'Pflicht') : null;
         }
 
         function makeEmptyGame() {
@@ -297,9 +569,7 @@
                 solo: {},
                 soloKind: {},
                 soloType: {},
-                hochzeit: {},
-                armut: {},
-                trumpfabgabe: {}
+                ansage: {}
             };
         }
 
@@ -317,9 +587,7 @@
                 solo: g.solo || {},
                 soloKind: g.soloKind || {},
                 soloType: g.soloType || {},
-                hochzeit: g.hochzeit || {},
-                armut: g.armut || {},
-                trumpfabgabe: g.trumpfabgabe || {}
+                ansage: g.ansage || {}
             };
         }
 
@@ -486,7 +754,7 @@
             let realGameCount = 1;
             games.forEach((g) => {
                 if (g.isRoundMarker) return; // Runden-Marker im Chart überspringen
-                labels.push(`Spiel ${realGameCount}`);
+                labels.push("Spiel " + realGameCount);
                 realGameCount++;
                 const gm = normalizeGame(g);
                 order.forEach(p => {
@@ -506,10 +774,15 @@
                 data: cumulativePoints[name],
                 borderColor: colors[i % colors.length],
                 backgroundColor: colors[i % colors.length],
-                tension: 0.1,
+                tension: 0.3,
+                cubicInterpolationMode: 'monotone', // Verhindert Überschwingen der Linien
                 spanGaps: true,
-                borderWidth: 2.5,
-                pointRadius: 4
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+                pointHitRadius: 10,
+                borderCapStyle: 'round',
+                borderJoinStyle: 'round'
             }));
 
             eveningCharts[chartKey] = new Chart(ctx, {
@@ -521,11 +794,14 @@
                     scales: {
                         y: {
                             title: { display: true, text: 'Gesamtpunkte', font: { size: 10 } },
-                            ticks: { font: { size: 9 } }
+                            grid: { color: '#f1f5f9' },
+                            border: { dash: [4, 4] },
+                            ticks: { font: { size: 9 }, color: '#64748b' }
                         },
                         x: {
                             title: { display: true, text: 'Spiele', font: { size: 10 } },
-                            ticks: { font: { size: 9 } }
+                            grid: { display: false },
+                            ticks: { font: { size: 9 }, color: '#64748b' }
                         }
                     },
                     plugins: {
@@ -591,7 +867,7 @@
 
         function getNextRoundNumber() {
             const markers = detailedGames.filter(g => g.isRoundMarker);
-            return markers.length + 2; // Da Start automatisch "Runde 1" ist, fügt der erste manuelle Button "Runde 2" ein
+            return markers.length + 2; 
         }
 
         function startNewRound() {
@@ -819,7 +1095,7 @@
             }
 
             const status = document.getElementById('connectionStatus');
-            status.textContent = "Live-Verbunden";
+            status.textContent = "Verbunden";
             status.className = "absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
             render();
         }, (error) => {
@@ -918,7 +1194,7 @@
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
-            if (confirm("Möchtest du diesen Abend wirklich unwiderruflich löschen?")) {
+            if (confirm("Möchtest du diesen Abend unwiderruflich löschen?")) {
                 if (season.matches && season.matches[matchId]) {
                     delete season.matches[matchId];
                     saveToCloud();
@@ -1028,26 +1304,32 @@
             matchesEntries.forEach(([id, match]) => {
                 if (!match.scores) return;
 
-                if (season.isHistorical) {
-                    Object.keys(match.scores).forEach(name => {
-                        if (matchCounts[name] !== undefined) matchCounts[name]++;
-                        if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += match.scores[name];
-                    });
-                } else {
+                // 1. Teilnahmen erfassen
+                Object.keys(match.scores).forEach(name => {
+                    if (matchCounts[name] !== undefined) matchCounts[name]++;
+                });
+
+                // 2. Platzierungspunkte für den Abend bestimmen
+                const isMatchdayType = !season.isHistorical || match.pointType === 'spieltag';
+                let placements = isMatchdayType ? getPlacementScoresForMatch(match.scores) : match.scores;
+
+                // 3. Platzierungspunkte auf das Saisonkonto addieren
+                Object.keys(placements).forEach(name => {
+                    if (totalSeasonPoints[name] !== undefined) {
+                        totalSeasonPoints[name] += placements[name];
+                    }
+                });
+
+                // 4. Rekorde nur bei regulären Saisons erfassen
+                if (!season.isHistorical) {
                     Object.keys(match.scores).forEach(name => {
                         let score = match.scores[name];
-                        if (matchCounts[name] !== undefined) matchCounts[name]++;
                         if (score > maxWin.score) maxWin = { score: score, player: name, date: match.date, season: seasonKey };
                         if (score < maxLoss.score) maxLoss = { score: score, player: name, date: match.date, season: seasonKey };
                         if (match.host && match.host === name && hostStats[name]) {
                             hostStats[name].totalScore += score;
                             hostStats[name].count++;
                         }
-                    });
-
-                    let placements = getPlacementScoresForMatch(match.scores);
-                    Object.keys(placements).forEach(name => {
-                        if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += placements[name];
                     });
                 }
             });
@@ -1070,6 +1352,7 @@
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
             let globalTagessiege = {}; // { player: 0 }
             let globalTotalPoints = {}; // { player: 0 }
+            let globalAnsagen = {}; // { player: 0 }
             let allUniquePlayers = new Set();
 
             Object.values(state.seasons).forEach(s => {
@@ -1081,6 +1364,7 @@
                 globalSoloStats[p] = { played: 0, won: 0 };
                 globalTagessiege[p] = 0;
                 globalTotalPoints[p] = 0;
+                globalAnsagen[p] = 0;
             });
 
             Object.keys(state.seasons).forEach(sKey => {
@@ -1092,7 +1376,7 @@
                 Object.values(season.matches).forEach(match => {
                     if (!match.scores) return;
 
-                    // 1. Tagessieg calculation
+                    // 1. Tagessieg calculation (Gilt für alle Saisons, egal ob Platzierung oder Spieltag)
                     let sortedEvening = Object.keys(match.scores).map(p => ({ name: p, score: match.scores[p] })).sort((a,b) => b.score - a.score);
                     if (sortedEvening.length > 0) {
                         let maxScore = sortedEvening[0].score;
@@ -1103,8 +1387,10 @@
                         });
                     }
 
-                    // 2. Host & Total points calculations (Nur Spieltagspunkte, keine Platzierungspunkte aus historischen Saisons)
-                    if (!isHist) {
+                    // 2. Host-Statistik & Punktesammelgott (Ewige Festung / Gesamtpunkte)
+                    // Gilt für reguläre Saisons ODER historische Saisons, wenn Spieltagspunkte eingetragen wurden
+                    const isMatchdayData = !isHist || match.pointType === 'spieltag';
+                    if (isMatchdayData) {
                         Object.keys(match.scores).forEach(name => {
                             let score = match.scores[name];
                             if (globalTotalPoints[name] !== undefined) {
@@ -1117,15 +1403,21 @@
                         });
                     }
 
-                    // Solos (detailed games)
+                    // Solos (detailed games) & Ansagen (falls vorhanden, z.B. bei regulären Saisons)
                     if (match.mode === 'detailed' && match.games) {
                         match.games.forEach(g => {
                             if (g.isRoundMarker) return;
+                            const gm = normalizeGame(g);
                             allUniquePlayers.forEach(p => {
-                                if (g.solo && g.solo[p] === true) {
+                                if (gm.solo && gm.solo[p] === true) {
                                     globalSoloStats[p].played++;
-                                    if (g.points && g.points[p] !== undefined && g.points[p] > 0) {
+                                    if (gm.points && gm.points[p] !== undefined && gm.points[p] > 0) {
                                         globalSoloStats[p].won++;
+                                    }
+                                }
+                                if (gm.ansage && gm.ansage[p] === true) {
+                                    if (globalAnsagen[p] !== undefined) {
+                                        globalAnsagen[p]++;
                                     }
                                 }
                             });
@@ -1179,7 +1471,22 @@
                 }
             });
 
+            // Find Ewiger Ansagekönig
+            let bestAllTimeAnsagenPlayer = "-";
+            let maxAllTimeAnsagen = 0;
+            Object.keys(globalAnsagen).forEach(p => {
+                if (globalAnsagen[p] > maxAllTimeAnsagen) {
+                    maxAllTimeAnsagen = globalAnsagen[p];
+                    bestAllTimeAnsagenPlayer = p;
+                }
+            });
+
             return {
+                globalHostStats,
+                globalSoloStats,
+                globalTagessiege,
+                globalTotalPoints,
+                globalAnsagen,
                 bestAllTimeHostName,
                 bestAllTimeHostAvg,
                 bestSoloPlayer,
@@ -1188,7 +1495,9 @@
                 bestTagessiegPlayer,
                 maxTagessiege,
                 bestPointsPlayer,
-                maxTotalPoints
+                maxTotalPoints,
+                bestAllTimeAnsagenPlayer,
+                maxAllTimeAnsagen
             };
         }
 
@@ -1260,7 +1569,7 @@
                 simpleJoker.disabled = !checked || !!seasonJokers[name];
                 if (!checked) simpleJoker.checked = false;
                 
-                const label = document.getElementById(`joker-label-${name}`);
+                const label = document.getElementById('joker-label-' + name);
                 if (label) {
                     if (checked && !seasonJokers[name]) {
                         label.classList.remove('opacity-40', 'cursor-not-allowed');
@@ -1283,7 +1592,7 @@
             const checkedNames = [];
             Array.from(listEl.children).forEach(el => {
                 const name = el.dataset.name;
-                const cb = document.getElementById(`check-${name}`);
+                const cb = document.getElementById('check-' + name);
                 if (cb && cb.checked) {
                     checkedNames.push(name);
                 }
@@ -1295,7 +1604,7 @@
             if (state.currentSeasonKey) {
                 const season = state.seasons[state.currentSeasonKey];
                 if (season) {
-                    const remaining = (season.players || []).filter(p => !newOrder.includes(p));
+                    const remaining = (season.players || []).filter(p => p !== name);
                     season.players = [...newOrder, ...remaining];
                     saveToCloud();
                 }
@@ -1324,19 +1633,19 @@
         }
 
         function toggleSittingOutInDraft(name) {
-            const cb = document.getElementById(`sitout-${name}`);
-            const wrap = document.getElementById(`gamepointwrap-${name}`);
-            const soloWrap = document.getElementById(`gamesolowrap-${name}`);
-            const typeWrap = document.getElementById(`gamesolotypewrap-${name}`);
-            const kindWrap = document.getElementById(`gamesolokindwrap-${name}`);
-            const extrasWrap = document.getElementById(`gameextraswrap-${name}`);
+            const cb = document.getElementById('sitout-' + name);
+            const wrap = document.getElementById('gamepointwrap-' + name);
+            const soloWrap = document.getElementById('gamesolowrap-' + name);
+            const typeWrap = document.getElementById('gamesolotypewrap-' + name);
+            const kindWrap = document.getElementById('gamesolokindwrap-' + name);
+            const ansageWrap = document.getElementById('gameansagewrap-' + name);
             if (!cb || !wrap) return;
             const hidden = cb.checked;
             wrap.classList.toggle('hidden', hidden);
             if (soloWrap) soloWrap.classList.toggle('hidden', hidden);
             if (typeWrap) typeWrap.classList.toggle('hidden', hidden);
             if (kindWrap) kindWrap.classList.toggle('hidden', hidden);
-            if (extrasWrap) extrasWrap.classList.toggle('hidden', hidden);
+            if (ansageWrap) ansageWrap.classList.toggle('hidden', hidden);
         }
 
         function addGameRound() {
@@ -1345,33 +1654,29 @@
             let solo = {};
             let soloKind = {};
             let soloType = {};
-            let hochzeit = {};
-            let armut = {};
-            let trumpfabgabe = {};
+            let ansage = {};
 
             detailedOrder.forEach(name => {
-                const sitCb = document.getElementById(`sitout-${name}`);
+                const sitCb = document.getElementById('sitout-' + name);
                 const isSittingOut = sitCb ? sitCb.checked : suggestedOut.includes(name);
                 if (!isSittingOut) {
-                    const input = document.getElementById(`gamepoint-${name}`);
+                    const input = document.getElementById('gamepoint-' + name);
                     const val = input ? parseInt(input.value) : NaN;
                     points[name] = isNaN(val) ? 0 : val;
 
-                    const soloCb = document.getElementById(`gamesolo-${name}`);
-                    const soloKindEl = document.getElementById(`gamesolokind-${name}`);
-                    const soloTypeEl = document.getElementById(`gamesolotype-${name}`);
-                    const hochzeitCb = document.getElementById(`gamehochzeit-${name}`);
-                    const armutCb = document.getElementById(`gamearmut-${name}`);
-                    const trumpfabgabeCb = document.getElementById(`gametrumpfabgabe-${name}`);
+                    const soloCb = document.getElementById('gamesolo-' + name);
+                    const soloKindEl = document.getElementById('gamesolokind-' + name);
+                    const soloTypeEl = document.getElementById('gamesolotype-' + name);
+                    const ansageCb = document.getElementById('gameansage-' + name);
 
                     if (soloCb && soloCb.checked) {
                         solo[name] = true;
                         soloKind[name] = soloKindEl ? soloKindEl.value : 'pflicht';
                         soloType[name] = soloTypeEl ? soloTypeEl.value : 'Damen';
                     }
-                    if (hochzeitCb && hochzeitCb.checked) hochzeit[name] = true;
-                    if (armutCb && armutCb.checked) armut[name] = true;
-                    if (trumpfabgabeCb && trumpfabgabeCb.checked) trumpfabgabe[name] = true;
+                    if (ansageCb && ansageCb.checked) {
+                        ansage[name] = true;
+                    }
                 }
             });
 
@@ -1380,15 +1685,20 @@
                 return alert(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeCount}). Bitte die „aussetzen"-Auswahl prüfen.`);
             }
 
+            // Nullsummenprüfung für das einzelne Spiel (immer aktiv bei detailliertem Spiel)
+            let gameSum = 0;
+            Object.values(points).forEach(v => gameSum += v);
+            if (gameSum !== 0) {
+                return alert(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`);
+            }
+
             detailedGames.push({
                 sittingOut: detailedOrder.filter(name => points[name] === undefined),
                 points,
                 solo,
                 soloKind,
                 soloType,
-                hochzeit,
-                armut,
-                trumpfabgabe
+                ansage
             });
 
             updateLiveDraft();
@@ -1397,7 +1707,7 @@
         }
 
         function deleteGame(index) {
-            if (!confirm(`Dieses Element wirklich löschen?`)) return;
+            if (!confirm("Möchtest du dieses Spiel unwiderruflich löschen?")) return;
             detailedGames.splice(index, 1);
             updateLiveDraft();
             if (isBlitztabelleActive) render();
@@ -1424,22 +1734,28 @@
             const totals = computeDetailedTotals();
             const nextGameIndex = detailedGames.filter(g => !g.isRoundMarker).length;
             const suggestedOut = computeSittingOut(detailedGames.length);
+            const nextDealerIdx = getNextDealerIndex(detailedOrder, detailedGames);
+
+            const processedGames = processGamesList(detailedOrder, detailedGames);
 
             let detailedGameNum = 1;
-            const gamesListHtml = detailedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : detailedGames.map((g, idx) => {
+            const gamesListHtml = processedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : processedGames.map((g, idx) => {
                 if (g.isRoundMarker) {
                     return `
                         <div class="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-lg p-2 text-xs text-indigo-900 font-bold">
                             <span class="flex items-center gap-1">Runde ${g.roundNumber}</span>
+                            ${g.isVirtualPlaceholder ? '' : `
                             <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde löschen">🗑️</button>
+                            `}
                         </div>
                     `;
                 }
+                const originalIdx = (detailedOrder.length >= 4 && detailedOrder.length <= 7) ? g._indexInGamesOnly : idx;
                 const html = `
                     <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-gray-700">Spiel ${detailedGameNum}</span>
-                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                            <span class="font-bold text-gray-700">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''}</span>
+                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
                         </div>
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
@@ -1450,10 +1766,14 @@
                                 const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
                                 
                                 const extras = [];
-                                if (g.solo && g.solo[name]) extras.push(`Solo ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}`.trim());
-                                if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
-                                if (g.armut && g.armut[name]) extras.push('Armut');
-                                if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
+                                if (g.solo && g.solo[name]) {
+                                    const kind = soloKindLabel(g.soloKind?.[name]) || '';
+                                    const type = g.soloType?.[name] || '';
+                                    extras.push(`Solo ${type} (${kind})`);
+                                }
+                                if (g.ansage && g.ansage[name]) {
+                                    extras.push('Ansage');
+                                }
                                 const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
                                 
                                 return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
@@ -1483,15 +1803,23 @@
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
                             const isOut = suggestedOut.includes(name);
+                            const isNextDealer = (detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
                             return `
-                                <div class="bg-white border border-amber-100 rounded-lg p-2 space-y-2">
+                                <div class="bg-white border ${isNextDealer ? 'border-amber-300 ring-2 ring-amber-100' : 'border-amber-100'} rounded-lg p-2 space-y-2">
                                     <div class="flex items-center gap-2">
                                         ${detailedOrder.length > 4 ? `
                                         <label class="flex items-center gap-1 text-[10px] text-gray-600 shrink-0 w-16 cursor-pointer">
                                             <input type="checkbox" id="sitout-${name}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${name}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
                                         </label>
                                         ` : `<input type="checkbox" id="sitout-${name}" class="hidden">`}
-                                        <span class="text-xs font-semibold text-gray-700 w-20 truncate">${name}</span>
+                                        <span class="text-xs font-semibold text-gray-700 w-20 truncate flex items-center gap-1">
+                                            ${name}
+                                        </span>
+                                        ${isNextDealer ? `
+                                        <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[9px] font-extrabold px-1.5 py-0.5 rounded border border-amber-300 shadow-sm tracking-wide">
+                                            🃏 GEBER
+                                        </span>
+                                        ` : ''}
                                         <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow">
                                             <input type="number" id="gamepoint-${name}" placeholder="0" class="w-full border border-gray-300 rounded p-1 text-xs text-right bg-white">
                                         </span>
@@ -1510,18 +1838,17 @@
                                             </select>
                                         </span>
                                     </div>
-                                    <div id="gameextraswrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamehochzeit-${name}" class="rounded text-emerald-600 w-3 h-3"> Hochzeit</label>
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gamearmut-${name}" class="rounded text-emerald-600 w-3 h-3"> Armut</label>
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600"><input type="checkbox" id="gametrumpfabgabe-${name}" class="rounded text-emerald-600 w-3 h-3"> Abgabe</label>
+                                    <div id="gameansagewrap-${name}" class="${isOut ? 'hidden' : ''} pt-1">
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600">
+                                            <input type="checkbox" id="gameansage-${name}" class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
+                                        </label>
                                     </div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">Spiel speichern</button>
-                        <button onclick="startNewRound()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition cursor-pointer">🏁 Neue Runde</button>
+                    <div>
+                        <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition mt-2 cursor-pointer">Spiel speichern</button>
                     </div>
                 </div>
             `;
@@ -1566,6 +1893,9 @@
             if (!state.currentSeasonKey) return alert("Keine Saison gewählt!");
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return alert("Saison ist abgeschlossen!");
+
+            // Sicherheitsabfrage vor dem Sichern
+            if (!confirm("Möchtest du diesen Abend speichern?")) return;
 
             let matchScores = {};
             let matchJokers = {};
@@ -1625,9 +1955,9 @@
             } else {
                 const seasonPlayers = season.players || [];
                 seasonPlayers.forEach(name => {
-                    const checkbox = document.getElementById(`check-${name}`);
+                    const checkbox = document.getElementById('check-' + name);
                     const input = document.getElementById('score-' + name);
-                    const jokerCheckbox = document.getElementById(`joker-${name}`);
+                    const jokerCheckbox = document.getElementById('joker-' + name);
                     if (checkbox && checkbox.checked) {
                         matchScores[name] = parseInt(input.value) || 0;
                         if (jokerCheckbox && jokerCheckbox.checked) {
@@ -1636,6 +1966,29 @@
                         count++;
                     }
                 });
+            }
+
+            const checkedRadio = document.querySelector('input[name="matchPointType"]:checked');
+            const matchPointType = checkedRadio ? checkedRadio.value : 'platzierung';
+
+            // Nullsummenprüfung am Ende des Abends:
+            // - Bei regulären Saisons muss sie immer durchgeführt werden.
+            // - Bei historischen Saisons nur, wenn Spieltagspunkte ausgewählt wurden.
+            let needsZeroSumCheck = false;
+            if (!season.isHistorical) {
+                needsZeroSumCheck = true;
+            } else {
+                if (matchPointType === 'spieltag') {
+                    needsZeroSumCheck = true;
+                }
+            }
+
+            if (needsZeroSumCheck) {
+                let eveningSum = 0;
+                Object.values(matchScores).forEach(v => eveningSum += v);
+                if (eveningSum !== 0) {
+                    return alert(`Die Summe aller Endergebnisse des Abends muss 0 ergeben! Aktuelle Summe: ${eveningSum > 0 ? '+' : ''}${eveningSum}`);
+                }
             }
 
             Object.keys(matchJokers).forEach(name => {
@@ -1665,6 +2018,7 @@
                 jokers: matchJokers,
                 timestamp,
                 mode: useDetailedMode ? 'detailed' : 'simple',
+                pointType: season.isHistorical ? matchPointType : 'spieltag',
                 ...(useDetailedMode ? { order: detailedOrderForSave, games: detailedGamesForSave } : {})
             };
 
@@ -1699,12 +2053,14 @@
 
             const sortedMatches = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             const seasonPlayers = season.players || [];
+            const playerLimit = seasonPlayers.length || 4;
             let rankHistory = {};
             seasonPlayers.forEach(p => { rankHistory[p] = []; });
             let labels = [];
 
             sortedMatches.forEach((match, index) => {
-                labels.push(`Abend ${index + 1} (${padDateString(match.date)})`);
+                // Nur das Datum, ohne "Abend X"
+                labels.push(padDateString(match.date));
                 let participants = Object.keys(match.scores || {}).map(name => ({ name, score: match.scores[name] }));
                 participants.sort((a, b) => b.score - a.score);
 
@@ -1733,10 +2089,15 @@
                 data: rankHistory[name],
                 borderColor: colors[i % colors.length],
                 backgroundColor: colors[i % colors.length],
-                tension: 0.1,
+                tension: 0.3,
+                cubicInterpolationMode: 'monotone', // Verhindert Überschwingen der Linienkurve
                 spanGaps: false,
-                borderWidth: 3,
-                pointRadius: 5
+                borderWidth: 2,
+                pointRadius: 4.5,            // Geringfügig vergrößert (vorher 2)
+                pointHoverRadius: 7,         // Geringfügig vergrößert (vorher 5)
+                pointHitRadius: 10,
+                borderCapStyle: 'round',
+                borderJoinStyle: 'round'
             })).filter(ds => ds.data.some(val => val !== null));
 
             courseChartInstance = new Chart(ctx, {
@@ -1748,12 +2109,23 @@
                     scales: {
                         y: {
                             reverse: true,
-                            min: 0.5,
-                            max: (seasonPlayers.length || 4) + 0.5,
-                            ticks: { stepSize: 1, callback: value => value % 1 === 0 ? value + '.' : '' },
-                            title: { display: true, text: 'Platzierung am Abend' }
+                            min: 0.7,               // Verhindert das Abschneiden der Punkte am oberen Rand (vorher 1)
+                            max: playerLimit + 0.3,  // Verhindert das Abschneiden am unteren Rand (vorher playerLimit)
+                            ticks: { 
+                                stepSize: 1, 
+                                callback: value => value % 1 === 0 && value >= 1 && value <= playerLimit ? value + '.' : '',
+                                font: { size: 9 },
+                                color: '#64748b'
+                            },
+                            title: { display: true, text: 'Platzierung am Abend' },
+                            grid: { color: '#f1f5f9' },
+                            border: { dash: [4, 4] }
                         },
-                        x: { title: { display: true, text: 'Spieltage' } }
+                        x: { 
+                            title: { display: true, text: 'Spieltage' },
+                            grid: { display: false },
+                            ticks: { font: { size: 9 }, color: '#64748b' }
+                        }
                     },
                     plugins: {
                         legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12 } },
@@ -1778,11 +2150,8 @@
                 let played = matchCounts[name] || 0;
                 let pts = totalSeasonPoints[name] || 0;
                 let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
-                return {
-                    name, played, ratio: Math.round(ratio * 100) + "%", pts,
-                    avg: played > 0 ? (pts / played).toFixed(2) : "0.00",
-                    inRating: ratio >= 0.40
-                };
+                return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0,
+                         inRating: ratio >= 0.40 };
             });
 
             let sortedData = playerData.sort((a, b) => b.avg - a.avg || b.played - a.played);
@@ -1796,7 +2165,7 @@
                     }
                 }
                 let rank = p.inRating && p.played > 0 ? `${lastRankExp}.` : "-";
-                let row = `${rank};${p.name};${p.avg};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts}`;
+                let row = `${rank};${p.name};${p.avg.toFixed(2)};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts}`;
                 csvContent += row + "\r\n";
             });
 
@@ -1826,18 +2195,43 @@
                 });
             }
 
+            const histContainer = document.getElementById('historicalPointTypeContainer');
+            const modeToggle = document.getElementById('entryModeToggle');
+
             if (season) {
                 document.getElementById('formTitle').textContent = editingMatchId ? "Abend bearbeiten" : (isHist ? "Alten Abend eintragen" : "Abend eintragen");
                 document.getElementById('modernFormFields').style.display = "block";
                 document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
 
-                const modeToggle = document.getElementById('entryModeToggle');
                 if (isHist) {
                     modeToggle.classList.add('hidden');
                     entryMode = 'simple';
+                    histContainer.classList.remove('hidden');
+                    
+                    let currentType = 'platzierung';
+                    if (editingMatchId && season.matches && season.matches[editingMatchId]) {
+                        currentType = season.matches[editingMatchId].pointType || 'platzierung';
+                    } else {
+                        const checkedRadio = document.querySelector('input[name="matchPointType"]:checked');
+                        if (checkedRadio) currentType = checkedRadio.value;
+                    }
+
+                    histContainer.innerHTML = `
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentType === 'spieltag' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500'}">
+                            <input type="radio" name="matchPointType" value="spieltag" ${currentType === 'spieltag' ? 'checked' : ''} onchange="changeMatchPointType('spieltag')" class="hidden">
+                            🪙 Spieltagspkt.
+                        </label>
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentType === 'platzierung' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500'}">
+                            <input type="radio" name="matchPointType" value="platzierung" ${currentType === 'platzierung' ? 'checked' : ''} onchange="changeMatchPointType('platzierung')" class="hidden">
+                            🏆 Platzierungspkt.
+                        </label>
+                    `;
                 } else {
                     modeToggle.classList.remove('hidden');
+                    histContainer.classList.add('hidden');
+                    histContainer.innerHTML = '';
                 }
+                
                 document.getElementById('pointsLabel').innerHTML = (entryMode === 'detailed' && !isHist)
                     ? "Teilnehmer für diesen Abend auswählen:"
                     : "Spieler / Status am Ende des Abends:";
@@ -1900,6 +2294,13 @@
                 statusContainer.innerHTML = '';
             }
 
+            let placeholderText = 'Punkte';
+            if (isHist) {
+                const checkedRadio = document.querySelector('input[name="matchPointType"]:checked');
+                const currentType = checkedRadio ? checkedRadio.value : 'platzierung';
+                placeholderText = (currentType === 'spieltag') ? 'Spieltag-Pkt' : 'Platz-Pkt';
+            }
+
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
                 let isChecked = false;
@@ -1925,8 +2326,8 @@
                                 </label>
                             </div>
 
-                            <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' && !isHist ? 'hidden' : ''}">
-                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} placeholder="${isHist ? 'Platz-Pkt' : 'Punkte'}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
+                            <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' ? 'hidden' : ''}">
+                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} placeholder="${placeholderText}" class="w-20 border border-gray-300 rounded p-1 text-sm text-right bg-white disabled:bg-gray-200 transition">
                             </span>
                         </div>
 
@@ -1952,64 +2353,108 @@
             if (entryMode === 'detailed' && detailedGames.length > 0 && !editingMatchId) {
                 liveViewer.classList.remove('hidden');
 
-                const totals = computeDetailedTotals();
-                const liveViewerTotals = document.getElementById('liveViewerTotals');
-
-                let sortedPlayers = detailedOrder.map(name => ({ name, score: totals[name] || 0 }))
-                    .sort((a, b) => b.score - a.score);
-
-                liveViewerTotals.innerHTML = sortedPlayers.map(p => {
-                    const cls = p.score > 0 ? 'text-emerald-700' : (p.score < 0 ? 'text-red-700' : 'text-gray-600');
-                    const playedPflicht = hasPlayedPflichtsolo(p.name);
-                    const badgeCls = playedPflicht ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-600';
-                    const badgeTitle = playedPflicht ? 'Pflichtsolo bereits gespielt' : 'Pflichtsolo noch offen';
-                    return `<div class="flex justify-between items-center bg-white rounded px-3 py-2 border border-amber-100 shadow-sm">
-                                <span class="text-sm font-bold text-gray-700 flex items-center gap-1.5">${p.name}<span class="inline-flex items-center justify-center w-4 h-4 rounded-[3px] text-[10px] font-bold leading-none ${badgeCls}" title="${badgeTitle}">P</span></span>
-                                <span class="text-sm font-mono font-bold ${cls}">${p.score > 0 ? '+' : ''}${p.score}</span>
-                            </div>`;
-                }).join('');
-
                 const actualGamesCount = detailedGames.filter(g => !g.isRoundMarker).length;
                 document.getElementById('liveViewerCount').textContent = actualGamesCount;
 
-                const liveViewerGames = document.getElementById('liveViewerGames');
+                const liveTableHeader = document.getElementById('liveTableHeader');
+                const liveTableBody = document.getElementById('liveTableBody');
+
+                // 1. Spaltenköpfe generieren (Sitzreihenfolge) - "Spiel / Geber" oben links bleibt leer
+                let headerHtml = `<th class="p-3 border-r border-amber-200 text-xs uppercase tracking-wider"></th>`;
                 
-                let gameNumber = 1;
-                const gamesHtmlArray = detailedGames.map((g, idx) => {
+                detailedOrder.forEach(name => {
+                    const pflichtType = getPlayedPflichtsoloType(name);
+                    const playedPflicht = pflichtType !== null;
+                    const badgeCls = playedPflicht ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-gray-200 text-gray-500 border-gray-300';
+                    const badgeTitle = playedPflicht ? `Pflichtsolo bereits gespielt: ${pflichtType}` : 'Pflichtsolo noch offen';
+                    const badgeText = 'P'; // Nur noch das kleine quadratische P-Badge
+
+                    headerHtml += `
+                        <th class="p-3 border-r border-amber-200 text-center select-none text-xs uppercase tracking-wider text-amber-950 font-bold">
+                            <span class="inline-flex items-center gap-1">
+                                <span>${name}</span>
+                                <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
+                                    P
+                                </span>
+                            </span>
+                        </th>`;
+                });
+                liveTableHeader.innerHTML = headerHtml;
+
+                // 2. Gesamtpunkte-Zeile ganz oben vorbereiten (Ohne Pflichtsolo-Badge)
+                const totals = computeDetailedTotals();
+                let tableRowsHtml = `<tr class="bg-amber-100/70 font-extrabold border-b-2 border-amber-200">
+                    <td class="p-3 font-extrabold text-amber-950 border-r border-amber-200 text-xs">GESAMTPUNKTE</td>`;
+
+                detailedOrder.forEach(name => {
+                    const score = totals[name] || 0;
+                    const cls = score > 0 ? 'text-emerald-700 font-extrabold' : (score < 0 ? 'text-red-700 font-extrabold' : 'text-slate-600 font-bold');
+                    const sign = score > 0 ? '+' : '';
+
+                    tableRowsHtml += `
+                        <td class="p-3 text-center border-r border-amber-200">
+                            <span class="font-mono text-sm ${cls}">${sign}${score}</span>
+                        </td>`;
+                });
+                tableRowsHtml += `</tr>`;
+
+                // 3. Chronologische Einzelspiele darunter anhängen
+                const processedLiveGames = processGamesList(detailedOrder, detailedGames);
+                let liveGameNumber = 1;
+
+                processedLiveGames.forEach((g) => {
                     if (g.isRoundMarker) {
-                        return `
-                        <div class="relative flex py-2 items-center">
-                            <div class="flex-grow border-t border-indigo-300"></div>
-                            <span class="flex-shrink mx-4 text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider bg-indigo-100/80 px-2.5 py-0.5 rounded border border-indigo-200 shadow-sm">Runde ${g.roundNumber}</span>
-                            <div class="flex-grow border-t border-indigo-300"></div>
-                        </div>`;
+                        const colSpan = detailedOrder.length + 1;
+                        tableRowsHtml += `
+                            <tr class="bg-indigo-50 border-y border-indigo-100">
+                                <td colspan="${colSpan}" class="p-2 text-center text-indigo-900 text-[10px] font-black uppercase tracking-widest">
+                                    Runde ${g.roundNumber}
+                                </td>
+                            </tr>`;
+                        return;
                     }
-                    const html = `
-                    <div class="bg-white border border-amber-100 rounded-lg p-2 text-xs shadow-sm">
-                        <div class="font-bold text-amber-900 mb-1">Spiel ${gameNumber}</div>
-                        <div class="flex flex-wrap gap-1.5">
-                            ${detailedOrder.map(name => {
-                                if (g.points[name] === undefined) {
-                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-50 text-gray-400 border border-gray-100">${name} (aus)</span>`;
-                                }
-                                const val = g.points[name];
-                                const cls = val >= 0 ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200';
-                                const extras = [];
-                                if (g.solo && g.solo[name]) extras.push(`Solo ${soloKindLabel(g.soloKind?.[name])} ${g.soloType?.[name] || ''}`.trim());
-                                if (g.hochzeit && g.hochzeit[name]) extras.push('Hochzeit');
-                                if (g.armut && g.armut[name]) extras.push('Armut');
-                                if (g.trumpfabgabe && g.trumpfabgabe[name]) extras.push('Trumpfabgabe');
-                                const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
-                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono font-semibold">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
-                            }).join('')}
-                        </div>
-                    </div>`;
-                    gameNumber++;
-                    return html;
+
+                    const pointTypeBadge = g.pointType === 'platzierung' ? ' <span class="text-[8px] bg-amber-100 text-amber-800 font-bold px-1 rounded border border-amber-200">🏆 Platzierung</span>' : '';
+                    const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 font-semibold block leading-tight mt-0.5">Geber: ${g._dealerName}</span>` : '';
+                    tableRowsHtml += `
+                        <tr class="hover:bg-amber-50/20 transition text-xs">
+                            <td class="p-2.5 font-bold text-amber-950 border-r border-amber-100">
+                                <span>Spiel ${liveGameNumber} ${pointTypeBadge}</span>
+                                ${dealerText}
+                            </td>`;
+
+                    detailedOrder.forEach(name => {
+                        if (g.points[name] === undefined) {
+                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 italic bg-gray-50/50 border-r border-amber-100/40">-</td>`;
+                        } else {
+                            const val = g.points[name];
+                            const cls = val > 0 ? 'text-emerald-600 font-bold' : (val < 0 ? 'text-red-600 font-bold' : 'text-slate-500');
+                            const sign = val > 0 ? '+' : '';
+
+                            const extras = [];
+                            if (g.solo && g.solo[name]) {
+                                const kind = soloKindLabel(g.soloKind?.[name]) || '';
+                                const type = g.soloType?.[name] || '';
+                                extras.push(`Solo ${type} (${kind})`);
+                            }
+                            if (g.ansage && g.ansage[name]) {
+                                extras.push('Ansage');
+                            }
+                            const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 font-semibold bg-amber-100 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
+
+                            tableRowsHtml += `
+                                <td class="p-2.5 text-center border-r border-amber-100/40">
+                                    <span class="font-mono ${cls}">${sign}${val}</span>
+                                    ${extraText}
+                                </td>`;
+                        }
+                    });
+
+                    tableRowsHtml += `</tr>`;
+                    liveGameNumber++;
                 });
 
-                const reversedGamesHtml = [...gamesHtmlArray].reverse();
-                liveViewerGames.innerHTML = reversedGamesHtml.join('');
+                liveTableBody.innerHTML = tableRowsHtml;
 
                 if (liveStatsExpanded) {
                     renderLiveStats();
@@ -2049,7 +2494,8 @@
                     let played = matchCounts[name] || 0;
                     let pts = totalSeasonPoints[name] || 0;
                     let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
-                    return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= 0.40 };
+                    return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0,
+                             inRating: ratio >= 0.40 };
                 });
 
                 let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
@@ -2110,12 +2556,10 @@
 
                 if (!isHist) {
                     // Berechnung der Saison-Rekorde
-                    let weddings = {};
-                    let poverties = {};
+                    let ansagen = {};
                     let longestStreaks = {};
                     seasonPlayers.forEach(p => {
-                        weddings[p] = 0;
-                        poverties[p] = 0;
+                        ansagen[p] = 0;
                         longestStreaks[p] = 0;
                     });
 
@@ -2124,14 +2568,10 @@
                             if (match.mode === 'detailed' && match.games) {
                                 match.games.forEach(g => {
                                     if (g.isRoundMarker) return;
-                                    if (g.hochzeit) {
-                                        Object.keys(g.hochzeit).forEach(p => {
-                                            if (weddings[p] !== undefined) weddings[p]++;
-                                        });
-                                    }
-                                    if (g.armut) {
-                                        Object.keys(g.armut).forEach(p => {
-                                            if (poverties[p] !== undefined) poverties[p]++;
+                                    const gm = normalizeGame(g);
+                                    if (gm.ansage) {
+                                        Object.keys(gm.ansage).forEach(p => {
+                                            if (ansagen[p] !== undefined && gm.ansage[p] === true) ansagen[p]++;
                                         });
                                     }
                                 });
@@ -2161,21 +2601,12 @@
                         });
                     }
 
-                    let bestWeddingPlayer = "-";
-                    let maxWeddings = 0;
-                    Object.keys(weddings).forEach(p => {
-                        if (weddings[p] > maxWeddings) {
-                            maxWeddings = weddings[p];
-                            bestWeddingPlayer = p;
-                        }
-                    });
-
-                    let bestPovertyPlayer = "-";
-                    let maxPoverties = 0;
-                    Object.keys(poverties).forEach(p => {
-                        if (poverties[p] > maxPoverties) {
-                            maxPoverties = poverties[p];
-                            bestPovertyPlayer = p;
+                    let bestAnsagenPlayer = "-";
+                    let maxAnsagen = 0;
+                    Object.keys(ansagen).forEach(p => {
+                        if (ansagen[p] > maxAnsagen) {
+                            maxAnsagen = ansagen[p];
+                            bestAnsagenPlayer = p;
                         }
                     });
 
@@ -2189,15 +2620,10 @@
                     });
 
                     recordsContainer.innerHTML = `
-                        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
-                            <p class="text-xs text-emerald-700 font-bold uppercase tracking-wider">💍 Hochzeits-König</p>
-                            <p class="text-lg font-bold text-emerald-900 mt-1">${maxWeddings > 0 ? `${maxWeddings} Hochzeiten` : '0 Hochzeiten'}</p>
-                            <p class="text-xs text-emerald-800 mt-0.5">Vorne: <b>${bestWeddingPlayer}</b></p>
-                        </div>
-                        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">🗑️ Armer Schlucker</p>
-                            <p class="text-lg font-bold text-amber-900 mt-1">${maxPoverties > 0 ? `${maxPoverties} Armut-Spiele` : '0 Spiele'}</p>
-                            <p class="text-xs text-amber-800 mt-0.5">Meiste Armut: <b>${bestPovertyPlayer}</b></p>
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                            <p class="text-xs text-blue-700 font-bold uppercase tracking-wider">📢 Ansagekönig (Saison)</p>
+                            <p class="text-lg font-bold text-blue-900 mt-1">${maxAnsagen > 0 ? `${maxAnsagen} Ansagen` : '0 Ansagen'}</p>
+                            <p class="text-xs text-blue-800 mt-0.5">Vorne: <b>${bestAnsagenPlayer}</b></p>
                         </div>
                         <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
                             <p class="text-xs text-indigo-700 font-bold uppercase tracking-wider">🔥 Siegesserie (Spiele)</p>
@@ -2219,29 +2645,36 @@
                 bestTagessiegPlayer,
                 maxTagessiege,
                 bestPointsPlayer,
-                maxTotalPoints
+                maxTotalPoints,
+                bestAllTimeAnsagenPlayer,
+                maxAllTimeAnsagen
             } = calculateAllTimeRecords();
 
             document.getElementById('allTimeRecordsContainer').innerHTML = `
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Ewiger Solo-Meister</p>
                     <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} Soli` : '0 Soli'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${bestSoloPlayer}</b> (${bestSoloQuote}% gewonnen)</p>
                 </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                <div onclick="showAllTimeDetail('host')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Ewige Festung</p>
                     <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${bestAllTimeHostName}</b></p>
                 </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                <div onclick="showAllTimeDetail('tagessiege')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
                     <p class="text-xl font-black text-white mt-1">${maxTagessiege > 0 ? `${maxTagessiege} Siege` : '0 Siege'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${bestTagessiegPlayer}</b></p>
                 </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60">
+                <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktesammelgott</p>
                     <p class="text-xl font-black text-white mt-1">${maxTotalPoints > -Infinity ? `${maxTotalPoints > 0 ? '+' : ''}${maxTotalPoints}` : '0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${bestPointsPlayer}</b></p>
+                </div>
+                <div onclick="showAllTimeDetail('ansagen')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
+                    <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ewiger Ansagekönig</p>
+                    <p class="text-xl font-black text-white mt-1">${maxAllTimeAnsagen > 0 ? `${maxAllTimeAnsagen} Ansagen` : '0 Ansagen'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${bestAllTimeAnsagenPlayer}</b></p>
                 </div>
             `;
 
@@ -2263,6 +2696,8 @@
                         if (idx > 0 && p.score < sortedEveningPlayers[idx - 1].score) currentRank = idx + 1;
                         p.rank = currentRank;
                     });
+
+                    const pointsLabelText = isHist ? (match.pointType === 'spieltag' ? 'Spieltagspunkte' : 'Platzierungspunkte') : 'Spieltagspunkte';
 
                     return `
                         <div class="bg-gray-50 rounded-xl border border-gray-200 text-xs shadow-sm overflow-hidden">
@@ -2298,16 +2733,14 @@
                                                     <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
                                                     <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
                                                 </div>
-                                                ${isHist ? '' : `
                                                 <div class="mt-1">
-                                                    <span class="${scoreClass} font-bold block text-xs">${prefix}${score} Spieltagspunkte</span>
+                                                    <span class="${scoreClass} font-bold block text-xs">${prefix}${score} ${pointsLabelText}</span>
                                                 </div>
-                                                `}
                                             </div>
                                         `;
                                     }).join('')}
                                 </div>
-                                ${(!isHist && match.mode === 'detailed' && match.games && match.games.length > 0) ? `
+                                ${(match.mode === 'detailed' && match.games && match.games.length > 0) ? `
                                 <div class="flex flex-wrap gap-2.5 mt-3 items-center">
                                     <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.filter(g => !g.isRoundMarker).length} Spiele)</button>
                                     <span class="text-gray-300">|</span>
@@ -2316,7 +2749,9 @@
                                 <div id="gamelog-${id}" class="hidden mt-2 space-y-1">
                                     ${(() => {
                                         let gameNum = 1;
-                                        return match.games.map((g, idx) => {
+                                        const order = match.order || Object.keys(match.scores || {});
+                                        const processedHistGames = processGamesList(order, match.games);
+                                        return processedHistGames.map((g, idx) => {
                                             if (g.isRoundMarker) {
                                                 return `
                                                 <div class="relative flex py-1.5 items-center">
@@ -2326,21 +2761,27 @@
                                                 </div>`;
                                             }
                                             const gm = normalizeGame(g);
-                                            const order = match.order || Object.keys(gm.points || {});
                                             const html = `
-                                                <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center gap-1.5">
-                                                    <span class="font-bold text-gray-600 shrink-0">Spiel ${gameNum}:</span>
-                                                    ${order.map(pName => {
-                                                        if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
-                                                        const v = gm.points[pName];
-                                                        const extras = [];
-                                                        if (gm.solo && gm.solo[pName]) extras.push(`Solo ${soloKindLabel(gm.soloKind?.[pName])} ${gm.soloType?.[pName] || ''}`.trim());
-                                                        if (gm.hochzeit && gm.hochzeit[pName]) extras.push('Hochzeit');
-                                                        if (gm.armut && gm.armut[pName]) extras.push('Armut');
-                                                        if (gm.trumpfabgabe && gm.trumpfabgabe[pName]) extras.push('Trumpfabgabe');
-                                                        const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
-                                                        return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
-                                                    }).join(' · ')}
+                                                <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center justify-between gap-1.5">
+                                                    <div class="flex flex-wrap items-center gap-1.5">
+                                                        <span class="font-bold text-gray-600 shrink-0">Spiel ${gameNum}:</span>
+                                                        ${order.map(pName => {
+                                                            if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
+                                                            const v = gm.points[pName];
+                                                            const extras = [];
+                                                            if (gm.solo && gm.solo[pName]) {
+                                                                const kind = soloKindLabel(gm.soloKind?.[pName]) || '';
+                                                                const type = gm.soloType?.[pName] || '';
+                                                                extras.push("Solo " + type + " (" + kind + ")");
+                                                            }
+                                                            if (gm.ansage && gm.ansage[pName]) {
+                                                                extras.push('Ansage');
+                                                            }
+                                                            const extraText = extras.length ? ` <span class="text-slate-500">(${extras.join(', ')})</span>` : '';
+                                                            return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
+                                                        }).join(' · ')}
+                                                    </div>
+                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 font-semibold bg-amber-50 border border-amber-100 rounded px-1">Geber: ${g._dealerName}</span>` : ''}
                                                 </div>
                                             `;
                                             gameNum++;
