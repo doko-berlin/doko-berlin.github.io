@@ -166,7 +166,7 @@
                         <li><strong>Schweine im Farbsolo:</strong> Bei einem Farbsolo werden die beiden Asse der Solofarbe zu Schweinen, falls sie sich auf einer Hand befinden.</li>
                         <li><strong>Punktelimit ohne Ansage:</strong> Findet während des Spiels keine Ansage (Re/Kontra) statt, wird das Spiel maximal bis zur Stufe „keine 60“ gewertet.</li>
                         <li><strong>Pflichtansage bei Doppelkopf:</strong> Ist der erste Stich des Spiels ein Doppelkopf (und es gab noch keine Ansagen), muss eine Ansage (Re/Kontra) gemacht werden. Bei einer Hochzeit zählen hierfür die Augen des Findungsstichs. Die Pflichtansage gilt immer, außer bei Solospielen.</li>
-                        <li><strong>Fristen Re/Kontra:</strong> Eine Ansage is so lange erlaubt, bis die eigene 2. Karte auf dem Tisch liegt. Für nachfolgende Ansagen (z. B. keine 90) verlängert sich die Frist entsprechend bis zum Legen der eigenen 3. Karte usw.</li>
+                        <li><strong>Fristen Re/Kontra:</strong> Eine Ansage ist so lange erlaubt, bis die eigene 2. Karte auf dem Tisch liegt. Für nachfolgende Ansagen (z. B. keine 90) verlängert sich die Frist entsprechend bis zum Legen der eigenen 3. Karte usw.</li>
                         <li><strong>Gleichzeitiges Re & Kontra:</strong> Werden Re und Kontra im selben Spiel angesagt (Rednerfolge unerheblich), benötigt die Re-Partei zum Sieg mindestens 121 Punkte.</li>
                         <li><strong>Ablauf bei Armut:</strong> Der Spieler mit der Armut reicht drei Karten verdeckt weiter. Darunter müssen sich zwingend all seine Trümpfe befinden. Der Partner nimmt diese auf und gibt verdeckt drei beliebige Karten zurück (auch gerade erhaltene Karten sind zulässig). Es darf für die übrigen Spieler nicht erkennbar sein, wie viele Trümpfe oder welche Karten ausgetauscht werden.</li>
                     </ul>
@@ -217,7 +217,7 @@
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Wertungsquoten:</strong>
                             <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-500">
-                                <li>Um in die Tageswertung zu kommen, ist eine Anwesenheitsquote von mindestens 60% an dem Abend erforderlich.</li>
+                                <li>Um in die Tageswertung zu kommen, is eine Anwesenheitsquote von mindestens 60% an dem Abend erforderlich.</li>
                                 <li>Um in die Saisonwertung zu kommen, muss die Teilnahmequote an den Spieltagen mindestens 40% betragen.</li>
                             </ul>
                         </li>
@@ -1891,7 +1891,7 @@
             if (state.currentSeasonKey) {
                 const season = state.seasons[state.currentSeasonKey];
                 if (season) {
-                    const remaining = (season.players || []).filter(p => p !== name);
+                    const remaining = (season.players || []).filter(p => !newOrder.includes(p));
                     season.players = [...newOrder, ...remaining];
                     saveToCloud();
                 }
@@ -2042,7 +2042,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
                             <span class="font-bold text-gray-700">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''}</span>
-                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel loeschen">🗑️</button>
+                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
                         </div>
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
@@ -2263,7 +2263,7 @@
             // - Bei historischen Saisons nur, wenn Spieltagspunkte ausgewählt wurden.
             let needsZeroSumCheck = false;
             if (!season.isHistorical) {
-                needsZeroSumCheck = true;
+                needsZeroSetCheck = true;
             } else {
                 if (matchPointType === 'spieltag') {
                     needsZeroSumCheck = true;
@@ -2572,7 +2572,6 @@
                             } else {
                                 qualifiedRankCount++;
                                 if (lastEveningScore === null || p.score !== lastEveningScore) {
-                                    lastEveningRank = qualifiedRankCount;
                                     lastEveningRank = qualifiedRankCount;
                                     lastEveningScore = p.score;
                                 }
