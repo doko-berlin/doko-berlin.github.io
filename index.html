@@ -53,13 +53,29 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.1 -->
+                <!-- Version 1.2 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800">Version 1.1</span>
-                        <span class="text-[10px] text-slate-500 bg-slate-100 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
+                        <span class="text-sm font-bold text-slate-800">Version 1.2</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 font-bold px-1.5 py-0.5 rounded">20.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 space-y-1.5 mt-2">
+                        <li><strong>Excel-Export:</strong> Kompletter Neuaufbau des Exports als strukturierte Excel-Arbeitsmappe (.xlsx) für alle Saisondaten.</li>
+                        <li><strong>Regelwerk:</strong> Integration eines Infofensters mit den vollständigen Doko-Hausregeln.</li>
+                        <li><strong>Saisonspezifische Mindestquote:</strong> Option zur Konfiguration der erforderlichen Mindestquote pro Saison im Admin-Bereich.</li>
+                        <li><strong>Abend-Beteiligungsquote:</strong> Disqualifikation (0 Platzierungspunkte) bei unter 60 % Rundenbeteiligung an Abenden ab 5 Spielern im Detailmodus.</li>
+                        <li><strong>Ewige Bestenliste:</strong> Anzeige des Punkteschnitts pro Abend im Detail-Ranking des „Punktesammelgott“.</li>
+                        <li><strong>GUI-Optimierungen:</strong> Auslagerung der Menü-Buttons in eine obere Leiste und Behebung von Höhenverschiebungen bei der Anzeige von Solos.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.1 -->
+                <div class="border-l-2 border-slate-300 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-500">Version 1.1</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Live-Ansicht:</strong> Umstellung auf eine tabellarische Ergebnis-Matrix. Die kumulierten Gesamtpunkte stehen dauerhaft in der obersten Zeile.</li>
                         <li><strong>Pflichtsolos:</strong> Status-Badge hinter den Spielernamen im Tabellenkopf platziert. Anzeige des Solo-Typs direkt bei den Punkten im jeweiligen Spiel.</li>
                         <li><strong>Anpassungen Ergebnis-Eingabe:</strong> Tracking der Sonderspiele (Hochzeit, Armut, Abgabe) entfernt. Einführung der Option „Ansage“ pro Spieler und Spiel sowie des neuen Solos „hängen gelassen“.</li>
@@ -87,6 +103,137 @@
 
             </div>
             <button onclick="closeWhatsNewModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+        </div>
+    </div>
+
+    <!-- Regeln Modal -->
+    <div id="regelnModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeRegelnModal()">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative" onclick="event.stopPropagation()">
+            <h2 class="text-2xl font-bold mb-4 text-emerald-800 border-b pb-2 flex items-center gap-2">📜 Offizielle Hausregeln & Wertung</h2>
+            <div class="space-y-6 text-xs text-slate-600 max-h-[65vh] overflow-y-auto pr-2 text-left">
+                
+                <!-- 1. Vorbehalte & Solos -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-bold text-emerald-800 border-b border-emerald-100 pb-1">1. Vorbehalte & Solos</h3>
+                    
+                    <div class="pl-2 space-y-3">
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider mb-1">Kleine Vorbehalte</h4>
+                            <ul class="list-disc list-inside space-y-1 pl-1">
+                                <li><strong>Schmeißen ohne Grund:</strong> Einmalig pro Spieler und Saison erlaubt. Gilt nur als gespielt, wenn tatsächlich geschmissen wurde. Erst ab der 2. persönlichen Saison-Teilnahme anwendbar.</li>
+                                <li><strong>Hochzeit:</strong> Anmeldung bei zwei Kreuz-Damen auf einer Hand.</li>
+                                <li><strong>Armut:</strong> Anmeldung bei drei oder weniger Trümpfen auf der Hand.</li>
+                                <li><strong>5 Könige:</strong> Anmeldung bei fünf oder mehr Königen auf der Hand.</li>
+                                <li><strong>80 Punkte (oder mehr):</strong> Anmeldung bei einer Hand mit mindestens 80 Augen.</li>
+                                <li><strong>Spezial-Schmeißen:</strong> Anmeldung bei genau 4 Trümpfen, 4 Königen und 79 Augen.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider mb-1">Große Vorbehalte (Soli)</h4>
+                            <ul class="list-disc list-inside space-y-1 pl-1">
+                                <li><strong>Fleischlos (Farblos):</strong> Kein Trumpf im Spiel. Reihenfolge: Ass, Zehn, König, Dame, Bube.</li>
+                                <li><strong>Kreuz / Pik / Herz / Karo:</strong> Farbsolos. Trumpf sind die Herz-Zehnen, die Damen, die Buben sowie alle Karten der angesagten Trumpffarbe.</li>
+                                <li><strong>Buben-Solo:</strong> Ausschließlich die Buben sind Trumpf.</li>
+                                <li><strong>Damen-Solo:</strong> Ausschließlich die Damen sind Trumpf.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-[11px] uppercase tracking-wider mb-1">Anmeldung & Prioritäten</h4>
+                            <ul class="list-disc list-inside space-y-1.5 pl-1">
+                                <li><strong>Ansagereihenfolge:</strong> Die Vorbehaltsansage erfolgt chronologisch: <span class="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700">Gesund/Vorbehalt</span> &rarr; <span class="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700">Klein/Groß</span> &rarr; <span class="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700">Lust-/Pflichtsolo</span> &rarr; <span class="bg-slate-100 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700">konkrete Vorbehalts-Nennung</span>.</li>
+                                <li><strong>Bedenkzeit:</strong> Die Ansage „Gesund“ oder „Vorbehalt“ kann so lange zurückgenommen oder geändert werden, bis sich der nachfolgende reguläre Spieler geäußert hat.</li>
+                                <li><strong>Solo-Priorität:</strong> Haben mehrere Spieler ein Solo angemeldet, gilt folgende Rangfolge zur Ermittlung des Ausspielers:
+                                    <ol class="list-decimal list-inside pl-4 space-y-0.5 mt-1 font-medium text-slate-500">
+                                        <li>Pflichtsolo schlägt Lustsolo.</li>
+                                        <li>Art des Solos (Damen, Buben, Kreuz, Pik, Herz, Karo, Fleischlos).</li>
+                                        <li>Sitzposition (Sitzreihenfolge ab Geber).</li>
+                                    </ol>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Sonderregeln & Spielweise -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-bold text-emerald-800 border-b border-emerald-100 pb-1">2. Sonderregeln & Spielweise</h3>
+                    <ul class="list-disc list-inside pl-2 space-y-1.5">
+                        <li><strong>Gelegte Karten:</strong> Eine gespielte Karte gilt als gelegt (auch wenn sie verdeckt landet und ungesehen bleibt) und darf nicht zurückgenommen werden.</li>
+                        <li><strong>Herz-Zehn (Dullen):</strong> Die zweite Herz-Zehn schlägt im selben Stich die erste Herz-Zehn.</li>
+                        <li><strong>Schweine im Normalspiel:</strong> Besitzt ein Spieler beide Karo-Asse auf einer Hand, werden diese zu „Schweinen“ (höchster Trumpf). Sie müssen beim Ausspielen des ersten Karo-Asses angesagt werden (spätestens bevor der nächste Spieler eine Karte legt).</li>
+                        <li><strong>Schweine im Farbsolo:</strong> Bei einem Farbsolo werden die beiden Asse der Solofarbe zu Schweinen, falls sie sich auf einer Hand befinden.</li>
+                        <li><strong>Punktelimit ohne Ansage:</strong> Findet während des Spiels keine Ansage (Re/Kontra) statt, wird das Spiel maximal bis zur Stufe „keine 60“ gewertet.</li>
+                        <li><strong>Pflichtansage bei Doppelkopf:</strong> Ist der erste Stich des Spiels ein Doppelkopf (und es gab noch keine Ansagen), muss eine Ansage (Re/Kontra) gemacht werden. Bei einer Hochzeit zählen hierfür die Augen des Findungsstichs. Die Pflichtansage gilt immer, außer bei Solospielen.</li>
+                        <li><strong>Fristen Re/Kontra:</strong> Eine Ansage is so lange erlaubt, bis die eigene 2. Karte auf dem Tisch liegt. Für nachfolgende Ansagen (z. B. keine 90) verlängert sich die Frist entsprechend bis zum Legen der eigenen 3. Karte usw.</li>
+                        <li><strong>Gleichzeitiges Re & Kontra:</strong> Werden Re und Kontra im selben Spiel angesagt (Rednerfolge unerheblich), benötigt die Re-Partei zum Sieg mindestens 121 Punkte.</li>
+                        <li><strong>Ablauf bei Armut:</strong> Der Spieler mit der Armut reicht drei Karten verdeckt weiter. Darunter müssen sich zwingend all seine Trümpfe befinden. Der Partner nimmt diese auf und gibt verdeckt drei beliebige Karten zurück (auch gerade erhaltene Karten sind zulässig). Es darf für die übrigen Spieler nicht erkennbar sein, wie viele Trümpfe oder welche Karten ausgetauscht werden.</li>
+                    </ul>
+                </div>
+
+                <!-- 3. Sonderpunkte & Pflichtausrufe -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-bold text-emerald-800 border-b border-emerald-100 pb-1">3. Sonderpunkte & Pflichtausrufe</h3>
+                    <ul class="list-disc list-inside pl-2 space-y-1.5">
+                        <li><strong>Sonderpunkte:</strong> Vergeben für Doppelkopf, Fuchs gefangen, Karlchen (letzter Stich mit dem Kreuz-Buben) und Karlchen gefangen.</li>
+                        <li><strong>Doppelkopf-Ausrufepflicht:</strong> Spieler, die einen Stich mit mindestens 40 Punkten gewinnen, sind verpflichtet, mit möglichst hoher Stimme das Wort „Doppelkopf“ auszurufen. Diese Pflicht gilt nicht bei Solospielen.</li>
+                    </ul>
+                </div>
+
+                <!-- 4. Pflichtsoli & Ausnahmen -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-bold text-emerald-800 border-b border-emerald-100 pb-1">4. Pflichtsoli & Ausnahmen</h3>
+                    <ul class="list-disc list-inside pl-2 space-y-1.5">
+                        <li><strong>Pflichtsolo pro Abend:</strong> Jeder aktive Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
+                        <li><strong>Spaßspieler:</strong> Personen, die sich zu Beginn des Abends als Spaßspieler deklarieren, spielen außerhalb der Wertung. Sie dürfen kein Pflichtsolo spielen und maximal 3 Runden mitspielen.</li>
+                        <li><strong>Vorzeitiges Verlassen:</strong> Spieler, die den Spielabend vorzeitig verlassen müssen, sind verpflichtet, ihr Pflichtsolo vorher abzuleisten, unabhängig von der Anzahl der bis dahin gespielten Runden.</li>
+                        <li><strong>Geberfolge beim Pflichtsolo:</strong> Das Pflichtsolo kommt normal heraus. Die Person, die das Pflichtsolo ausgeteilt hat, gibt auch das darauffolgende Spiel noch einmal.</li>
+                        <li><strong>Ausnahmeregelungen:</strong>
+                            <ul class="list-disc list-inside pl-4 space-y-1 mt-1 text-slate-500">
+                                <li>Eine Stille Hochzeit oder das Hängengelassenwerden bei einer Hochzeit können wahlweise als Pflichtsolo gewertet werden (Entscheidung liegt beim Spieler).</li>
+                                <li>Bei einer Stillen Hochzeit darf der Alleinspieler am Ende entscheiden, ob das Spiel als Pflicht- oder Lustsolo gezählt wird (sofern das Pflichtsolo noch offen war).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 5. Strafenkatalog (-13 Punkte) -->
+                <div class="bg-red-50 border border-red-200 rounded-xl p-3.5 space-y-2">
+                    <h3 class="text-sm font-bold text-red-800 flex items-center gap-1.5">🚨 5. Strafenkatalog (-13 Punkte)</h3>
+                    <p class="font-medium text-red-900 mb-1">Folgende Regelverstöße werden am Ende des Abends mit -13 Strafpunkten geahndet. Das betroffene Spiel wird umgehend abgebrochen und wiederholt:</p>
+                    <ul class="list-disc list-inside pl-1 space-y-1.5 text-red-950 font-medium">
+                        <li>Falsch bedient (Bedienfehler).</li>
+                        <li>Armut falsch oder sichtbar weitergegeben (Verstoß gegen die verdeckte Weitergabe).</li>
+                        <li>Keine 80 Augen auf der Hand, obwohl es angesagt wurde.</li>
+                        <li>Re oder Kontra fälschlicherweise angesagt (z. B. ohne die entsprechenden Karten).</li>
+                        <li><strong>Outing:</strong> Outet sich ein Spieler an einem Abend zweimal versehentlich, erhält er am Ende des Abends ebenfalls 13 Strafpunkte. Bei einem dritten Outing wird er automatisch auf den letzten Platz des Abends gesetzt.</li>
+                    </ul>
+                </div>
+
+                <!-- 6. Organisatorisches & Spielbetrieb -->
+                <div class="space-y-2">
+                    <h3 class="text-sm font-bold text-emerald-800 border-b border-emerald-100 pb-1">6. Organisatorisches & Spielbetrieb</h3>
+                    <ul class="list-disc list-inside pl-2 space-y-1.5">
+                        <li><strong>Wertungsquoten:</strong>
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-500">
+                                <li>Um in die Tageswertung zu kommen, ist eine Anwesenheitsquote von mindestens 60% an dem Abend erforderlich.</li>
+                                <li>Um in die Saisonwertung zu kommen, muss die Teilnahmequote an den Spieltagen mindestens 40% betragen.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Fehler in der Geberreihenfolge:</strong>
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-500">
+                                <li>Wird ein Fehler vor Ende des darauffolgenden Spiels bemerkt, wird das aktuell laufende Spiel abgebrochen, annulliert und in korrekter Reihenfolge neu gegeben.</li>
+                                <li>Wird der Fehler erst später bemerkt, kann das fehlende Spiel nachgeholt werden, sofern es eindeutig identifizierbar ist. Anderenfalls wird normal weitergespielt (zu viel gegebene Spiele bleiben gewertet).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Rekord-Berechtigung:</strong> Den Rekord für den „höchsten Spielstand am Ende des Abends“ kann nur ein Spieler erhalten, der auch bis zum Ende des Abends mitgespielt hat.</li>
+                        <li><strong>Regelabstimmungen:</strong> Um bei Regeländerungen stimmberechtigt zu sein, muss ein Spieler in der vorhergegangenen Saison mindestens die Hälfte der aktuellen Saisonteilnahmequote erreicht haben (aktuell entspricht dies einer Teilnahme an mindestens 20% der Spieltage).</li>
+                    </ul>
+                </div>
+
+            </div>
+            <button onclick="closeRegelnModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
         </div>
     </div>
 
@@ -150,6 +297,10 @@
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Ausgewählte Saison bearbeiten:</label>
                     <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white border border-gray-300 rounded p-1.5 text-sm font-medium"></select>
                 </div>
+                <div class="pt-2">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Erforderliche Gesamt-Teilnahmequote (%):</label>
+                    <input id="seasonMinQuota" type="number" min="0" max="100" class="w-full bg-white border border-gray-300 rounded p-1.5 text-xs text-center font-semibold" onchange="updateSeasonMinQuota()">
+                </div>
                 <div class="pt-2 border-t border-gray-100 space-y-2">
                     <p class="text-xs text-gray-500 font-medium">Neue Saison anlegen:</p>
                     <div class="grid grid-cols-2 gap-2">
@@ -165,6 +316,10 @@
                             <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border border-gray-300 rounded p-1 text-xs text-center">
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500">Mindestquote für Wertung (%):</label>
+                        <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white border border-gray-300 rounded p-1 text-xs text-center">
+                    </div>
                     <div class="flex items-center gap-2 pt-1">
                         <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
                         <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 font-semibold cursor-pointer">Historisch (nur Endergebnis)</label>
@@ -179,9 +334,25 @@
     </div>
 
     <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Dezent platzierte Utility-Leiste oberhalb des Headers -->
+        <div class="flex justify-between items-center text-xs text-slate-500 px-1 py-1">
+            <div class="flex items-center gap-2">
+                <button onclick="openWhatsNewModal()" class="hover:text-emerald-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    ✨ What's new?
+                </button>
+                <button onclick="openRegelnModal()" class="hover:text-emerald-700 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    📜 Regeln
+                </button>
+            </div>
+            <div class="flex items-center gap-1.5 font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-full shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse inline-block" id="statusDot"></span>
+                <span id="connectionStatus" class="text-[10px] tracking-wide uppercase text-slate-500">Verbinde...</span>
+            </div>
+        </div>
+
         <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
-            <button onclick="openWhatsNewModal()" class="absolute top-3 left-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm cursor-pointer transition">✨ What's new?</button>
             <h1 class="text-2xl md:text-4xl font-extrabold tracking-tight flex items-center justify-center gap-3 md:gap-4 text-white">
                 <svg class="w-7 h-10 md:w-8 md:h-12 drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)] shrink-0 select-none bg-white rounded-md" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
                     <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
@@ -207,7 +378,6 @@
                     </g>
                 </svg>
             </h1>
-            <span id="connectionStatus" class="absolute top-3 right-3 bg-yellow-500/90 backdrop-blur-sm text-[9px] px-2 py-0.5 rounded-full font-bold tracking-wider uppercase text-white shadow-sm animate-pulse">Verbinde...</span>
         </header>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200/60">
@@ -262,7 +432,7 @@
                             <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
                             ⚡ Blitztabelle
                         </label>
-                        <button onclick="exportTableToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                        <button onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 shadow-sm transition flex items-center gap-1 cursor-pointer">
                             📊 Excel-Export
                         </button>
                     </div>
@@ -356,6 +526,14 @@
             document.getElementById('whatsNewModal').classList.add('hidden');
         }
 
+        // Steuerung Regeln Modal
+        function openRegelnModal() {
+            document.getElementById('regelnModal').classList.remove('hidden');
+        }
+        function closeRegelnModal() {
+            document.getElementById('regelnModal').classList.add('hidden');
+        }
+
         function showAllTimeDetail(metricType) {
             const records = calculateAllTimeRecords();
             let title = '';
@@ -396,7 +574,14 @@
                 sortedList = Object.keys(records.globalTotalPoints)
                     .map(player => {
                         const pts = records.globalTotalPoints[player] || 0;
-                        return { player, value: pts, detail: 'Punkte gesamt' };
+                        const matchCount = records.globalTotalPointsMatchCount[player] || 0;
+                        const avg = matchCount > 0 ? (pts / matchCount).toFixed(1) : '0.0';
+                        const avgSign = parseFloat(avg) > 0 ? '+' : '';
+                        return { 
+                            player, 
+                            value: pts, 
+                            detail: `Schnitt: ${avgSign}${avg} Pkt. (aus ${matchCount} Abenden mit Spieltagspkt.)` 
+                        };
                     })
                     .filter(item => item.value !== 0)
                     .sort((a, b) => b.value - a.value);
@@ -548,6 +733,33 @@
             }
 
             return processedList;
+        }
+
+        // Berechnet die Beteiligung eines Spielers an einem Abend (nur für detailed matches)
+        function getEveningParticipation(match, player) {
+            if (!match || !match.games) return 1.0;
+            const gamesOnly = match.games.filter(g => !g.isRoundMarker);
+            if (gamesOnly.length === 0) return 1.0;
+            let playedCount = 0;
+            gamesOnly.forEach(g => {
+                const gm = normalizeGame(g);
+                if (gm.points && gm.points[player] !== undefined) {
+                    playedCount++;
+                }
+            });
+            return playedCount / gamesOnly.length;
+        }
+
+        // Hilfsfunktion zur Ermittlung des Beteiligungs-Status
+        function getEveningParticipationInfo(match, name) {
+            if (!match || match.mode !== 'detailed' || !match.games) return null;
+            const playersCount = match.order ? match.order.length : Object.keys(match.scores || {}).length;
+            if (playersCount < 5) return null;
+            
+            const rate = getEveningParticipation(match, name);
+            const ratePercent = Math.round(rate * 100);
+            const isQualified = rate >= 0.60;
+            return { ratePercent, isQualified };
         }
 
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
@@ -902,6 +1114,25 @@
             saveToCloud();
         }
 
+        function updateSeasonMinQuota() {
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (season.status === "abgeschlossen") {
+                alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+                render();
+                return;
+            }
+            const input = document.getElementById('seasonMinQuota');
+            const val = parseInt(input.value);
+            if (isNaN(val) || val < 0 || val > 100) {
+                alert("Bitte einen Wert zwischen 0 und 100 eingeben.");
+                render();
+                return;
+            }
+            season.minQuota = val;
+            saveToCloud();
+        }
+
         function restoreFormState() {
             if (editingMatchId) return;
             if (!state.currentSeasonKey) return;
@@ -931,12 +1162,13 @@
 
         function openPlayerDetails(playerName) {
             const season = state.seasons[state.currentSeasonKey];
-            if (!season || !season.matches || season.isHistorical) return;
+            if (!season || !season.matches) return;
 
             let history = [];
             Object.keys(season.matches).forEach(key => {
                 const match = season.matches[key];
-                if (match.scores && match.scores[playerName] !== undefined) {
+                const isSpieltagMatch = !season.isHistorical || match.pointType === 'spieltag';
+                if (isSpieltagMatch && match.scores && match.scores[playerName] !== undefined) {
                     history.push({ date: match.date, score: match.scores[playerName] });
                 }
             });
@@ -947,32 +1179,35 @@
             document.getElementById('playerModalName').textContent = playerName;
 
             if (history.length === 0) {
-                modalContent.innerHTML = `<p class="text-gray-500">Keine Spieldaten für diese Saison gefunden.</p>`;
+                modalContent.innerHTML = `<p class="text-gray-500">Keine Spieltags-Spieldaten für diesen Spieler in dieser Saison gefunden.</p>`;
             } else {
                 const best = history[0];
                 const worst = history[history.length - 1];
                 const avg = (history.reduce((sum, m) => sum + m.score, 0) / history.length).toFixed(1);
+                
+                const bestSign = best.score > 0 ? '+' : '';
+                const worstSign = worst.score > 0 ? '+' : '';
 
                 modalContent.innerHTML = `
                     <div class="space-y-4">
                         <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                            <p class="text-xs text-gray-500 uppercase font-bold">Teilnahmen</p>
+                            <p class="text-xs text-gray-500 uppercase font-bold">Teilnahmen (mit Spieltagspunkten)</p>
                             <p class="text-xl font-bold">${history.length}</p>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-200">
                                 <p class="text-[10px] text-emerald-800 uppercase font-bold">Bester</p>
-                                <p class="font-bold text-emerald-900">+${best.score}</p>
+                                <p class="font-bold text-emerald-900">${bestSign}${best.score}</p>
                                 <p class="text-[10px] text-emerald-600">${padDateString(best.date)}</p>
                             </div>
                             <div class="bg-red-50 p-3 rounded-lg border border-red-200">
                                 <p class="text-[10px] text-red-800 uppercase font-bold">Schlechtester</p>
-                                <p class="font-bold text-red-900">${worst.score}</p>
+                                <p class="font-bold text-red-900">${worstSign}${worst.score}</p>
                                 <p class="text-[10px] text-red-600">${padDateString(worst.date)}</p>
                             </div>
                         </div>
                         <div class="bg-slate-800 text-white p-3 rounded-lg flex justify-between items-center">
-                            <p class="text-sm font-bold">Saison-Schnitt</p>
+                            <p class="text-sm font-bold">Saison-Schnitt (Spieltagspunkte)</p>
                             <p class="text-xl font-black">${avg}</p>
                         </div>
                     </div>
@@ -1096,11 +1331,22 @@
 
             const status = document.getElementById('connectionStatus');
             status.textContent = "Verbunden";
-            status.className = "absolute top-3 right-3 bg-emerald-500/90 backdrop-blur-sm text-[9px] px-2.5 py-1 rounded-full font-bold tracking-wider uppercase text-white shadow-sm";
+            status.className = "text-[10px] tracking-wide uppercase text-emerald-600 font-bold";
+            
+            const dot = document.getElementById('statusDot');
+            if (dot) {
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 inline-block";
+            }
             render();
         }, (error) => {
             console.error(error);
-            document.getElementById('connectionStatus').textContent = "Fehler!";
+            const status = document.getElementById('connectionStatus');
+            status.textContent = "Fehler!";
+            status.className = "text-[10px] tracking-wide uppercase text-red-600 font-bold";
+            const dot = document.getElementById('statusDot');
+            if (dot) {
+                dot.className = "w-2 h-2 rounded-full bg-red-500 inline-block";
+            }
         });
 
         function saveToCloud() {
@@ -1140,13 +1386,19 @@
             const half = document.getElementById('newSeasonHalf').value;
             const year = parseInt(document.getElementById('newSeasonYear').value);
             const isHistorical = document.getElementById('newSeasonIsHistorical').checked;
+            const minQuotaInput = document.getElementById('newSeasonMinQuota');
+            const minQuota = minQuotaInput ? parseInt(minQuotaInput.value) : 40;
+
             if (!year || year < 1900 || year > 2100) return alert("Ungültiges Jahr!");
+            if (isNaN(minQuota) || minQuota < 0 || minQuota > 100) return alert("Ungültige Quote (0-100 erlaubt)!");
+
             const seasonKey = `${half} ${year}`;
             if (state.seasons[seasonKey]) return alert("Existiert bereits!");
 
-            state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, matches: {}, players: [] };
+            state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, minQuota: minQuota, matches: {}, players: [] };
             state.currentSeasonKey = seasonKey;
             document.getElementById('newSeasonIsHistorical').checked = false;
+            document.getElementById('newSeasonMinQuota').value = 40;
             saveToCloud();
         }
 
@@ -1268,15 +1520,41 @@
             }, 100);
         }
 
-        function getPlacementScoresForMatch(matchScores) {
-            let participants = Object.keys(matchScores).map(name => ({ name, realScore: matchScores[name] }));
-            let totalPlayersAtAbend = participants.length;
-            participants.sort((a, b) => b.realScore - a.realScore);
-            let placementScores = {};
-            participants.forEach((p) => {
-                let tieIndex = participants.findIndex(x => x.realScore === p.realScore);
-                placementScores[p.name] = totalPlayersAtAbend - tieIndex;
+        // Berechnet die Platzierungspunkte für ein Match, unter Berücksichtigung der 60%-Beteiligungsregel
+        function getPlacementScoresForMatch(matchScores, match) {
+            let participants = Object.keys(matchScores).map(name => {
+                let isQualified = true;
+                if (match && match.mode === 'detailed' && match.games) {
+                    const orderLength = match.order ? match.order.length : Object.keys(matchScores).length;
+                    if (orderLength >= 5) {
+                        const rate = getEveningParticipation(match, name);
+                        if (rate < 0.60) {
+                            isQualified = false;
+                        }
+                    }
+                }
+                return { name, realScore: matchScores[name], isQualified };
             });
+
+            // Nur qualifizierte Spieler ranken
+            let qualified = participants.filter(p => p.isQualified);
+            let unqualified = participants.filter(p => !p.isQualified);
+
+            qualified.sort((a, b) => b.realScore - a.realScore);
+
+            let placementScores = {};
+            let totalRankedPlayers = qualified.length;
+
+            qualified.forEach((p) => {
+                let tieIndex = qualified.findIndex(x => x.realScore === p.realScore);
+                placementScores[p.name] = totalRankedPlayers - tieIndex;
+            });
+
+            // Disqualifizierte Spieler erhalten 0 Platzierungspunkte
+            unqualified.forEach((p) => {
+                placementScores[p.name] = 0;
+            });
+
             return placementScores;
         }
 
@@ -1311,7 +1589,7 @@
 
                 // 2. Platzierungspunkte für den Abend bestimmen
                 const isMatchdayType = !season.isHistorical || match.pointType === 'spieltag';
-                let placements = isMatchdayType ? getPlacementScoresForMatch(match.scores) : match.scores;
+                let placements = isMatchdayType ? getPlacementScoresForMatch(match.scores, match) : match.scores;
 
                 // 3. Platzierungspunkte auf das Saisonkonto addieren
                 Object.keys(placements).forEach(name => {
@@ -1336,7 +1614,13 @@
 
             if (isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0 && !season.isHistorical) {
                 let currentTotals = computeDetailedTotals();
-                let placements = getPlacementScoresForMatch(currentTotals);
+                let tempMatch = {
+                    mode: 'detailed',
+                    order: detailedOrder,
+                    games: detailedGames,
+                    scores: currentTotals
+                };
+                let placements = getPlacementScoresForMatch(currentTotals, tempMatch);
                 Object.keys(placements).forEach(name => {
                     if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += placements[name];
                     if (matchCounts[name] !== undefined) matchCounts[name]++;
@@ -1352,6 +1636,7 @@
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
             let globalTagessiege = {}; // { player: 0 }
             let globalTotalPoints = {}; // { player: 0 }
+            let globalTotalPointsMatchCount = {}; // { player: 0 }
             let globalAnsagen = {}; // { player: 0 }
             let allUniquePlayers = new Set();
 
@@ -1364,6 +1649,7 @@
                 globalSoloStats[p] = { played: 0, won: 0 };
                 globalTagessiege[p] = 0;
                 globalTotalPoints[p] = 0;
+                globalTotalPointsMatchCount[p] = 0;
                 globalAnsagen[p] = 0;
             });
 
@@ -1395,6 +1681,7 @@
                             let score = match.scores[name];
                             if (globalTotalPoints[name] !== undefined) {
                                 globalTotalPoints[name] += score;
+                                globalTotalPointsMatchCount[name]++;
                             }
                             if (match.host && match.host === name && globalHostStats[name]) {
                                 globalHostStats[name].totalScore += score;
@@ -1486,7 +1773,7 @@
                 globalSoloStats,
                 globalTagessiege,
                 globalTotalPoints,
-                globalAnsagen,
+                globalTotalPointsMatchCount,
                 bestAllTimeHostName,
                 bestAllTimeHostAvg,
                 bestSoloPlayer,
@@ -1755,7 +2042,7 @@
                     <div class="bg-white border border-gray-200 rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
                             <span class="font-bold text-gray-700">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''}</span>
-                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel loeschen">🗑️</button>
                         </div>
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
@@ -1987,7 +2274,7 @@
                 let eveningSum = 0;
                 Object.values(matchScores).forEach(v => eveningSum += v);
                 if (eveningSum !== 0) {
-                    return alert(`Die Summe aller Endergebnisse des Abends muss 0 ergeben! Aktuelle Summe: ${eveningSum > 0 ? '+' : ''}${eveningSum}`);
+                    return alert("Die Summe aller Endergebnisse des Abends muss 0 ergeben!");
                 }
             }
 
@@ -2135,54 +2422,293 @@
             });
         }
 
-        function exportTableToCSV() {
-            const season = state.currentSeasonKey;
-            if (!season) return alert("Keine Saisondaten zum Exportieren vorhanden!");
-            const seasonObj = state.seasons[season];
-            const seasonPlayers = seasonObj ? (seasonObj.players || []) : [];
-
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Platz;Spieler;Schnitt;Teilnahmen;Quote;Saison-Punkte\r\n";
-
-            const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(season);
-
-            let playerData = seasonPlayers.map(name => {
-                let played = matchCounts[name] || 0;
-                let pts = totalSeasonPoints[name] || 0;
-                let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
-                return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0,
-                         inRating: ratio >= 0.40 };
-            });
-
-            let sortedData = playerData.sort((a, b) => b.avg - a.avg || b.played - a.played);
-
-            let lastAvgExp = null, lastRankExp = 0;
-            sortedData.forEach((p, index) => {
-                if (p.inRating && p.played > 0) {
-                    if (lastAvgExp === null || Math.abs(parseFloat(p.avg) - lastAvgExp) > 0.0001) {
-                        lastRankExp = index + 1;
-                        lastAvgExp = parseFloat(p.avg);
-                    }
+        // Asynchrones Laden der SheetJS Excel-Bibliothek bei Bedarf
+        function loadSheetJS() {
+            return new Promise((resolve, reject) => {
+                if (window.XLSX) {
+                    resolve(window.XLSX);
+                    return;
                 }
-                let rank = p.inRating && p.played > 0 ? `${lastRankExp}.` : "-";
-                let row = `${rank};${p.name};${p.avg.toFixed(2)};${p.played} / ${totalMatchesCount};${p.ratio};${p.pts}`;
-                csvContent += row + "\r\n";
+                let script = document.querySelector('script[src*="xlsx.full.min.js"]');
+                if (script) {
+                    script.addEventListener('load', () => resolve(window.XLSX));
+                    script.addEventListener('error', () => reject(new Error("SheetJS konnte nicht geladen werden.")));
+                    return;
+                }
+                script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+                script.onload = () => resolve(window.XLSX);
+                script.onerror = () => reject(new Error("SheetJS konnte nicht geladen werden."));
+                document.head.appendChild(script);
             });
+        }
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            const fileName = `Doko_Export_${season.replace(/\s+/g, '_')}.csv`;
-            link.setAttribute("download", fileName);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        // Neuer, vollstaendiger Excel-Export fuer alle Saisons, Spieltage und Runden-Details
+        async function exportToExcel() {
+            try {
+                const XLSX = await loadSheetJS();
+                
+                // --- Sheet 1: Saison-Tabellen (Overview) ---
+                const tabellenData = [];
+                tabellenData.push([
+                    "Saison", "Status", "Typ", "Mindestquote (%)", "Platz", "Spieler", 
+                    "Schnitt", "Teilnahmen", "Gesamt-Spieltage", "Quote (%)", 
+                    "Saison-Punkte", "Gewertet"
+                ]);
+                
+                const seasonKeys = Object.keys(state.seasons);
+                sortSeasonsChronologically(seasonKeys);
+                
+                seasonKeys.forEach(sKey => {
+                    const season = state.seasons[sKey];
+                    const seasonPlayers = season.players || [];
+                    const minQuota = season.minQuota !== undefined ? season.minQuota : 40;
+                    const minQuotaRatio = minQuota / 100;
+                    const isHist = season.isHistorical;
+                    
+                    const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(sKey);
+                    
+                    let playerData = seasonPlayers.map(name => {
+                        let played = matchCounts[name] || 0;
+                        let pts = totalSeasonPoints[name] || 0;
+                        let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
+                        return { 
+                            name, played, pts, ratio, 
+                            avg: played > 0 ? (pts / played) : 0,
+                            inRating: ratio >= minQuotaRatio 
+                        };
+                    });
+                    
+                    let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
+                    let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
+                    
+                    let lastAvg = null;
+                    let lastRank = 0;
+                    
+                    qualified.forEach((p, idx) => {
+                        if (lastAvg === null || Math.abs(p.avg - lastAvg) > 0.0001) {
+                            lastRank = idx + 1;
+                            lastAvg = p.avg;
+                        }
+                        tabellenData.push([
+                            sKey,
+                            season.status,
+                            isHist ? "Historisch" : "Regulär",
+                            minQuota,
+                            lastRank,
+                            p.name,
+                            parseFloat(p.avg.toFixed(2)),
+                            p.played,
+                            totalMatchesCount,
+                            Math.round(p.ratio * 100),
+                            p.pts,
+                            "Ja"
+                        ]);
+                    });
+                    
+                    unqualified.forEach(p => {
+                        tabellenData.push([
+                            sKey,
+                            season.status,
+                            isHist ? "Historisch" : "Regulär",
+                            minQuota,
+                            "-",
+                            p.name,
+                            p.played > 0 ? parseFloat(p.avg.toFixed(2)) : 0.00,
+                            p.played,
+                            totalMatchesCount,
+                            Math.round(p.ratio * 100),
+                            p.pts,
+                            "Nein"
+                        ]);
+                    });
+                });
+                
+                // --- Sheet 2: Spieltage (Abend-Uebersicht) ---
+                const spieltageData = [];
+                spieltageData.push([
+                    "Saison", "Saison-Typ", "Datum", "Gastgeber", "Eingabe-Modus", 
+                    "Spieler", "Platzierung (Abend)", "Punkte", "Punkte-Typ", 
+                    "Beteiligung (%)", "Qualifiziert", "SoG genutzt"
+                ]);
+                
+                seasonKeys.forEach(sKey => {
+                    const season = state.seasons[sKey];
+                    if (!season.matches) return;
+                    
+                    const matchesEntries = Object.entries(season.matches)
+                        .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
+                        
+                    matchesEntries.forEach(([matchId, match]) => {
+                        if (!match.scores) return;
+                        
+                        let sortedEvening = Object.keys(match.scores).map(pName => {
+                            let isQualified = true;
+                            let ratePercent = 100;
+                            if (match.mode === 'detailed' && match.games) {
+                                const playersCount = match.order ? match.order.length : Object.keys(match.scores).length;
+                                if (playersCount >= 5) {
+                                    const rate = getEveningParticipation(match, pName);
+                                    ratePercent = Math.round(rate * 100);
+                                    if (rate < 0.60) isQualified = false;
+                                }
+                            }
+                            return {
+                                name: pName,
+                                score: match.scores[pName],
+                                isQualified,
+                                ratePercent,
+                                sog: !!(match.jokers && match.jokers[pName])
+                            };
+                        }).sort((a, b) => b.score - a.score);
+                        
+                        let qualifiedRankCount = 0;
+                        let lastEveningScore = null;
+                        let lastEveningRank = 1;
+                        
+                        sortedEvening.forEach(p => {
+                            if (!p.isQualified) {
+                                p.rank = "DQ";
+                            } else {
+                                qualifiedRankCount++;
+                                if (lastEveningScore === null || p.score !== lastEveningScore) {
+                                    lastEveningRank = qualifiedRankCount;
+                                    lastEveningRank = qualifiedRankCount;
+                                    lastEveningScore = p.score;
+                                }
+                                p.rank = lastEveningRank;
+                            }
+                        });
+                        
+                        const pointsLabelText = season.isHistorical 
+                            ? (match.pointType === 'spieltag' ? 'Spieltag' : 'Platzierung') 
+                            : 'Spieltag';
+                            
+                        sortedEvening.forEach(p => {
+                            spieltageData.push([
+                                sKey,
+                                season.isHistorical ? "Historisch" : "Regulär",
+                                padDateString(match.date),
+                                match.host || "-",
+                                match.mode === 'detailed' ? "Spiel für Spiel" : "Nur Endergebnis",
+                                p.name,
+                                p.rank,
+                                p.score,
+                                pointsLabelText,
+                                p.ratePercent,
+                                p.isQualified ? "Ja" : "Nein",
+                                p.sog ? "Ja" : "Nein"
+                            ]);
+                        });
+                    });
+                });
+                
+                // --- Sheet 3: Einzelspiele (Granulare Runden-Details) ---
+                const einzelspieleData = [];
+                einzelspieleData.push([
+                    "Saison", "Datum", "Runde", "Spiel-Nr", "Geber", 
+                    "Spieler", "Punkte", "Solo", "Solo-Typ", "Solo-Klasse", "Ansage"
+                ]);
+                
+                seasonKeys.forEach(sKey => {
+                    const season = state.seasons[sKey];
+                    if (!season.matches) return;
+                    
+                    const matchesEntries = Object.entries(season.matches)
+                        .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
+                        
+                    matchesEntries.forEach(([matchId, match]) => {
+                        if (match.mode !== 'detailed' || !match.games) return;
+                        
+                        const order = match.order || Object.keys(match.scores || {});
+                        const processedGames = processGamesList(order, match.games);
+                        
+                        let gameNum = 1;
+                        let currentRound = 1;
+                        
+                        processedGames.forEach(g => {
+                            if (g.isRoundMarker) {
+                                currentRound = g.roundNumber;
+                                return;
+                            }
+                            
+                            const gm = normalizeGame(g);
+                            
+                            order.forEach(pName => {
+                                if (gm.points[pName] === undefined) {
+                                    einzelspieleData.push([
+                                        sKey,
+                                        padDateString(match.date),
+                                        currentRound,
+                                        gameNum,
+                                        gm._dealerName || "-",
+                                        pName,
+                                        "Ausgesetzt",
+                                        "-",
+                                        "-",
+                                        "-",
+                                        "-"
+                                    ]);
+                                } else {
+                                    const pts = gm.points[pName];
+                                    const isSolo = !!(gm.solo && gm.solo[pName]);
+                                    const sType = isSolo ? (gm.soloType?.[pName] || "Unbekannt") : "-";
+                                    const sKind = isSolo ? (soloKindLabel(gm.soloKind?.[pName]) || "Lust/Pflicht") : "-";
+                                    const hasAnsage = !!(gm.ansage && gm.ansage[pName]);
+                                    
+                                    einzelspieleData.push([
+                                        sKey,
+                                        padDateString(match.date),
+                                        currentRound,
+                                        gameNum,
+                                        gm._dealerName || "-",
+                                        pName,
+                                        pts,
+                                        isSolo ? "Ja" : "Nein",
+                                        sType,
+                                        sKind,
+                                        hasAnsage ? "Ja" : "Nein"
+                                    ]);
+                                }
+                            });
+                            
+                            gameNum++;
+                        });
+                    });
+                });
+                
+                // Arbeitsmappe erstellen und Blaetter befuellen
+                const wb = XLSX.utils.book_new();
+                
+                const wsTabellen = XLSX.utils.aoa_to_sheet(tabellenData);
+                const wsSpieltage = XLSX.utils.aoa_to_sheet(spieltageData);
+                const wsEinzelspiele = XLSX.utils.aoa_to_sheet(einzelspieleData);
+                
+                XLSX.utils.book_append_sheet(wb, wsTabellen, "Saison-Tabellen");
+                XLSX.utils.book_append_sheet(wb, wsSpieltage, "Spieltage");
+                XLSX.utils.book_append_sheet(wb, wsEinzelspiele, "Einzelspiele");
+                
+                // XLSX abspeichern
+                XLSX.writeFile(wb, `Doko_Gesamtexport_${new Date().toISOString().slice(0, 10)}.xlsx`);
+                
+            } catch (error) {
+                console.error(error);
+                alert("Fehler beim Excel-Export: " + error.message);
+            }
         }
 
         function render() {
             const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
             const isHist = season && season.isHistorical;
             const seasonPlayers = season ? (season.players || []) : [];
+            const minQuota = (season && season.minQuota !== undefined) ? season.minQuota : 40;
+            const minQuotaRatio = minQuota / 100;
+
+            const seasonMinQuotaInput = document.getElementById('seasonMinQuota');
+            if (seasonMinQuotaInput && season) {
+                seasonMinQuotaInput.value = minQuota;
+                seasonMinQuotaInput.disabled = season.status === "abgeschlossen";
+            }
 
             let seasonJokers = {};
             if (season && !isHist && season.matches) {
@@ -2195,7 +2721,7 @@
                 });
             }
 
-            const histContainer = document.getElementById('historicalPointTypeContainer');
+            const historicalPointTypeContainer = document.getElementById('historicalPointTypeContainer');
             const modeToggle = document.getElementById('entryModeToggle');
 
             if (season) {
@@ -2206,7 +2732,7 @@
                 if (isHist) {
                     modeToggle.classList.add('hidden');
                     entryMode = 'simple';
-                    histContainer.classList.remove('hidden');
+                    historicalPointTypeContainer.classList.remove('hidden');
                     
                     let currentType = 'platzierung';
                     if (editingMatchId && season.matches && season.matches[editingMatchId]) {
@@ -2216,7 +2742,7 @@
                         if (checkedRadio) currentType = checkedRadio.value;
                     }
 
-                    histContainer.innerHTML = `
+                    historicalPointTypeContainer.innerHTML = `
                         <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentType === 'spieltag' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500'}">
                             <input type="radio" name="matchPointType" value="spieltag" ${currentType === 'spieltag' ? 'checked' : ''} onchange="changeMatchPointType('spieltag')" class="hidden">
                             🪙 Spieltagspkt.
@@ -2228,8 +2754,8 @@
                     `;
                 } else {
                     modeToggle.classList.remove('hidden');
-                    histContainer.classList.add('hidden');
-                    histContainer.innerHTML = '';
+                    historicalPointTypeContainer.classList.add('hidden');
+                    historicalPointTypeContainer.innerHTML = '';
                 }
                 
                 document.getElementById('pointsLabel').innerHTML = (entryMode === 'detailed' && !isHist)
@@ -2359,7 +2885,7 @@
                 const liveTableHeader = document.getElementById('liveTableHeader');
                 const liveTableBody = document.getElementById('liveTableBody');
 
-                // 1. Spaltenköpfe generieren (Sitzreihenfolge) - "Spiel / Geber" oben links bleibt leer
+                // 1. Spaltenköpfe generieren (Sitzreihenfolge)
                 let headerHtml = `<th class="p-3 border-r border-amber-200 text-xs uppercase tracking-wider"></th>`;
                 
                 detailedOrder.forEach(name => {
@@ -2367,11 +2893,10 @@
                     const playedPflicht = pflichtType !== null;
                     const badgeCls = playedPflicht ? 'bg-emerald-600 text-white border-emerald-700' : 'bg-gray-200 text-gray-500 border-gray-300';
                     const badgeTitle = playedPflicht ? `Pflichtsolo bereits gespielt: ${pflichtType}` : 'Pflichtsolo noch offen';
-                    const badgeText = 'P'; // Nur noch das kleine quadratische P-Badge
 
                     headerHtml += `
                         <th class="p-3 border-r border-amber-200 text-center select-none text-xs uppercase tracking-wider text-amber-950 font-bold">
-                            <span class="inline-flex items-center gap-1">
+                            <span class="inline-flex items-center justify-center gap-1">
                                 <span>${name}</span>
                                 <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
                                     P
@@ -2381,10 +2906,10 @@
                 });
                 liveTableHeader.innerHTML = headerHtml;
 
-                // 2. Gesamtpunkte-Zeile ganz oben vorbereiten (Ohne Pflichtsolo-Badge)
+                // 2. Gesamtpunkte-Zeile ganz oben vorbereiten
                 const totals = computeDetailedTotals();
                 let tableRowsHtml = `<tr class="bg-amber-100/70 font-extrabold border-b-2 border-amber-200">
-                    <td class="p-3 font-extrabold text-amber-950 border-r border-amber-200 text-xs">GESAMTPUNKTE</td>`;
+                    <td class="p-3 font-extrabold text-amber-950 border-r border-amber-200 text-xs text-left">GESAMTPUNKTE</td>`;
 
                 detailedOrder.forEach(name => {
                     const score = totals[name] || 0;
@@ -2392,7 +2917,7 @@
                     const sign = score > 0 ? '+' : '';
 
                     tableRowsHtml += `
-                        <td class="p-3 text-center border-r border-amber-200">
+                        <td class="p-3 text-center border-r border-amber-200 align-top">
                             <span class="font-mono text-sm ${cls}">${sign}${score}</span>
                         </td>`;
                 });
@@ -2418,14 +2943,14 @@
                     const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 font-semibold block leading-tight mt-0.5">Geber: ${g._dealerName}</span>` : '';
                     tableRowsHtml += `
                         <tr class="hover:bg-amber-50/20 transition text-xs">
-                            <td class="p-2.5 font-bold text-amber-950 border-r border-amber-100">
+                            <td class="p-2.5 font-bold text-amber-950 border-r border-amber-100 text-left align-top">
                                 <span>Spiel ${liveGameNumber} ${pointTypeBadge}</span>
                                 ${dealerText}
                             </td>`;
 
                     detailedOrder.forEach(name => {
                         if (g.points[name] === undefined) {
-                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 italic bg-gray-50/50 border-r border-amber-100/40">-</td>`;
+                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 italic bg-gray-50/50 border-r border-amber-100/40 align-top">-</td>`;
                         } else {
                             const val = g.points[name];
                             const cls = val > 0 ? 'text-emerald-600 font-bold' : (val < 0 ? 'text-red-600 font-bold' : 'text-slate-500');
@@ -2443,7 +2968,7 @@
                             const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 font-semibold bg-amber-100 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
 
                             tableRowsHtml += `
-                                <td class="p-2.5 text-center border-r border-amber-100/40">
+                                <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
                                     <span class="font-mono ${cls}">${sign}${val}</span>
                                     ${extraText}
                                 </td>`;
@@ -2480,12 +3005,15 @@
             const tableHint = document.getElementById('tableHint');
 
             if (season) {
+                // Prüfen, ob Spieltagspunkte in dieser Saison erfasst wurden (für reguläre Saisons immer true)
+                const hasSpieltagspunkte = !season.isHistorical || Object.values(season.matches || {}).some(m => m.pointType === 'spieltag');
+
                 document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey} ${isHist ? '(Historisch)' : ''}`;
 
                 if (tableHint) {
-                    tableHint.textContent = isHist
-                        ? "⚠️ Unter 40 % Teilnahmequote ohne Wertung."
-                        : "⚠️ Klicke auf einen Namen für Details. Unter 40 % Teilnahmequote ohne Wertung.";
+                    tableHint.textContent = hasSpieltagspunkte
+                        ? `⚠️ Klicke auf einen Namen für Details. Unter ${minQuota} % Teilnahmequote ohne Wertung.`
+                        : `⚠️ Unter ${minQuota} % Teilnahmequote ohne Wertung.`;
                 }
 
                 const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(state.currentSeasonKey);
@@ -2495,7 +3023,7 @@
                     let pts = totalSeasonPoints[name] || 0;
                     let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
                     return { name, played, pts, ratio, avg: played > 0 ? (pts / played) : 0,
-                             inRating: ratio >= 0.40 };
+                             inRating: ratio >= minQuotaRatio };
                 });
 
                 let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
@@ -2507,9 +3035,9 @@
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
                     const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 text-red-700 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
 
-                    const playerNameContent = isHist
-                        ? `<span class="text-emerald-700 font-bold">${p.name}</span>`
-                        : `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 decoration-2 underline-offset-2">${p.name}</button>`;
+                    const playerNameContent = hasSpieltagspunkte
+                        ? `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 decoration-2 underline-offset-2">${p.name}</button>`
+                        : `<span class="text-emerald-700 font-bold">${p.name}</span>`;
 
                     if (isQ) {
                         return `
@@ -2526,9 +3054,9 @@
                         </tr>
                         `;
                     } else {
-                        const playerNameContentUnqual = isHist
-                            ? `<span class="text-gray-500">${p.name}</span>`
-                            : `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left">${p.name}</button>`;
+                        const playerNameContentUnqual = hasSpieltagspunkte
+                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold">${p.name}</button>`
+                            : `<span class="text-gray-500">${p.name}</span>`;
 
                         return `
                         <tr class="bg-gray-50/50 text-gray-400 italic">
@@ -2691,10 +3219,34 @@
                         score: match.scores[pName]
                     })).sort((a, b) => b.score - a.score);
 
-                    let currentRank = 1;
-                    sortedEveningPlayers.forEach((p, idx) => {
-                        if (idx > 0 && p.score < sortedEveningPlayers[idx - 1].score) currentRank = idx + 1;
-                        p.rank = currentRank;
+                    // Abend-Beteiligungscheck für jeden Spieler einpflegen
+                    sortedEveningPlayers.forEach(p => {
+                        let isQualified = true;
+                        if (match.mode === 'detailed' && match.games) {
+                            const playersCount = match.order ? match.order.length : Object.keys(match.scores).length;
+                            if (playersCount >= 5) {
+                                const rate = getEveningParticipation(match, p.name);
+                                if (rate < 0.60) isQualified = false;
+                            }
+                        }
+                        p.isQualified = isQualified;
+                    });
+
+                    // Rankings nur unter den qualifizierten Spielern vergeben
+                    let qualifiedRankCount = 0;
+                    let lastEveningScore = null;
+                    let lastEveningRank = 1;
+                    sortedEveningPlayers.forEach((p) => {
+                        if (!p.isQualified) {
+                            p.rank = 'DQ';
+                        } else {
+                            qualifiedRankCount++;
+                            if (lastEveningScore === null || p.score !== lastEveningScore) {
+                                lastEveningRank = qualifiedRankCount;
+                                lastEveningScore = p.score;
+                            }
+                            p.rank = lastEveningRank;
+                        }
                     });
 
                     const pointsLabelText = isHist ? (match.pointType === 'spieltag' ? 'Spieltagspunkte' : 'Platzierungspunkte') : 'Spieltagspunkte';
@@ -2724,8 +3276,9 @@
                                         const rankNum = playerObj.rank;
                                         let rankBadgeClass = "bg-slate-200 text-slate-700";
                                         if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-950 font-black shadow-xs";
-                                        if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 font-extrabold";
-                                        if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
+                                        else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 font-extrabold";
+                                        else if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
+                                        else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 font-bold border border-red-300";
 
                                         return `
                                             <div class="bg-slate-50 p-2 rounded-lg border border-slate-100 flex flex-col justify-between">
@@ -2733,8 +3286,16 @@
                                                     <span class="font-semibold text-gray-800 text-sm truncate">${p}</span>
                                                     <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
                                                 </div>
-                                                <div class="mt-1">
+                                                <div class="mt-1 flex justify-between items-center flex-wrap gap-1">
                                                     <span class="${scoreClass} font-bold block text-xs">${prefix}${score} ${pointsLabelText}</span>
+                                                    ${(() => {
+                                                        const info = getEveningParticipationInfo(match, p);
+                                                        if (info) {
+                                                            const cls = info.isQualified ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100 font-bold';
+                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border ${cls}" title="Abendbeteiligung: ${info.ratePercent}% (Mind. 60% erforderlich)">${info.ratePercent}% Bet.</span>`;
+                                                        }
+                                                        return '';
+                                                    })()}
                                                 </div>
                                             </div>
                                         `;
@@ -2763,7 +3324,7 @@
                                             const gm = normalizeGame(g);
                                             const html = `
                                                 <div class="bg-slate-50 border border-slate-200 rounded p-1.5 text-[10px] flex flex-wrap items-center justify-between gap-1.5">
-                                                    <div class="flex flex-wrap items-center gap-1.5">
+                                                    <div class="flex flex-wrap items-center gap-1.5 text-left">
                                                         <span class="font-bold text-gray-600 shrink-0">Spiel ${gameNum}:</span>
                                                         ${order.map(pName => {
                                                             if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400">${pName} (aus)</span>`;
@@ -2781,7 +3342,7 @@
                                                             return `<span class="${v >= 0 ? 'text-emerald-700' : 'text-red-700'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
                                                         }).join(' · ')}
                                                     </div>
-                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 font-semibold bg-amber-50 border border-amber-100 rounded px-1">Geber: ${g._dealerName}</span>` : ''}
+                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 font-semibold bg-amber-50 border border-amber-100 rounded px-1 shrink-0">Geber: ${g._dealerName}</span>` : ''}
                                                 </div>
                                             `;
                                             gameNum++;
