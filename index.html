@@ -194,7 +194,7 @@
                 <div class="space-y-2">
                     <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">3. Sonderpunkte & Pflichtausrufe</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
-                        <li><strong>Sonderpunkte:</strong> Vergeben for Doppelkopf, Fuchs gefangen, Karlchen (letzter Stich mit dem Kreuz-Buben) und Karlchen gefangen.</li>
+                        <li><strong>Sonderpunkte:</strong> Vergeben für Doppelkopf, Fuchs gefangen, Karlchen (letzter Stich mit dem Kreuz-Buben) und Karlchen gefangen.</li>
                         <li><strong>Doppelkopf-Ausrufepflicht:</strong> Spieler, die einen Stich mit mindestens 40 Punkten gewinnen, sind verpflichtet, mit möglichst hoher Stimme das Wort „Doppelkopf“ auszurufen. Diese Pflicht gilt nicht bei Solospielen.</li>
                     </ul>
                 </div>
@@ -203,7 +203,7 @@
                 <div class="space-y-2">
                     <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">4. Pflichtsoli & Ausnahmen</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
-                        <li><strong>Pflichtsolo pro Abend:</strong> Jeder aktive Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
+                        <li><strong>Pflichtsolo pro Abend:</strong> Jeder active Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
                         <li><strong>Spaßspieler:</strong> Personen, die sich zu Beginn des Abends als Spaßspieler deklarieren, spielen außerhalb der Wertung. Sie dürfen kein Pflichtsolo spielen und maximal 3 Runden mitspielen.</li>
                         <li><strong>Vorzeitiges Verlassen:</strong> Spieler, die den Spielabend vorzeitig verlassen müssen, sind verpflichtet, ihr Pflichtsolo vorher abzuleisten, unabhängig von der Anzahl der bis dahin gespielten Runden.</li>
                         <li><strong>Geberfolge beim Pflichtsolo:</strong> Das Pflichtsolo kommt normal heraus. Die Person, die das Pflichtsolo ausgeteilt hat, gibt auch das darauffolgende Spiel noch einmal.</li>
@@ -217,7 +217,7 @@
                 </div>
 
                 <!-- 5. Strafenkatalog (-13 Punkte) -->
-                <div class="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-xl p-3.5 space-y-2">
+                <div class="bg-red-50 dark:bg-red-955/20 border border-red-200 dark:border-red-900/50 rounded-xl p-3.5 space-y-2">
                     <h3 class="text-sm font-bold text-red-800 dark:text-red-400 flex items-center gap-1.5">🚨 5. Strafenkatalog (-13 Punkte)</h3>
                     <p class="font-medium text-red-900 dark:text-red-300 mb-1">Folgende Regelverstöße werden am Ende des Abends mit -13 Strafpunkten geahndet. Das betroffene Spiel wird umgehend abgebrochen und wiederholt:</p>
                     <ul class="list-disc list-inside pl-1 space-y-1.5 text-red-900 dark:text-red-200 font-medium">
@@ -666,7 +666,7 @@
                                 valStr = `${item.value} Ansagen`;
                             }
 
-                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-950 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-500 dark:bg-slate-850 dark:text-slate-400'));
+                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-955 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-500 dark:bg-slate-850 dark:text-slate-400'));
                             
                             return `
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
@@ -1241,7 +1241,7 @@
             document.getElementById('playerModalName').textContent = playerName;
 
             if (history.length === 0) {
-                modalContent.innerHTML = `<p class="text-gray-500 dark:text-slate-400">Keine Spieltags-Spieldaten for diesen Spieler in dieser Saison gefunden.</p>`;
+                modalContent.innerHTML = `<p class="text-gray-500 dark:text-slate-400">Keine Spieltags-Spieldaten für diesen Spieler in dieser Saison gefunden.</p>`;
             } else {
                 const best = history[0];
                 const worst = history[history.length - 1];
@@ -1399,7 +1399,7 @@
                         localLive = JSON.parse(localDraftStr);
                         // Falls es bereits ein neueres Match in dieser Saison gibt, verwerfe den alten lokalen Entwurf
                         if (localLive && season.matches) {
-                            const newestMatchTimestamp = Object.values(season.matches).reduce((max, m) => Math.max(max, m.timestamp || 0), 0);
+                            const newestMatchTimestamp = Object.values(season.matches).reduce((max, m) => Math.max(max, m.createdTimestamp || m.timestamp || 0), 0);
                             if (localLive.timestamp && localLive.timestamp <= newestMatchTimestamp) {
                                 localLive = null;
                                 localStorage.removeItem(`doko_live_draft_${state.currentSeasonKey}`);
@@ -1911,7 +1911,7 @@
         function setEntryMode(mode) {
             if (mode === entryMode) return;
             if (detailedOrder.length > 0 || detailedGames.length > 0) {
-                if (!confirm('Beim Wechsel des Eingabe-Modus gehen bereits erfasste Einzelspiele for diesen Abend verloren. Fortfahren?')) return;
+                if (!confirm('Beim Wechsel des Eingabe-Modus gehen bereits erfasste Einzelspiele für diesen Abend verloren. Fortfahren?')) return;
             }
             entryMode = mode;
             detailedOrder = [];
@@ -1947,7 +1947,7 @@
 
         function togglePlayerSelected(name, checked) {
             if (entryMode === 'detailed' && detailedGames.length > 0) {
-                if (!confirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele for diesen Abend. Fortfahren?')) {
+                if (!confirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb) cb.checked = !checked;
                     return;
@@ -2092,11 +2092,11 @@
                 return alert(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeCount}). Bitte die „aussetzen"-Auswahl prüfen.`);
             }
 
-            // Nullsummenprüfung for das einzelne Spiel
+            // Nullsummenprüfung für das einzelne Spiel
             let gameSum = 0;
             Object.values(points).forEach(v => gameSum += v);
             if (gameSum !== 0) {
-                return alert(`Die Summe der Punkte for dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`);
+                return alert(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`);
             }
 
             detailedGames.push({
@@ -2421,16 +2421,15 @@
                 scores: matchScores,
                 jokers: matchJokers,
                 timestamp,
+                createdTimestamp: Date.now(),
                 mode: useDetailedMode ? 'detailed' : 'simple',
                 pointType: season.isHistorical ? matchPointType : 'spieltag',
                 ...(useDetailedMode ? { order: detailedOrderForSave, games: detailedGamesForSave } : {})
             };
 
-            if (!editingMatchId) {
-                delete season.liveDraft;
-                // Nach erfolgreichem Speichern Puffer im localStorage löschen
-                localStorage.removeItem(`doko_live_draft_${state.currentSeasonKey}`);
-            }
+            // Live-Entwurf und lokalen Speicher löschen
+            delete season.liveDraft;
+            localStorage.removeItem(`doko_live_draft_${state.currentSeasonKey}`);
 
             document.getElementById('matchDate').value = "";
             const hSelect = document.getElementById('matchHostSelect');
@@ -2567,7 +2566,7 @@
             });
         }
 
-        // Excel-Export for alle Saisons, Spieltage und Runden-Details mit edlen Styles
+        // Excel-Export für alle Saisons, Spieltage und Runden-Details mit edlen Styles
         async function exportToExcel() {
             const btn = document.getElementById('excelExportBtn');
             const originalContent = btn.innerHTML;
@@ -2856,7 +2855,7 @@
                                 bottom: { style: "medium", color: { rgb: "047857" } }
                             };
                         } else {
-                            // Zebra Wechsellayout for verbesserte Lesbarkeit
+                            // Zebra Wechsellayout für verbesserte Lesbarkeit
                             if (row % 2 === 1) {
                                 style.fill = { fgColor: { rgb: "F8FAFC" } }; // Slate-50 alternating background
                             } else {
@@ -3022,7 +3021,7 @@
                 }
                 
                 document.getElementById('pointsLabel').innerHTML = (entryMode === 'detailed' && !isHist)
-                    ? "Teilnehmer for diesen Abend auswählen:"
+                    ? "Teilnehmer für diesen Abend auswählen:"
                     : "Spieler / Status am Ende des Abends:";
             }
 
@@ -3122,7 +3121,7 @@
 
                         ${isHist ? '' : `
                         <div id="simpleJokerWrap-${name}" class="flex gap-2 justify-end pt-1 border-t border-gray-200/50 dark:border-slate-700">
-                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-100' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-955/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-100' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
                                 <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                             </label>
                         </div>
@@ -3142,6 +3141,7 @@
             if (entryMode === 'detailed' && detailedGames.length > 0 && !editingMatchId) {
                 liveViewer.classList.remove('hidden');
 
+                const totals = computeDetailedTotals();
                 const actualGamesCount = detailedGames.filter(g => !g.isRoundMarker).length;
                 document.getElementById('liveViewerCount').textContent = actualGamesCount;
 
@@ -3273,7 +3273,7 @@
 
                 if (tableHint) {
                     tableHint.textContent = hasSpieltagspunkte
-                        ? `⚠️ Klicke auf einen Namen for Details. Unter ${minQuota} % Teilnahmequote ohne Wertung.`
+                        ? `⚠️ Klicke auf einen Namen für Details. Unter ${minQuota} % Teilnahmequote ohne Wertung.`
                         : `⚠️ Unter ${minQuota} % Teilnahmequote ohne Wertung.`;
                 }
 
@@ -3294,7 +3294,7 @@
 
                 const mapRow = (p, isQ) => {
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
-                    const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
+                    const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-955/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
 
                     const playerNameContent = hasSpieltagspunkte
                         ? `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${p.name}</button>`
@@ -3471,15 +3471,15 @@
                 const matchesEntries = Object.entries(season.matches);
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
-                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
-                    let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-955/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel for Spiel erfasst">🎮 Spiel for Spiel</span>` : '';
+                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-955/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
+                    let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-955/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
 
                     let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
                         name: pName,
                         score: match.scores[pName]
                     })).sort((a, b) => b.score - a.score);
 
-                    // Abend-Beteiligungscheck for jeden Spieler einpflegen
+                    // Abend-Beteiligungscheck für jeden Spieler einpflegen
                     sortedEveningPlayers.forEach(p => {
                         let isQualified = true;
                         if (match.mode === 'detailed' && match.games) {
@@ -3538,7 +3538,7 @@
                                         if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-955 font-black shadow-xs";
                                         else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-100 font-extrabold";
                                         else if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
-                                        else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 dark:bg-red-950/50 dark:text-red-400 font-bold border border-red-300 dark:border-red-900";
+                                        else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 dark:bg-red-955/50 dark:text-red-400 font-bold border border-red-300 dark:border-red-900";
 
                                         return `
                                             <div class="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 p-2 rounded-lg flex flex-col justify-between">
@@ -3576,9 +3576,9 @@
                                             if (g.isRoundMarker) {
                                                 return `
                                                 <div class="relative flex py-1.5 items-center">
-                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-950"></div>
+                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
                                                     <span class="flex-shrink mx-3 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-955/40 px-2 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/60 shadow-sm">Runde ${g.roundNumber}</span>
-                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-950"></div>
+                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
                                                 </div>`;
                                             }
                                             const gm = normalizeGame(g);
