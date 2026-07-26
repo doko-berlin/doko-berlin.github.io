@@ -12,6 +12,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
@@ -32,7 +33,7 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans p-4 md:p-8 transition-colors duration-200">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-101 font-sans p-4 md:p-8 transition-colors duration-200">
 
     <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
@@ -57,13 +58,27 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.3 -->
+                <!-- Version 1.4 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.3</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">21.07.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.4</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Firebase-Login:</strong> Einführung einer Benutzeranmeldung zum Schutz der Datenbank.</li>
+                        <li><strong>Grafik-Interaktion:</strong> Schaltflächen über dem Saisonverlauf zum Ein- und Ausblenden einzelner Kurven.</li>
+                        <li><strong>Wertungsausschluss:</strong> Option „Teilnahme &lt; 60 %“ zum manuellen Ausschluss von Spielern aus der Statistik (Nullsummenprüfung bleibt aktiv).</li>
+                        <li><strong>Auswahl Gastgeber:</strong> Neuer Dropdown-Punkt „Extern/App“.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.3 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.3</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">21.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Nachtmodus:</strong> Integration eines manuellen Schalters für ein augenschonendes dunkles Layout.</li>
                         <li><strong>Excel-Export:</strong> Migration auf xlsx-js-style für einen gestalteten Export im Doko-Branding.</li>
                         <li><strong>Offline-Backup:</strong> Automatische Sicherung des Live-Entwurfs im lokalen Speicher gegen Verbindungsabbrüche.</li>
@@ -74,10 +89,10 @@
                 <!-- Version 1.2 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.2</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.07.2026</span>
+                        <span class="text-sm font-bold text-slate-500 dark:text-slate-400">Version 1.2</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.07.2026</span>
                     </div>
-                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                    <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Excel-Export:</strong> Kompletter Neuaufbau des Exports als strukturierte Excel-Arbeitsmappe (.xlsx) für alle Saisondaten.</li>
                         <li><strong>Regelwerk:</strong> Integration eines Infofensters mit den vollständigen Doko-Hausregeln.</li>
                         <li><strong>Saisonspezifische Mindestquote:</strong> Option zur Konfiguration der erforderlichen Mindestquote pro Saison im Admin-Bereich.</li>
@@ -90,10 +105,10 @@
                 <!-- Version 1.1 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-500 dark:text-slate-350">Version 1.1</span>
-                        <span class="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
+                        <span class="text-sm font-bold text-slate-400 dark:text-slate-500">Version 1.1</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
                     </div>
-                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                    <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Live-Ansicht:</strong> Umstellung auf eine tabellarische Ergebnis-Matrix. Die kumulierten Gesamtpunkte stehen dauerhaft in der obersten Zeile.</li>
                         <li><strong>Pflichtsolos:</strong> Status-Badge hinter den Spielernamen im Tabellenkopf platziert. Anzeige des Solo-Typs direkt bei den Punkten im jeweiligen Spiel.</li>
                         <li><strong>Anpassungen Ergebnis-Eingabe:</strong> Tracking der Sonderspiele (Hochzeit, Armut, Abgabe) entfernt. Einführung der Option „Ansage“ pro Spieler und Spiel sowie des neuen Solos „hängen gelassen“.</li>
@@ -108,10 +123,10 @@
                 <!-- Version 1.0 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-500">Version 1.0</span>
-                        <span class="text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.07.2026</span>
+                        <span class="text-sm font-bold text-slate-400 dark:text-slate-500">Version 1.0</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.07.2026</span>
                     </div>
-                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                    <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Basis-Release</strong> der Doko-Saisonverwaltung.</li>
                         <li>Zentrale Verwaltung von Saisons, Spielern und Abenden.</li>
                         <li>Berechnung von Saison-Tabellen, Bestenlisten und grafischen Verläufen.</li>
@@ -152,18 +167,18 @@
                             <ul class="list-disc list-inside space-y-1 pl-1">
                                 <li><strong>Fleischlos (Farblos):</strong> Kein Trumpf im Spiel. Reihenfolge: Ass, Zehn, König, Dame, Bube.</li>
                                 <li><strong>Kreuz / Pik / Herz / Karo:</strong> Farbsolos. Trumpf sind die Herz-Zehnen, die Damen, die Buben sowie alle Karten der angesagten Trumpffarbe.</li>
-                                <li><strong>Buben-Solo:</strong> Ausschließlich die Buben are Trumpf.</li>
-                                <li><strong>Damen-Solo:</strong> Ausschließlich die Damen are Trumpf.</li>
+                                <li><strong>Buben-Solo:</strong> Ausschließlich die Buben sind Trumpf.</li>
+                                <li><strong>Damen-Solo:</strong> Ausschließlich die Damen sind Trumpf.</li>
                             </ul>
                         </div>
 
                         <div>
                             <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-wider mb-1">Anmeldung & Prioritäten</h4>
                             <ul class="list-disc list-inside space-y-1.5 pl-1">
-                                <li><strong>Ansagereihenfolge:</strong> Die Vorbehaltsansage erfolgt chronologisch: <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Gesund/Vorbehalt</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Klein/Groß</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Lust-/Pflichtsolo</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">konkrete Vorbehalts-Nennung</span>.</li>
+                                <li><strong>Ansagereihenfolge:</strong> Die Vorbehaltsansage erfolgt chronologisch: <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Gesund/Vorbehalt</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Klein/Groß</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Lust-/Pflichtsolo</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">konkrete Vorbehalts-Nennung</span>.</li>
                                 <li><strong>Bedenkzeit:</strong> Die Ansage „Gesund“ oder „Vorbehalt“ kann so lange zurückgenommen oder geändert werden, bis sich der nachfolgende reguläre Spieler geäußert hat.</li>
                                 <li><strong>Solo-Priorität:</strong> Haben mehrere Spieler ein Solo angemeldet, gilt folgende Rangfolge zur Ermittlung des Ausspielers:
-                                    <ol class="list-decimal list-inside pl-4 space-y-0.5 mt-1 font-medium text-slate-500 dark:text-slate-400">
+                                    <ol class="list-decimal list-inside pl-4 space-y-0.5 mt-1 font-medium text-slate-505 dark:text-slate-400">
                                         <li>Pflichtsolo schlägt Lustsolo.</li>
                                         <li>Art des Solos (Damen, Buben, Kreuz, Pik, Herz, Karo, Fleischlos).</li>
                                         <li>Sitzposition (Sitzreihenfolge ab Geber).</li>
@@ -203,12 +218,12 @@
                 <div class="space-y-2">
                     <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">4. Pflichtsoli & Ausnahmen</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
-                        <li><strong>Pflichtsolo pro Abend:</strong> Jeder active Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
+                        <li><strong>Pflichtsolo pro Abend:</strong> Jeder aktive Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
                         <li><strong>Spaßspieler:</strong> Personen, die sich zu Beginn des Abends als Spaßspieler deklarieren, spielen außerhalb der Wertung. Sie dürfen kein Pflichtsolo spielen und maximal 3 Runden mitspielen.</li>
                         <li><strong>Vorzeitiges Verlassen:</strong> Spieler, die den Spielabend vorzeitig verlassen müssen, sind verpflichtet, ihr Pflichtsolo vorher abzuleisten, unabhängig von der Anzahl der bis dahin gespielten Runden.</li>
                         <li><strong>Geberfolge beim Pflichtsolo:</strong> Das Pflichtsolo kommt normal heraus. Die Person, die das Pflichtsolo ausgeteilt hat, gibt auch das darauffolgende Spiel noch einmal.</li>
                         <li><strong>Ausnahmeregelungen:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-1 mt-1 text-slate-500 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
                                 <li>Eine Stille Hochzeit oder das Hängengelassenwerden bei einer Hochzeit können wahlweise als Pflichtsolo gewertet werden (Entscheidung liegt beim Spieler).</li>
                                 <li>Bei einer Stillen Hochzeit darf der Alleinspieler am Ende entscheiden, ob das Spiel als Pflicht- oder Lustsolo gezählt wird (sofern das Pflichtsolo noch offen war).</li>
                             </ul>
@@ -216,9 +231,9 @@
                     </ul>
                 </div>
 
-                <!-- 5. Strafenkatalog (-13 Punkte) -->
+                <!-- 5. Strafen (-13 Punkte) -->
                 <div class="bg-red-50 dark:bg-red-955/20 border border-red-200 dark:border-red-900/50 rounded-xl p-3.5 space-y-2">
-                    <h3 class="text-sm font-bold text-red-800 dark:text-red-400 flex items-center gap-1.5">🚨 5. Strafenkatalog (-13 Punkte)</h3>
+                    <h3 class="text-sm font-bold text-red-800 dark:text-red-400 flex items-center gap-1.5">🚨 5. Strafen (-13 Punkte)</h3>
                     <p class="font-medium text-red-900 dark:text-red-300 mb-1">Folgende Regelverstöße werden am Ende des Abends mit -13 Strafpunkten geahndet. Das betroffene Spiel wird umgehend abgebrochen und wiederholt:</p>
                     <ul class="list-disc list-inside pl-1 space-y-1.5 text-red-900 dark:text-red-200 font-medium">
                         <li>Falsch bedient (Bedienfehler).</li>
@@ -234,13 +249,13 @@
                     <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">6. Organisatorisches & Spielbetrieb</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Wertungsquoten:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-500 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
                                 <li>Um in die Tageswertung zu kommen, ist eine Anwesenheitsquote von mindestens 60 % an dem Abend erforderlich.</li>
                                 <li>Um in die Saisonwertung zu kommen, muss die Teilnahmequote an den Spieltagen mindestens 40 % betragen.</li>
                             </ul>
                         </li>
                         <li><strong>Fehler in der Geberreihenfolge:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-500 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
                                 <li>Wird ein Fehler vor Ende des darauffolgenden Spiels bemerkt, wird das aktuell laufende Spiel abgebrochen, annulliert und in korrekter Reihenfolge neu gegeben.</li>
                                 <li>Wird der Fehler erst später bemerkt, kann das fehlende Spiel nachgeholt werden, sofern es eindeutig identifizierbar ist. Anderenfalls wird normal weitergespielt (zu viel gegebene Spiele bleiben gewertet).</li>
                             </ul>
@@ -259,7 +274,7 @@
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 shrink-0">
-                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-101 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
@@ -270,31 +285,31 @@
                         <div class="bg-gray-50 dark:bg-slate-900 p-3 rounded border border-gray-200 dark:border-slate-700 space-y-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">📅 Spieldatum:</label>
-                                <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm">
+                                <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">🏠 Gastgeber:</label>
-                                <select id="matchHostSelect" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm font-medium">
+                                <select id="matchHostSelect" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm font-medium">
                                     <option value="">-- Gastgeber wählen --</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 dark:bg-slate-900 p-1 rounded-lg">
+                    <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-101 dark:bg-slate-900 p-1 rounded-lg">
                         <button type="button" id="modeSimpleBtn" onclick="setEntryMode('simple')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">📝 Nur Endergebnis</button>
                         <button type="button" id="modeDetailedBtn" onclick="setEntryMode('detailed')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">🎮 Spiel für Spiel</button>
                     </div>
 
-                    <div id="historicalPointTypeContainer" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 dark:bg-slate-900 p-1 rounded-lg">
+                    <div id="historicalPointTypeContainer" class="hidden grid grid-cols-2 gap-1.5 bg-gray-101 dark:bg-slate-900 p-1 rounded-lg">
                         <!-- Wird dynamisch befüllt -->
                     </div>
 
                     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
-                    <p class="text-[10px] text-gray-400 dark:text-slate-500 -mt-1 font-medium select-none" id="dragHint">💡 Spieler per Drag &amp; Drop (⠿) in die gewünschte Sitzreihenfolge ziehen.</p>
+                    <p class="text-[10px] text-gray-400 dark:text-slate-505 -mt-1 font-medium select-none" id="dragHint">💡 Spieler per Drag &amp; Drop (⠿) in die gewünschte Sitzreihenfolge ziehen.</p>
                     <div id="matchPlayersContainer" class="space-y-2"></div>
 
-                    <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200 dark:border-slate-700"></div>
+                    <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200/50 dark:border-slate-700"></div>
 
                     <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
                 </div>
@@ -303,7 +318,7 @@
             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Spieler dieser Saison</h2>
                 <div class="flex gap-2 mb-4">
-                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
                     <button onclick="addPlayer()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
                 </div>
                 <div id="playerList" class="flex flex-wrap gap-2"></div>
@@ -313,18 +328,18 @@
                 <h2 class="text-lg font-semibold border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Saison-Einstellungen</h2>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Ausgewählte Saison bearbeiten:</label>
-                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
+                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Erforderliche Gesamt-Teilnahmequote (%):</label>
-                    <input id="seasonMinQuota" type="number" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" onchange="updateSeasonMinQuota()">
+                    <input id="seasonMinQuota" type="number" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" onchange="updateSeasonMinQuota()">
                 </div>
                 <div class="pt-2 border-t border-gray-100 dark:border-slate-700 space-y-2">
                     <p class="text-xs text-gray-500 dark:text-slate-400 font-medium">Neue Saison anlegen:</p>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] text-gray-500 dark:text-slate-400">Halbjahr:</label>
-                            <select id="newSeasonHalf" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs">
+                            <select id="newSeasonHalf" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs">
                                 <option value="Erstes Halbjahr">Erstes Halbjahr</option>
                                 <option value="Zweites Halbjahr">Zweites Halbjahr</option>
                             </select>
@@ -336,7 +351,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] text-gray-500 dark:text-slate-400">Mindestquote für Wertung (%):</label>
-                        <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
+                        <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
                     </div>
                     <div class="flex items-center gap-2 pt-1">
                         <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
@@ -351,7 +366,32 @@
         </div>
     </div>
 
-    <div class="max-w-5xl mx-auto space-y-6">
+    <!-- Login-Fenster -->
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 md:p-8">
+            <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-emerald-800 dark:text-emerald-400">Doko-Saisonverwaltung</h1>
+            <p class="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">Bitte melde dich an, um fortzufahren.</p>
+            <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1" for="loginUsername">Benutzername</label>
+                    <input type="text" id="loginUsername" autocomplete="username" required
+                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1" for="loginPassword">Passwort</label>
+                    <input type="password" id="loginPassword" autocomplete="current-password" required
+                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div id="loginError" class="hidden text-sm text-red-600 dark:text-red-400 font-semibold text-center"></div>
+                <button type="submit" id="loginSubmitBtn"
+                    class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl font-bold cursor-pointer transition">
+                    Anmelden
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="appContent" class="max-w-5xl mx-auto space-y-6 hidden">
         
         <!-- Dezent platzierte Utility-Leiste oberhalb des Headers -->
         <div class="flex justify-between items-center text-xs text-slate-500 px-1 py-1">
@@ -366,8 +406,11 @@
                     🌙 Nachtmodus
                 </button>
             </div>
-            <div class="flex items-center p-1.5">
+            <div class="flex items-center gap-2 p-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block" id="statusDot" title="Verbinde..."></span>
+                <button onclick="handleLogout()" class="hover:text-red-700 dark:hover:text-red-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    🚪 Abmelden
+                </button>
             </div>
         </div>
 
@@ -452,7 +495,7 @@
                             <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
                             ⚡ Blitztabelle
                         </label>
-                        <button id="excelExportBtn" onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                        <button id="excelExportBtn" onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-201 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-301 dark:border-slate-600 shadow-sm transition flex items-center gap-1 cursor-pointer">
                             📊 Excel-Export
                         </button>
                     </div>
@@ -469,7 +512,7 @@
                                 <th class="p-3 text-right">Saison-Pkt</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardBody" class="divide-y divide-gray-100 dark:divide-slate-700 text-sm"></tbody>
+                        <tbody id="leaderboardBody" class="divide-y divide-gray-101 dark:divide-slate-700 text-sm"></tbody>
                     </table>
                 </div>
                 <p id="tableHint" class="text-[11px] text-gray-500 dark:text-slate-400 mt-3 italic"></p>
@@ -477,6 +520,7 @@
 
             <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
                 <h2 class="text-xl font-bold mb-4 border-b dark:border-slate-700 pb-3 text-slate-900 dark:text-white">📈 Saisonverlauf (Abend-Platzierungen)</h2>
+                <div id="chartLegendContainer" class="flex flex-wrap gap-2 mb-4"></div>
                 <div class="relative w-full" style="height: 320px;">
                     <canvas id="saisonVerlaufChart"></canvas>
                 </div>
@@ -546,6 +590,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const auth = firebase.auth();
 
         let state = { seasons: {}, currentSeasonKey: "" };
         let courseChartInstance = null;
@@ -555,6 +600,14 @@
         let entryMode = 'simple';
         let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
         let detailedGames = [];
+        
+        // Lokaler Formularzwischenspeicher zum Erhalt von Eingaben bei Rendering-Schleifen
+        let tempScores = {};
+        let tempJokers = {};
+        let matchBelowSixty = {};
+
+        // Zustand für ein- und auszublendende Spieler in der Verlaufsgrafik
+        let hiddenChartPlayers = {};
 
         let eveningCharts = {};
         let liveStatsExpanded = false;
@@ -666,10 +719,10 @@
                                 valStr = `${item.value} Ansagen`;
                             }
 
-                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-955 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-500 dark:bg-slate-850 dark:text-slate-400'));
+                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-955 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-101 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-505 dark:bg-slate-850 dark:text-slate-400'));
                             
                             return `
-                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
+                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-101 dark:border-slate-800 hover:bg-slate-101/50 dark:hover:bg-slate-700/50 transition">
                                     <div class="flex items-center gap-3 truncate mr-2">
                                         <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${index + 1}</span>
                                         <div class="truncate">
@@ -697,6 +750,7 @@
         }
 
         function changeMatchPointType(type) {
+            saveFormToTemp();
             render();
         }
 
@@ -813,6 +867,24 @@
             return { ratePercent, isQualified };
         }
 
+        // Ermittelt, ob ein Spieler für ein bestimmtes Match komplett disqualifiziert (Teilnahme < 60 %) ist [11]
+        function isPlayerDisqualifiedInMatch(match, name) {
+            if (!match) return false;
+            if (match.belowSixty && match.belowSixty[name] === true) {
+                return true;
+            }
+            if (match.mode === 'detailed' && match.games) {
+                const playersCount = match.order ? match.order.length : Object.keys(match.scores || {}).length;
+                if (playersCount >= 5) {
+                    const rate = getEveningParticipation(match, name);
+                    if (rate < 0.60) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
         // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
         function hasPlayedPflichtsolo(name) {
@@ -888,7 +960,7 @@
             if (!container) return;
 
             if (!order || order.length === 0 || !games || games.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-400 italic p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">Keine Spieldaten für Statistiken vorhanden.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-400 italic p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-lg">Keine Spieldaten für Statistiken vorhanden.</p>`;
                 return;
             }
 
@@ -896,30 +968,30 @@
             let matrixHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700 dark:text-slate-300">🤝 Kooperations-Matrix (Ø Punkte als Partner | Anzahl)</p>
-                    <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
+                    <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
                         <table class="w-full text-left border-collapse text-[10px] min-w-[320px]">
                             <thead>
-                                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                    <th class="p-2 font-bold border-r border-slate-200 dark:border-slate-700">Spieler</th>
-                                    ${order.map(p => `<th class="p-2 font-bold text-center border-r border-slate-200 dark:border-slate-700">${p}</th>`).join('')}
+                                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200/60 dark:border-slate-700">
+                                    <th class="p-2 font-bold border-r border-slate-200/60 dark:border-slate-700">Spieler</th>
+                                    ${order.map(p => `<th class="p-2 font-bold text-center border-r border-slate-200/60 dark:border-slate-700">${p}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
                                 ${order.map(p1 => `
                                     <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                        <td class="p-2 font-bold bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">${p1}</td>
+                                        <td class="p-2 font-bold bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${p1}</td>
                                         ${order.map(p2 => {
                                             if (p1 === p2) {
-                                                return `<td class="p-2 text-center text-gray-300 dark:text-slate-600 bg-gray-50/50 dark:bg-slate-800/20 border-r border-slate-200 dark:border-slate-700">-</td>`;
+                                                return `<td class="p-2 text-center text-gray-300 dark:text-slate-600 bg-gray-50/50 dark:bg-slate-800/20 border-r border-slate-200/60 dark:border-slate-700">-</td>`;
                                             }
                                             const cell = matrix[p1][p2];
                                             if (cell.count === 0) {
-                                                return `<td class="p-2 text-center text-gray-400 dark:text-slate-600 border-r border-slate-200 dark:border-slate-700">-</td>`;
+                                                return `<td class="p-2 text-center text-gray-400 dark:text-slate-600 border-r border-slate-200/60 dark:border-slate-700">-</td>`;
                                             }
                                             const avg = cell.sum / cell.count;
-                                            const colorCls = avg > 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : (avg < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-500');
+                                            const colorCls = avg > 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : (avg < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-505');
                                             const sign = avg > 0 ? '+' : '';
-                                            return `<td class="p-2 text-center border-r border-slate-200 dark:border-slate-700 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 dark:text-slate-500 font-normal">(${cell.count})</span></td>`;
+                                            return `<td class="p-2 text-center border-r border-slate-200/60 dark:border-slate-700 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 dark:text-slate-505 font-normal">(${cell.count})</span></td>`;
                                         }).join('')}
                                     </tr>
                                 `).join('')}
@@ -950,13 +1022,13 @@
             let soloHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700 dark:text-slate-300">🃏 Soloquote</p>
-                    <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
+                    <div class="overflow-x-auto border border-slate-200/60 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900">
                         <table class="w-full text-left border-collapse text-[10px] min-w-[320px]">
                             <thead>
-                                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200 dark:border-slate-700">
-                                    <th class="p-2 font-bold border-r border-slate-200 dark:border-slate-700">Spieler</th>
-                                    <th class="p-2 font-bold text-center border-r border-slate-200 dark:border-slate-700">Gespielt</th>
-                                    <th class="p-2 font-bold text-center border-r border-slate-200 dark:border-slate-700">Gewonnen</th>
+                                <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200/60 dark:border-slate-700">
+                                    <th class="p-2 font-bold border-r border-slate-200/60 dark:border-slate-700">Spieler</th>
+                                    <th class="p-2 font-bold text-center border-r border-slate-200/60 dark:border-slate-700">Gespielt</th>
+                                    <th class="p-2 font-bold text-center border-r border-slate-200/60 dark:border-slate-700">Gewonnen</th>
                                     <th class="p-2 font-bold text-center">Quote</th>
                                 </tr>
                             </thead>
@@ -965,12 +1037,12 @@
                                     const stat = soloStats[p];
                                     const quote = stat.played > 0 ? Math.round((stat.won / stat.played) * 100) : null;
                                     const quoteStr = quote !== null ? `${quote} %` : '-';
-                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-500 font-semibold') : 'text-gray-400 dark:text-slate-600';
+                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-505 font-semibold') : 'text-gray-400 dark:text-slate-600';
                                     return `
                                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                            <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-700">${p}</td>
-                                            <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">${stat.played}</td>
-                                            <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200 dark:border-slate-700">${stat.won}</td>
+                                            <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${p}</td>
+                                            <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200/60 dark:border-slate-700">${stat.played}</td>
+                                            <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200/60 dark:border-slate-700">${stat.won}</td>
                                             <td class="p-2 text-center ${quoteCls}">${quoteStr}</td>
                                         </tr>
                                     `;
@@ -984,7 +1056,7 @@
             let chartHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700 dark:text-slate-300">📈 Verlauf des Abends (Kumulierte Gesamtpunkte)</p>
-                    <div class="relative w-full border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-2" style="height: 220px;">
+                    <div class="relative w-full border border-slate-200/60 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-2" style="height: 220px;">
                         <canvas id="${canvasId}"></canvas>
                     </div>
                 </div>
@@ -1165,12 +1237,13 @@
                 detailedGames: detailedGames,
                 matchDate: dateInput ? dateInput.value : '',
                 host: host,
+                belowSixty: matchBelowSixty,
                 timestamp: Date.now()
             };
 
             season.liveDraft = draftObj;
             
-            // Offline-Fallback: Lokaler Zwischenspeicher des Drafts pro Saison
+            // Offline-Backup-Logik (Verbindung mit localStorage)
             localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
             
             saveToCloud();
@@ -1222,6 +1295,38 @@
             }
         }
 
+        // Sichert Formulareingaben temporär im Cache gegen Re-Render-Verluste
+        function saveFormToTemp() {
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (!season) return;
+            const seasonPlayers = season.players || [];
+            seasonPlayers.forEach(name => {
+                const input = document.getElementById(`score-${name}`);
+                if (input) {
+                    tempScores[name] = input.value;
+                }
+                const joker = document.getElementById(`joker-${name}`);
+                if (joker) {
+                    tempJokers[name] = joker.checked;
+                }
+            });
+        }
+
+        // Setzt den Disqualifikations-Zustand manuell über den Formularbutton
+        function toggleBelowSixty(name) {
+            saveFormToTemp();
+            matchBelowSixty[name] = !matchBelowSixty[name];
+            updateLiveDraft();
+            render();
+        }
+
+        // Toggles Dataset Visibility im Verlaufschart
+        function toggleChartPlayer(name) {
+            hiddenChartPlayers[name] = !hiddenChartPlayers[name];
+            render();
+        }
+
         function openPlayerDetails(playerName) {
             const season = state.seasons[state.currentSeasonKey];
             if (!season || !season.matches) return;
@@ -1231,6 +1336,7 @@
                 const match = season.matches[key];
                 const isSpieltagMatch = !season.isHistorical || match.pointType === 'spieltag';
                 if (isSpieltagMatch && match.scores && match.scores[playerName] !== undefined) {
+                    if (isPlayerDisqualifiedInMatch(match, playerName)) return; // Disqualifizierte Abende überspringen [11]
                     history.push({ date: match.date, score: match.scores[playerName] });
                 }
             });
@@ -1254,14 +1360,14 @@
 
                 modalContent.innerHTML = `
                     <div class="space-y-4">
-                        <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+                        <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-200/60 dark:border-slate-800">
                             <p class="text-xs text-gray-500 dark:text-slate-400 uppercase font-bold mb-2">Teilnahmen / Spieltagspunkte</p>
                             <div class="flex justify-between items-center text-sm font-semibold">
-                                <span class="text-gray-600 dark:text-slate-350">Teilnahmen:</span>
+                                <span class="text-gray-600 dark:text-slate-355">Teilnahmen:</span>
                                 <span class="text-lg font-bold">${history.length}</span>
                             </div>
                             <div class="flex justify-between items-center text-sm font-semibold mt-1">
-                                <span class="text-gray-600 dark:text-slate-350">Spieltagspunkte:</span>
+                                <span class="text-gray-600 dark:text-slate-355">Spieltagspunkte:</span>
                                 <span class="text-lg font-bold ${totalPoints > 0 ? 'text-emerald-600 dark:text-emerald-400' : totalPoints < 0 ? 'text-red-600' : ''}">${pointsSign}${totalPoints}</span>
                             </div>
                         </div>
@@ -1274,7 +1380,7 @@
                             <div class="bg-red-50 dark:bg-red-955/20 p-3 rounded-lg border border-red-200 dark:border-red-900/60 text-red-900 dark:text-red-400">
                                 <p class="text-[10px] uppercase font-bold">Schlechtester</p>
                                 <p class="font-bold">${worstSign}${worst.score}</p>
-                                <p class="text-[10px] text-red-600 dark:text-red-500">${padDateString(worst.date)}</p>
+                                <p class="text-[10px] text-red-600 dark:text-red-505">${padDateString(worst.date)}</p>
                             </div>
                         </div>
                         <div class="bg-slate-800 dark:bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center border dark:border-slate-800">
@@ -1321,6 +1427,9 @@
                     const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
                     const hasActiveDraft = !!(season && season.liveDraft);
                     editingMatchId = null;
+                    tempScores = {};
+                    tempJokers = {};
+                    matchBelowSixty = {};
                     document.getElementById('saveMatchBtn').textContent = "Abend speichern";
                     if (!hasActiveDraft) {
                         document.getElementById('matchDate').value = "";
@@ -1363,7 +1472,13 @@
             render();
         }
 
-        db.ref('doko_v2_data').on('value', (snapshot) => {
+        let dbListenerAttached = false;
+
+        function startDatabaseListener() {
+            if (dbListenerAttached) return;
+            dbListenerAttached = true;
+
+            db.ref('doko_v2_data').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && data.seasons) {
                 state.seasons = data.seasons;
@@ -1437,10 +1552,12 @@
                     entryMode = finalLive.entryMode || 'simple';
                     detailedOrder = finalLive.detailedOrder || [];
                     detailedGames = (finalLive.detailedGames || []).map(normalizeGame);
+                    matchBelowSixty = finalLive.belowSixty || {};
                 } else {
                     entryMode = 'simple';
                     detailedOrder = [];
                     detailedGames = [];
+                    matchBelowSixty = {};
                 }
             }
 
@@ -1468,13 +1585,98 @@
                 dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 inline-block";
                 dot.title = "Fehler!";
             }
-        });
+
+            // Kurz nach dem Login kann die Datenbankverbindung den Auth-Token noch nicht
+            // übernommen haben (Race Condition). In dem Fall automatisch neu verbinden,
+            // solange noch ein Nutzer angemeldet ist.
+            if (auth.currentUser) {
+                dbListenerAttached = false;
+                setTimeout(() => startDatabaseListener(), 1000);
+            }
+            });
+        }
 
         function saveToCloud() {
             db.ref('doko_v2_data').set({
                 seasons: state.seasons
             });
         }
+
+        // === LOGIN / AUTHENTIFIZIERUNG ===
+        function usernameToEmail(username) {
+            const trimmed = (username || '').trim();
+            if (trimmed.includes('@')) return trimmed;
+            return trimmed + '@doko-app.local';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const usernameInput = document.getElementById('loginUsername');
+            const passwordInput = document.getElementById('loginPassword');
+            const errorBox = document.getElementById('loginError');
+            const submitBtn = document.getElementById('loginSubmitBtn');
+
+            const email = usernameToEmail(usernameInput.value);
+            const password = passwordInput.value;
+
+            errorBox.classList.add('hidden');
+            errorBox.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Anmelden...';
+
+            auth.signInWithEmailAndPassword(email, password)
+                .catch((error) => {
+                    let msg = 'Anmeldung fehlgeschlagen. Bitte prüfe Benutzername und Passwort.';
+                    if (error && (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found' || error.code === 'auth/invalid-email')) {
+                        msg = 'Benutzername oder Passwort ist falsch.';
+                    } else if (error && error.code === 'auth/too-many-requests') {
+                        msg = 'Zu viele Fehlversuche. Bitte kurz warten und erneut versuchen.';
+                    }
+                    errorBox.textContent = msg;
+                    errorBox.classList.remove('hidden');
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Anmelden';
+                });
+
+            return false;
+        }
+
+        function handleLogout() {
+            if (!confirm('Möchtest du dich wirklich abmelden?')) return;
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged((user) => {
+            const loginScreen = document.getElementById('loginScreen');
+            const appContent = document.getElementById('appContent');
+
+            if (user) {
+                // Erfolgreich angemeldet: App freischalten und Datenbank-Listener starten
+                if (loginScreen) loginScreen.classList.add('hidden');
+                if (appContent) appContent.classList.remove('hidden');
+                const passwordInput = document.getElementById('loginPassword');
+                if (passwordInput) passwordInput.value = '';
+                const dot = document.getElementById('statusDot');
+                if (dot) {
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block";
+                    dot.title = "Verbinde...";
+                }
+                // Kurz auf den bestätigten Auth-Token warten, damit die Datenbank-Regeln
+                // beim ersten Verbindungsaufbau bereits den angemeldeten Zustand sehen.
+                user.getIdToken().then(() => startDatabaseListener()).catch(() => startDatabaseListener());
+            } else {
+                // Nicht angemeldet: App verstecken, Login-Fenster zeigen
+                if (appContent) appContent.classList.add('hidden');
+                if (loginScreen) loginScreen.classList.remove('hidden');
+
+                // Alten Listener sauber trennen, damit bei der nächsten Anmeldung
+                // wieder eine frische Verbindung aufgebaut wird.
+                db.ref('doko_v2_data').off();
+                dbListenerAttached = false;
+            }
+        });
 
         function addPlayer() {
             if (!state.currentSeasonKey) return alert("Bitte wähle oder erstelle zuerst eine Saison!");
@@ -1530,10 +1732,12 @@
                 entryMode = live.entryMode || 'simple';
                 detailedOrder = live.detailedOrder || [];
                 detailedGames = (live.detailedGames || []).map(normalizeGame);
+                matchBelowSixty = live.belowSixty || {};
             } else {
                 entryMode = 'simple';
                 detailedOrder = [];
                 detailedGames = [];
+                matchBelowSixty = {};
             }
             render();
         }
@@ -1583,6 +1787,10 @@
             if (!match) return;
 
             editingMatchId = matchId;
+            tempScores = {};
+            tempJokers = {};
+            matchBelowSixty = match.belowSixty || {};
+
             const dateInput = document.getElementById('matchDate');
             if (dateInput) dateInput.value = parseGermanDateToYMD(match.date);
 
@@ -1641,7 +1849,7 @@
             }, 100);
         }
 
-        // Berechnet die Platzierungspunkte für ein Match, unter Berücksichtigung der 60 %-Beteiligungsregel
+        // Berechnet die Platzierungspunkte für ein Match, unter Berücksichtigung der 60 %-Beteiligungsregel und des manuellen Schalters [11]
         function getPlacementScoresForMatch(matchScores, match) {
             let participants = Object.keys(matchScores).map(name => {
                 let isQualified = true;
@@ -1654,6 +1862,12 @@
                         }
                     }
                 }
+                
+                // Manuelle Deklaration ("Teilnahme < 60 %") berücksichtigen [11]
+                if (match && match.belowSixty && match.belowSixty[name] === true) {
+                    isQualified = false;
+                }
+                
                 return { name, realScore: matchScores[name], isQualified };
             });
 
@@ -1703,9 +1917,9 @@
             matchesEntries.forEach(([id, match]) => {
                 if (!match.scores) return;
 
-                // 1. Teilnahmen erfassen
+                // 1. Teilnahmen erfassen (nur, wenn der Spieler nicht disqualifiziert ist) [11]
                 Object.keys(match.scores).forEach(name => {
-                    if (matchCounts[name] !== undefined) matchCounts[name]++;
+                    if (matchCounts[name] !== undefined && !isPlayerDisqualifiedInMatch(match, name)) matchCounts[name]++;
                 });
 
                 // 2. Platzierungspunkte für den Abend bestimmen
@@ -1719,9 +1933,10 @@
                     }
                 });
 
-                // 4. Rekorde nur bei regulären Saisons erfassen
+                // 4. Rekorde nur bei regulären Saisons erfassen und nur von qualifizierten Spielern [11]
                 if (!season.isHistorical) {
                     Object.keys(match.scores).forEach(name => {
+                        if (isPlayerDisqualifiedInMatch(match, name)) return;
                         let score = match.scores[name];
                         if (score > maxWin.score) maxWin = { score: score, player: name, date: match.date, season: seasonKey };
                         if (score < maxLoss.score) maxLoss = { score: score, player: name, date: match.date, season: seasonKey };
@@ -1739,10 +1954,12 @@
                     mode: 'detailed',
                     order: detailedOrder,
                     games: detailedGames,
-                    scores: currentTotals
+                    scores: currentTotals,
+                    belowSixty: matchBelowSixty
                 };
                 let placements = getPlacementScoresForMatch(currentTotals, tempMatch);
                 Object.keys(placements).forEach(name => {
+                    if (isPlayerDisqualifiedInMatch(tempMatch, name)) return;
                     if (totalSeasonPoints[name] !== undefined) totalSeasonPoints[name] += placements[name];
                     if (matchCounts[name] !== undefined) matchCounts[name]++;
                 });
@@ -1783,8 +2000,12 @@
                 Object.values(season.matches).forEach(match => {
                     if (!match.scores) return;
 
-                    // 1. Tagessieg calculation
-                    let sortedEvening = Object.keys(match.scores).map(p => ({ name: p, score: match.scores[p] })).sort((a,b) => b.score - a.score);
+                    // 1. Tagessieg calculation (nur von nicht-disqualifizierten Spielern) [11]
+                    let sortedEvening = Object.keys(match.scores)
+                        .filter(p => !isPlayerDisqualifiedInMatch(match, p))
+                        .map(p => ({ name: p, score: match.scores[p] }))
+                        .sort((a,b) => b.score - a.score);
+                        
                     if (sortedEvening.length > 0) {
                         let maxScore = sortedEvening[0].score;
                         sortedEvening.forEach(p => {
@@ -1794,10 +2015,11 @@
                         });
                     }
 
-                    // 2. Host-Statistik & Punktesammelgott
+                    // 2. Host-Statistik & Punktesammelgott (ohne disqualifizierte Leistungen) [11]
                     const isMatchdayData = !isHist || match.pointType === 'spieltag';
                     if (isMatchdayData) {
                         Object.keys(match.scores).forEach(name => {
+                            if (isPlayerDisqualifiedInMatch(match, name)) return;
                             let score = match.scores[name];
                             if (globalTotalPoints[name] !== undefined) {
                                 globalTotalPoints[name] += score;
@@ -1916,6 +2138,7 @@
             entryMode = mode;
             detailedOrder = [];
             detailedGames = [];
+            matchBelowSixty = {};
             updateLiveDraft();
             render();
         }
@@ -1946,6 +2169,7 @@
         }
 
         function togglePlayerSelected(name, checked) {
+            saveFormToTemp();
             if (entryMode === 'detailed' && detailedGames.length > 0) {
                 if (!confirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
                     const cb = document.getElementById(`check-${name}`);
@@ -1953,6 +2177,12 @@
                     return;
                 }
                 detailedGames = [];
+            }
+
+            if (!checked) {
+                delete tempScores[name];
+                delete tempJokers[name];
+                delete matchBelowSixty[name];
             }
 
             const scoreInput = document.getElementById(`score-${name}`);
@@ -2152,7 +2382,7 @@
                         <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-955/30 border border-indigo-200 dark:border-indigo-900 rounded-lg p-2 text-xs text-indigo-900 dark:text-indigo-300 font-bold">
                             <span class="flex items-center gap-1">Runde ${g.roundNumber}</span>
                             ${g.isVirtualPlaceholder ? '' : `
-                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde löschen">🗑️</button>
+                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde loeschen">🗑️</button>
                             `}
                         </div>
                     `;
@@ -2167,7 +2397,7 @@
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
                                 if (g.points[name] === undefined) {
-                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-700">${name} (aus)</span>`;
+                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-505 border border-gray-200 dark:border-slate-700">${name} (aus)</span>`;
                                 }
                                 const val = g.points[name];
                                 const cls = val >= 0 ? 'bg-emerald-50 dark:bg-emerald-955/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-955/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900';
@@ -2205,8 +2435,8 @@
 
             const newRoundHtml = `
                 <div class="bg-amber-50/70 dark:bg-amber-955/20 border border-amber-200 dark:border-amber-900 rounded-xl p-3 space-y-2">
-                    <p class="text-xs font-bold text-amber-800 dark:text-amber-300">➕ Spiel ${nextGameIndex + 1} erfassen</p>
-                    ${detailedOrder.length > 4 ? '<p class="text-[10px] text-amber-700 dark:text-slate-500">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>' : ''}
+                    <p class="text-xs font-bold text-amber-800 dark:text-amber-350">➕ Spiel ${nextGameIndex + 1} erfassen</p>
+                    ${detailedOrder.length > 4 ? '<p class="text-[10px] text-amber-700 dark:text-slate-505">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>' : ''}
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
                             const isOut = suggestedOut.includes(name);
@@ -2234,13 +2464,13 @@
                                     <div id="gamesolowrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400"><input type="checkbox" id="gamesolo-${name}" onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
                                         <span id="gamesolokindwrap-${name}" class="hidden">
-                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
+                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded p-1 text-[10px] bg-white">
                                                 <option value="pflicht">Pflichtsolo</option>
                                                 <option value="lust">Lustsolo</option>
                                             </select>
                                         </span>
                                         <span id="gamesolotypewrap-${name}" class="hidden">
-                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
+                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded p-1 text-[10px] bg-white">
                                                 ${SOLO_TYPES.map(t => `<option value="${t}">${t}</option>`).join('')}
                                             </select>
                                         </span>
@@ -2410,7 +2640,9 @@
 
             if (doubleJokerError) return;
             if (count < 4 || count > 7) return alert("4 bis 7 Spieler erlaubt!");
-            if (host && !matchScores.hasOwnProperty(host)) return alert("Der Gastgeber muss mitgespielt haben!");
+            
+            // Wenn der Gastgeber "Extern/App" ist, überspringen wir die Überprüfung [11]
+            if (host && host !== 'Extern/App' && !matchScores.hasOwnProperty(host)) return alert("Der Gastgeber muss mitgespielt haben!");
 
             const matchId = editingMatchId ? editingMatchId : 'match_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
@@ -2420,6 +2652,7 @@
                 host,
                 scores: matchScores,
                 jokers: matchJokers,
+                belowSixty: matchBelowSixty,
                 timestamp,
                 createdTimestamp: Date.now(),
                 mode: useDetailedMode ? 'detailed' : 'simple',
@@ -2439,6 +2672,9 @@
             entryMode = 'simple';
             detailedOrder = [];
             detailedGames = [];
+            tempScores = {};
+            tempJokers = {};
+            matchBelowSixty = {};
             
             liveStatsExpanded = false;
             const liveStatsCont = document.getElementById('liveStatsContainer');
@@ -2456,6 +2692,10 @@
                 courseChartInstance.destroy();
                 courseChartInstance = null;
             }
+
+            const legendContainer = document.getElementById('chartLegendContainer');
+            if (legendContainer) legendContainer.innerHTML = '';
+
             if (!season || !season.matches || Object.keys(season.matches).length === 0) return;
 
             const sortedMatches = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
@@ -2467,7 +2707,11 @@
 
             sortedMatches.forEach((match, index) => {
                 labels.push(padDateString(match.date));
-                let participants = Object.keys(match.scores || {}).map(name => ({ name, score: match.scores[name] }));
+                
+                // Disqualifizierte Leistungen aus der Ranking-Verlaufslinie herausfiltern [11]
+                let participants = Object.keys(match.scores || {})
+                    .filter(name => !isPlayerDisqualifiedInMatch(match, name))
+                    .map(name => ({ name, score: match.scores[name] }));
                 participants.sort((a, b) => b.score - a.score);
 
                 let eveningRanks = {};
@@ -2490,6 +2734,30 @@
 
             const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
 
+            // Erstelle interaktive HTML-Legende
+            if (legendContainer) {
+                legendContainer.innerHTML = seasonPlayers.map((name, i) => {
+                    const color = colors[i % colors.length];
+                    const isHidden = hiddenChartPlayers[name] === true;
+                    
+                    // Nur Spieler anzeigen, die an mindestens einem Abend ein valides Ergebnis erzielt haben
+                    const hasData = rankHistory[name] && rankHistory[name].some(val => val !== null);
+                    if (!hasData) return '';
+
+                    return `
+                        <button onclick="toggleChartPlayer('${name}')" 
+                            class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border
+                            ${isHidden 
+                                ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:text-slate-600 dark:border-slate-700 opacity-60' 
+                                : 'bg-white text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700'
+                            }">
+                            <span class="w-2.5 h-2.5 rounded-full mr-2 shrink-0 transition" style="background-color: ${isHidden ? '#94a3b8' : color}"></span>
+                            <span class="${isHidden ? 'line-through' : ''}">${name}</span>
+                        </button>
+                    `;
+                }).join('');
+            }
+
             let datasets = seasonPlayers.map((name, i) => ({
                 label: name,
                 data: rankHistory[name],
@@ -2503,7 +2771,8 @@
                 pointHoverRadius: 7,
                 pointHitRadius: 10,
                 borderCapStyle: 'round',
-                borderJoinStyle: 'round'
+                borderJoinStyle: 'round',
+                hidden: hiddenChartPlayers[name] === true // Steuert Sichtbarkeit über Chart.js [11]
             })).filter(ds => ds.data.some(val => val !== null));
 
             const isDark = document.documentElement.classList.contains('dark');
@@ -2538,7 +2807,7 @@
                         }
                     },
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 12, color: textColor } },
+                        legend: { display: false }, // Verstecke eingebaute unhandliche Legende
                         tooltip: { callbacks: { label: context => `${context.dataset.label}: Platz ${context.raw} an diesem Abend` } }
                     }
                 }
@@ -2680,15 +2949,17 @@
                         if (!match.scores) return;
                         
                         let sortedEvening = Object.keys(match.scores).map(pName => {
-                            let isQualified = true;
+                            let isQualified = !isPlayerDisqualifiedInMatch(match, pName);
                             let ratePercent = 100;
                             if (match.mode === 'detailed' && match.games) {
                                 const playersCount = match.order ? match.order.length : Object.keys(match.scores).length;
                                 if (playersCount >= 5) {
                                     const rate = getEveningParticipation(match, pName);
                                     ratePercent = Math.round(rate * 100);
-                                    if (rate < 0.60) isQualified = false;
                                 }
+                            }
+                            if (match.belowSixty && match.belowSixty[pName] === true) {
+                                ratePercent = 0;
                             }
                             return {
                                 name: pName,
@@ -2986,6 +3257,7 @@
             const historicalPointTypeContainer = document.getElementById('historicalPointTypeContainer');
             const modeToggle = document.getElementById('entryModeToggle');
 
+            let currentPointType = 'spieltag';
             if (season) {
                 document.getElementById('formTitle').textContent = editingMatchId ? "Abend bearbeiten" : (isHist ? "Alten Abend eintragen" : "Abend eintragen");
                 document.getElementById('modernFormFields').style.display = "block";
@@ -2996,21 +3268,20 @@
                     entryMode = 'simple';
                     historicalPointTypeContainer.classList.remove('hidden');
                     
-                    let currentType = 'platzierung';
                     if (editingMatchId && season.matches && season.matches[editingMatchId]) {
-                        currentType = season.matches[editingMatchId].pointType || 'platzierung';
+                        currentPointType = season.matches[editingMatchId].pointType || 'spieltag';
                     } else {
                         const checkedRadio = document.querySelector('input[name="matchPointType"]:checked');
-                        if (checkedRadio) currentType = checkedRadio.value;
+                        if (checkedRadio) currentPointType = checkedRadio.value;
                     }
 
                     historicalPointTypeContainer.innerHTML = `
-                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentType === 'spieltag' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
-                            <input type="radio" name="matchPointType" value="spieltag" ${currentType === 'spieltag' ? 'checked' : ''} onchange="changeMatchPointType('spieltag')" class="hidden">
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'spieltag' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
+                            <input type="radio" name="matchPointType" value="spieltag" ${currentPointType === 'spieltag' ? 'checked' : ''} onchange="changeMatchPointType('spieltag')" class="hidden">
                             🪙 Spieltagspkt.
                         </label>
-                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentType === 'platzierung' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
-                            <input type="radio" name="matchPointType" value="platzierung" ${currentType === 'platzierung' ? 'checked' : ''} onchange="changeMatchPointType('platzierung')" class="hidden">
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'platzierung' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
+                            <input type="radio" name="matchPointType" value="platzierung" ${currentPointType === 'platzierung' ? 'checked' : ''} onchange="changeMatchPointType('platzierung')" class="hidden">
                             🏆 Platzierungspkt.
                         </label>
                     `;
@@ -3028,15 +3299,15 @@
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-955/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
                     ${name}
-                    <button onclick="removePlayer('${name}')" class="text-emerald-600 dark:text-emerald-500 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
+                    <button onclick="removePlayer('${name}')" class="text-emerald-600 dark:text-emerald-505 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
                 </span>
             `).join('');
 
             const hostSelect = document.getElementById('matchHostSelect');
             if (hostSelect) {
                 const currentVal = hostSelect.value;
-                hostSelect.innerHTML = '<option value="">-- Gastgeber wählen --</option>' + seasonPlayers.map(p => `<option value="${p}">${p}</option>`).join('');
-                if (currentVal && seasonPlayers.includes(currentVal)) {
+                hostSelect.innerHTML = '<option value="">-- Gastgeber wählen --</option>' + seasonPlayers.map(p => `<option value="${p}">${p}</option>`).join('') + '<option value="Extern/App">Extern/App</option>';
+                if (currentVal && (seasonPlayers.includes(currentVal) || currentVal === 'Extern/App')) {
                     hostSelect.value = currentVal;
                 } else if (season && season.liveDraft && season.liveDraft.host) {
                     hostSelect.value = season.liveDraft.host;
@@ -3089,6 +3360,9 @@
                 placeholderText = (currentType === 'spieltag') ? 'Spieltag-Pkt' : 'Platz-Pkt';
             }
 
+            // Bedingung für die Anzeige des "Teilnahme < 60%"-Buttons ermitteln [11]
+            const showBelowSixtyBtn = (!isHist) || (isHist && currentPointType === 'spieltag');
+
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
                 let isChecked = false;
@@ -3103,6 +3377,55 @@
                     }
                 }
 
+                // Erhaltene Werte aus dem Cache laden
+                let scoreVal = '';
+                if (tempScores[name] !== undefined) {
+                    scoreVal = tempScores[name];
+                } else if (editingMatchId && season.matches && season.matches[editingMatchId]) {
+                    const m = season.matches[editingMatchId];
+                    if (m.scores && m.scores[name] !== undefined) {
+                        scoreVal = m.scores[name];
+                    }
+                }
+
+                let jokerChecked = false;
+                if (tempJokers[name] !== undefined) {
+                    jokerChecked = tempJokers[name];
+                } else if (editingMatchId && season.matches && season.matches[editingMatchId]) {
+                    const m = season.matches[editingMatchId];
+                    if (m.jokers && m.jokers[name]) {
+                        jokerChecked = true;
+                    }
+                }
+
+                const belowSixtyActive = matchBelowSixty[name] === true;
+
+                const belowSixtyBtnHtml = showBelowSixtyBtn ? `
+                    <button type="button" onclick="toggleBelowSixty('${name}')" ${isChecked ? '' : 'disabled'} 
+                        class="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border select-none transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed
+                        ${belowSixtyActive 
+                            ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-955/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
+                            : 'bg-slate-100 text-slate-600 border-slate-201 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800'
+                        }"
+                        title="Klicken, um den Spieler manuell von der Wertung auszuschließen (Spitzenwerte & Quoten unberücksichtigt)">
+                        ⏳ Teilnahme &lt; 60%
+                    </button>
+                ` : '';
+
+                const sogHtml = isHist ? '' : `
+                    <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-955/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                        <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
+                    </label>
+                `;
+
+                const showBottomBar = (!isHist) || showBelowSixtyBtn;
+                const bottomBarHtml = showBottomBar ? `
+                    <div class="flex gap-2 justify-end pt-1 border-t border-gray-200/50 dark:border-slate-700">
+                        ${belowSixtyBtnHtml}
+                        ${sogHtml}
+                    </div>
+                ` : '';
+
                 return `
                     <div class="flex flex-col gap-2 p-2.5 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700" data-name="${name}">
                         <div class="flex items-center justify-between gap-2">
@@ -3115,17 +3438,11 @@
                             </div>
 
                             <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' ? 'hidden' : ''}">
-                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} placeholder="${placeholderText}" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
+                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} value="${scoreVal}" placeholder="${placeholderText}" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
                             </span>
                         </div>
 
-                        ${isHist ? '' : `
-                        <div id="simpleJokerWrap-${name}" class="flex gap-2 justify-end pt-1 border-t border-gray-200/50 dark:border-slate-700">
-                            <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-955/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-100' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
-                                <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
-                            </label>
-                        </div>
-                        `}
+                        ${bottomBarHtml}
                     </div>
                 `;
             }).join('');
@@ -3212,7 +3529,7 @@
 
                     detailedOrder.forEach(name => {
                         if (g.points[name] === undefined) {
-                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-100/40 align-top">-</td>`;
+                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-101/40 align-top">-</td>`;
                         } else {
                             const val = g.points[name];
                             const cls = val > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (val < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-500');
@@ -3230,7 +3547,7 @@
                             const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-955 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
 
                             tableRowsHtml += `
-                                <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
+                                <td class="p-2.5 text-center border-r border-amber-101/40 align-top">
                                     <span class="font-mono ${cls}">${sign}${val}</span>
                                     ${extraText}
                                 </td>`;
@@ -3309,27 +3626,27 @@
                                 ${jokerBadge}
                             </td>
                             <td class="p-3 text-right font-bold text-emerald-700 dark:text-emerald-400 text-base">${p.avg.toFixed(2)}</td>
-                            <td class="p-3 text-center text-gray-500 dark:text-slate-300">${p.played} / ${totalMatchesCount}</td>
+                            <td class="p-3 text-center text-gray-550 dark:text-slate-355">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-emerald-600 dark:text-emerald-400 font-bold">${Math.round(p.ratio * 100)} %</td>
                             <td class="p-3 text-right text-gray-500 dark:text-slate-400">${p.pts} Pkt.</td>
                         </tr>
                         `;
                     } else {
                         const playerNameContentUnqual = hasSpieltagspunkte
-                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${p.name}</button>`
-                            : `<span class="text-gray-500 dark:text-slate-400">${p.name}</span>`;
+                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-550 dark:text-slate-400">${p.name}</button>`
+                            : `<span class="text-gray-550 dark:text-slate-400">${p.name}</span>`;
 
                         return `
                         <tr class="bg-gray-50/50 dark:bg-slate-800/40 text-gray-400 dark:text-slate-500 italic">
                             <td class="p-3 text-center font-bold font-mono">-</td>
-                            <td class="p-3 font-medium flex items-center">
+                            <td class="p-3 font-semibold flex items-center">
                                 ${playerNameContentUnqual}
                                 ${jokerBadge}
                             </td>
                             <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
                             <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
-                            <td class="p-3 text-center text-amber-600 dark:text-amber-500 font-semibold">${Math.round(p.ratio * 100)} %</td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-500">${p.pts} Pkt.</td>
+                            <td class="p-3 text-center text-amber-600 dark:text-amber-505 font-semibold">${Math.round(p.ratio * 100)} %</td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-505">${p.pts} Pkt.</td>
                         </tr>
                         `;
                     }
@@ -3421,7 +3738,7 @@
                     `;
                 }
             } else {
-                leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 dark:text-slate-500 italic">Keine Daten.</td></tr>';
+                leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 dark:text-slate-505 italic">Keine Daten.</td></tr>';
             }
 
             const {
@@ -3489,6 +3806,9 @@
                                 if (rate < 0.60) isQualified = false;
                             }
                         }
+                        if (match.belowSixty && match.belowSixty[p.name] === true) {
+                            isQualified = false;
+                        }
                         p.isQualified = isQualified;
                     });
 
@@ -3513,9 +3833,9 @@
 
                     return `
                         <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 text-xs shadow-sm overflow-hidden">
-                            <div class="p-3 bg-slate-100 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                            <div class="p-3 bg-slate-101 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
                                 <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
-                                    <span class="font-bold text-gray-700 dark:text-slate-200 text-sm">${padDateString(match.date)}</span>
+                                    <span class="font-bold text-gray-700 dark:text-slate-201 text-sm">${padDateString(match.date)}</span>
                                     ${match.host ? `<span class="bg-amber-100 dark:bg-amber-955/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${match.host}</span>` : ''}
                                     ${jokerInfo}
                                     ${modeBadge}
@@ -3534,9 +3854,9 @@
                                         const scoreClass = score >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
                                         const prefix = score > 0 ? '+' : '';
                                         const rankNum = playerObj.rank;
-                                        let rankBadgeClass = "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300";
+                                        let rankBadgeClass = "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-305";
                                         if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-955 font-black shadow-xs";
-                                        else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-100 font-extrabold";
+                                        else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-101 font-extrabold";
                                         else if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
                                         else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 dark:bg-red-955/50 dark:text-red-400 font-bold border border-red-300 dark:border-red-900";
 
@@ -3553,6 +3873,8 @@
                                                         if (info) {
                                                             const cls = info.isQualified ? 'bg-emerald-50 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold';
                                                             return `<span class="text-[8px] px-1 py-0.5 rounded border ${cls}" title="Abendbeteiligung: ${info.ratePercent} % (Mind. 60 % erforderlich)">${info.ratePercent} % Bet.</span>`;
+                                                        } else if (match.belowSixty && match.belowSixty[p] === true) {
+                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60% Bet.</span>`;
                                                         }
                                                         return '';
                                                     })()}
@@ -3577,7 +3899,7 @@
                                                 return `
                                                 <div class="relative flex py-1.5 items-center">
                                                     <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
-                                                    <span class="flex-shrink mx-3 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-955/40 px-2 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/60 shadow-sm">Runde ${g.roundNumber}</span>
+                                                    <span class="flex-shrink mx-3 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-955/40 px-2 py-0.5 rounded border border-indigo-101 dark:border-indigo-900/60 shadow-sm">Runde ${g.roundNumber}</span>
                                                     <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
                                                 </div>`;
                                             }
