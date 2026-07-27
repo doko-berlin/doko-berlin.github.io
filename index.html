@@ -369,7 +369,7 @@
     <!-- Login-Fenster -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 md:p-8">
-            <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-emerald-800 dark:text-emerald-400">🃏 Doko-Saisonverwaltung</h1>
+            <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-emerald-800 dark:text-emerald-400">Doko-Saisonverwaltung</h1>
             <p class="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">Bitte melde dich an, um fortzufahren.</p>
             <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
                 <div>
@@ -392,27 +392,6 @@
     </div>
 
     <div id="appContent" class="max-w-5xl mx-auto space-y-6 hidden">
-        
-        <!-- Dezent platzierte Utility-Leiste oberhalb des Headers -->
-        <div class="flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-2 text-xs text-slate-500 px-1 py-1">
-            <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap border-t border-slate-200 dark:border-slate-700 sm:border-0 pt-2 sm:pt-0 mt-1 sm:mt-0">
-                <button onclick="openWhatsNewModal()" class="hover:text-emerald-700 dark:hover:text-emerald-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
-                    ✨ What's new?
-                </button>
-                <button onclick="openRegelnModal()" class="hover:text-emerald-700 dark:hover:text-emerald-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
-                    📜 Regeln
-                </button>
-                <button onclick="toggleDarkMode()" id="darkModeToggleBtn" class="hover:text-emerald-700 dark:hover:text-emerald-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
-                    🌙 Nachtmodus
-                </button>
-            </div>
-            <div class="flex items-center justify-center sm:justify-end gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block" id="statusDot" title="Verbinde..."></span>
-                <button onclick="handleLogout()" class="hover:text-red-700 dark:hover:text-red-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
-                    🚪 Abmelden
-                </button>
-            </div>
-        </div>
 
         <header class="text-center bg-gradient-to-br from-emerald-800 to-emerald-950 text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden border border-emerald-700/50">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.1),transparent)] pointer-events-none"></div>
@@ -442,6 +421,37 @@
                 </svg>
             </h1>
         </header>
+
+        <!-- Dezent platzierte Utility-Leiste unterhalb des Headers -->
+        <div class="flex items-center justify-between text-xs text-slate-500 px-1 py-1">
+            <div class="relative">
+                <button onclick="toggleHeaderMenu()" id="headerMenuBtn" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold transition cursor-pointer shadow-xs">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="4" y1="6" x2="20" y2="6"></line>
+                        <line x1="4" y1="12" x2="20" y2="12"></line>
+                        <line x1="4" y1="18" x2="20" y2="18"></line>
+                    </svg>
+                    Menü
+                </button>
+                <div id="headerMenuDropdown" class="hidden absolute left-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
+                    <button onclick="toggleDarkMode(); closeHeaderMenu();" id="darkModeToggleBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        🌙 Nachtmodus
+                    </button>
+                    <button onclick="openRegelnModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        📜 Regeln
+                    </button>
+                    <button onclick="openWhatsNewModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        ✨ What's new?
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block" id="statusDot" title="Verbinde..."></span>
+                <button onclick="handleLogout()" class="hover:text-red-700 dark:hover:text-red-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
+                    Abmelden
+                </button>
+            </div>
+        </div>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700">
             <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -546,6 +556,31 @@
 
     <script>
         // === DARK MODE SYSTEM & LOCAL STORAGE INIT ===
+        function toggleHeaderMenu() {
+            const dropdown = document.getElementById('headerMenuDropdown');
+            const btn = document.getElementById('headerMenuBtn');
+            if (!dropdown || !btn) return;
+            const isHidden = dropdown.classList.contains('hidden');
+            dropdown.classList.toggle('hidden', !isHidden);
+            btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        }
+
+        function closeHeaderMenu() {
+            const dropdown = document.getElementById('headerMenuDropdown');
+            const btn = document.getElementById('headerMenuBtn');
+            if (dropdown) dropdown.classList.add('hidden');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('click', (event) => {
+            const dropdown = document.getElementById('headerMenuDropdown');
+            const btn = document.getElementById('headerMenuBtn');
+            if (!dropdown || dropdown.classList.contains('hidden')) return;
+            if (!dropdown.contains(event.target) && !btn.contains(event.target)) {
+                closeHeaderMenu();
+            }
+        });
+
         function initDarkMode() {
             const savedMode = localStorage.getItem('doko_dark_mode');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
