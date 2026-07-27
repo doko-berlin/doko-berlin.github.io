@@ -922,25 +922,10 @@
 
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
         // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
-        function hasPlayedPflichtsolo(name) {
-            return detailedGames.some(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
-        }
-
         // Gibt den Typ des gespielten Pflichtsolos zurück (z.B. 'Damen'), oder null falls noch offen.
         function getPlayedPflichtsoloType(name) {
             const playedGame = detailedGames.find(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
             return playedGame ? (playedGame.soloType?.[name] || 'Pflicht') : null;
-        }
-
-        function makeEmptyGame() {
-            return {
-                sittingOut: [],
-                points: {},
-                solo: {},
-                soloKind: {},
-                soloType: {},
-                ansage: {}
-            };
         }
 
         function normalizeGame(game) {
@@ -1238,23 +1223,6 @@
                 }
             }
         }
-
-        function getNextRoundNumber() {
-            const markers = detailedGames.filter(g => g.isRoundMarker);
-            return markers.length + 2; 
-        }
-
-        function startNewRound() {
-            const nextNum = getNextRoundNumber();
-            detailedGames.push({
-                isRoundMarker: true,
-                roundNumber: nextNum
-            });
-            updateLiveDraft();
-            if (isBlitztabelleActive) render();
-            else renderDetailedSection();
-        }
-        // ==========================================
 
         function updateLiveDraft() {
             if (editingMatchId) return;
