@@ -33,7 +33,21 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-101 font-sans p-4 md:p-8 transition-colors duration-200">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans p-4 md:p-8 transition-colors duration-200">
+
+    <!-- Toast-Container (ersetzt native alert()-Meldungen) -->
+    <div id="toastContainer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+    <!-- Bestätigungs-Modal (ersetzt native confirm()-Dialoge) -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
+            <p id="confirmModalMessage" class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line"></p>
+            <div class="flex gap-3 mt-6">
+                <button id="confirmModalCancelBtn" class="flex-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2 rounded-xl font-bold cursor-pointer transition">Abbrechen</button>
+                <button id="confirmModalOkBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-xl font-bold cursor-pointer transition">Bestätigen</button>
+            </div>
+        </div>
+    </div>
 
     <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
@@ -58,13 +72,31 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.4 -->
+                <!-- Version 1.5 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.4</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.07.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">27.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Menü:</strong> Buttons zu einem Hamburger-Menü zusammengefasst (Nachtmodus, Regeln, What's new).</li>
+                        <li><strong>Spieltage-Ansicht:</strong> Ergebnisse pro Abend jetzt einzeilig untereinander statt im Raster.</li>
+                        <li><strong>Spieltage einklappbar:</strong> Abende sind standardmäßig eingeklappt, Sieger direkt in der Kopfzeile sichtbar.</li>
+                        <li><strong>Dark-Mode:</strong> Zahlreiche fehlerhafte Farbwerte im Dunkelmodus korrigiert.</li>
+                        <li><strong>Bestätigungs- &amp; Erfolgsmeldungen:</strong> Native Browser-Dialoge durch animierte Toasts und Bestätigungsfenster im App-Design ersetzt – blockiert den Bedienfluss nicht mehr.</li>
+                        <li><strong>Nullsummen-Autoergänzung:</strong> Der vierte Punktwert bei „Spiel für Spiel“ wird als Vorschlag angezeigt und beim Speichern automatisch berechnet, sobald drei Werte eingetragen sind.</li>
+                        <li><strong>Spiele direkt bearbeiten:</strong> Neue Bearbeiten-Funktion in der Spielliste zum Korrigieren einzelner bereits erfasster Spiele.</li>
+                        <li><strong>Höhere Datensicherheit:</strong> Eingabebereich kann nicht mehr von mehreren Spielern gleichzeitig geöffnet werden.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.4 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.4</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Firebase-Login:</strong> Einführung einer Benutzeranmeldung zum Schutz der Datenbank.</li>
                         <li><strong>Grafik-Interaktion:</strong> Schaltflächen über dem Saisonverlauf zum Ein- und Ausblenden einzelner Kurven.</li>
                         <li><strong>Wertungsausschluss:</strong> Option „Teilnahme &lt; 60 %“ zum manuellen Ausschluss von Spielern aus der Statistik (Nullsummenprüfung bleibt aktiv).</li>
@@ -75,10 +107,10 @@
                 <!-- Version 1.3 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.3</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">21.07.2026</span>
+                        <span class="text-sm font-bold text-slate-500 dark:text-slate-400">Version 1.3</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">21.07.2026</span>
                     </div>
-                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                    <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Nachtmodus:</strong> Integration eines manuellen Schalters für ein augenschonendes dunkles Layout.</li>
                         <li><strong>Excel-Export:</strong> Migration auf xlsx-js-style für einen gestalteten Export im Doko-Branding.</li>
                         <li><strong>Offline-Backup:</strong> Automatische Sicherung des Live-Entwurfs im lokalen Speicher gegen Verbindungsabbrüche.</li>
@@ -89,8 +121,8 @@
                 <!-- Version 1.2 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-500 dark:text-slate-400">Version 1.2</span>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.07.2026</span>
+                        <span class="text-sm font-bold text-slate-400 dark:text-slate-500">Version 1.2</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Excel-Export:</strong> Kompletter Neuaufbau des Exports als strukturierte Excel-Arbeitsmappe (.xlsx) für alle Saisondaten.</li>
@@ -106,7 +138,7 @@
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-bold text-slate-400 dark:text-slate-500">Version 1.1</span>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">18.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Live-Ansicht:</strong> Umstellung auf eine tabellarische Ergebnis-Matrix. Die kumulierten Gesamtpunkte stehen dauerhaft in der obersten Zeile.</li>
@@ -124,7 +156,7 @@
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
                         <span class="text-sm font-bold text-slate-400 dark:text-slate-500">Version 1.0</span>
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-101 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.07.2026</span>
+                        <span class="text-[10px] text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Basis-Release</strong> der Doko-Saisonverwaltung.</li>
@@ -175,10 +207,10 @@
                         <div>
                             <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-wider mb-1">Anmeldung & Prioritäten</h4>
                             <ul class="list-disc list-inside space-y-1.5 pl-1">
-                                <li><strong>Ansagereihenfolge:</strong> Die Vorbehaltsansage erfolgt chronologisch: <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Gesund/Vorbehalt</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Klein/Groß</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Lust-/Pflichtsolo</span> &rarr; <span class="bg-slate-101 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">konkrete Vorbehalts-Nennung</span>.</li>
+                                <li><strong>Ansagereihenfolge:</strong> Die Vorbehaltsansage erfolgt chronologisch: <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Gesund/Vorbehalt</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Klein/Groß</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">Lust-/Pflichtsolo</span> &rarr; <span class="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded text-[10px] font-semibold text-slate-700 dark:text-slate-300">konkrete Vorbehalts-Nennung</span>.</li>
                                 <li><strong>Bedenkzeit:</strong> Die Ansage „Gesund“ oder „Vorbehalt“ kann so lange zurückgenommen oder geändert werden, bis sich der nachfolgende reguläre Spieler geäußert hat.</li>
                                 <li><strong>Solo-Priorität:</strong> Haben mehrere Spieler ein Solo angemeldet, gilt folgende Rangfolge zur Ermittlung des Ausspielers:
-                                    <ol class="list-decimal list-inside pl-4 space-y-0.5 mt-1 font-medium text-slate-505 dark:text-slate-400">
+                                    <ol class="list-decimal list-inside pl-4 space-y-0.5 mt-1 font-medium text-slate-600 dark:text-slate-400">
                                         <li>Pflichtsolo schlägt Lustsolo.</li>
                                         <li>Art des Solos (Damen, Buben, Kreuz, Pik, Herz, Karo, Fleischlos).</li>
                                         <li>Sitzposition (Sitzreihenfolge ab Geber).</li>
@@ -223,7 +255,7 @@
                         <li><strong>Vorzeitiges Verlassen:</strong> Spieler, die den Spielabend vorzeitig verlassen müssen, sind verpflichtet, ihr Pflichtsolo vorher abzuleisten, unabhängig von der Anzahl der bis dahin gespielten Runden.</li>
                         <li><strong>Geberfolge beim Pflichtsolo:</strong> Das Pflichtsolo kommt normal heraus. Die Person, die das Pflichtsolo ausgeteilt hat, gibt auch das darauffolgende Spiel noch einmal.</li>
                         <li><strong>Ausnahmeregelungen:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-600 dark:text-slate-400">
                                 <li>Eine Stille Hochzeit oder das Hängengelassenwerden bei einer Hochzeit können wahlweise als Pflichtsolo gewertet werden (Entscheidung liegt beim Spieler).</li>
                                 <li>Bei einer Stillen Hochzeit darf der Alleinspieler am Ende entscheiden, ob das Spiel als Pflicht- oder Lustsolo gezählt wird (sofern das Pflichtsolo noch offen war).</li>
                             </ul>
@@ -232,7 +264,7 @@
                 </div>
 
                 <!-- 5. Strafen (-13 Punkte) -->
-                <div class="bg-red-50 dark:bg-red-955/20 border border-red-200 dark:border-red-900/50 rounded-xl p-3.5 space-y-2">
+                <div class="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-xl p-3.5 space-y-2">
                     <h3 class="text-sm font-bold text-red-800 dark:text-red-400 flex items-center gap-1.5">🚨 5. Strafen (-13 Punkte)</h3>
                     <p class="font-medium text-red-900 dark:text-red-300 mb-1">Folgende Regelverstöße werden am Ende des Abends mit -13 Strafpunkten geahndet. Das betroffene Spiel wird umgehend abgebrochen und wiederholt:</p>
                     <ul class="list-disc list-inside pl-1 space-y-1.5 text-red-900 dark:text-red-200 font-medium">
@@ -249,13 +281,13 @@
                     <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">6. Organisatorisches & Spielbetrieb</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Wertungsquoten:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-600 dark:text-slate-400">
                                 <li>Um in die Tageswertung zu kommen, ist eine Anwesenheitsquote von mindestens 60 % an dem Abend erforderlich.</li>
                                 <li>Um in die Saisonwertung zu kommen, muss die Teilnahmequote an den Spieltagen mindestens 40 % betragen.</li>
                             </ul>
                         </li>
                         <li><strong>Fehler in der Geberreihenfolge:</strong>
-                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-505 dark:text-slate-400">
+                            <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-600 dark:text-slate-400">
                                 <li>Wird ein Fehler vor Ende des darauffolgenden Spiels bemerkt, wird das aktuell laufende Spiel abgebrochen, annulliert und in korrekter Reihenfolge neu gegeben.</li>
                                 <li>Wird der Fehler erst später bemerkt, kann das fehlende Spiel nachgeholt werden, sofern es eindeutig identifizierbar ist. Anderenfalls wird normal weitergespielt (zu viel gegebene Spiele bleiben gewertet).</li>
                             </ul>
@@ -274,7 +306,7 @@
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 shrink-0">
-                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-101 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
@@ -285,28 +317,28 @@
                         <div class="bg-gray-50 dark:bg-slate-900 p-3 rounded border border-gray-200 dark:border-slate-700 space-y-3">
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">📅 Spieldatum:</label>
-                                <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm">
+                                <input id="matchDate" type="date" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm">
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">🏠 Gastgeber:</label>
-                                <select id="matchHostSelect" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm font-medium">
+                                <select id="matchHostSelect" onchange="updateLiveDraft()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm font-medium">
                                     <option value="">-- Gastgeber wählen --</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-101 dark:bg-slate-900 p-1 rounded-lg">
+                    <div id="entryModeToggle" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 dark:bg-slate-900 p-1 rounded-lg">
                         <button type="button" id="modeSimpleBtn" onclick="setEntryMode('simple')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">📝 Nur Endergebnis</button>
                         <button type="button" id="modeDetailedBtn" onclick="setEntryMode('detailed')" class="py-1.5 rounded-md text-xs font-bold transition cursor-pointer">🎮 Spiel für Spiel</button>
                     </div>
 
-                    <div id="historicalPointTypeContainer" class="hidden grid grid-cols-2 gap-1.5 bg-gray-101 dark:bg-slate-900 p-1 rounded-lg">
+                    <div id="historicalPointTypeContainer" class="hidden grid grid-cols-2 gap-1.5 bg-gray-100 dark:bg-slate-900 p-1 rounded-lg">
                         <!-- Wird dynamisch befüllt -->
                     </div>
 
                     <p class="text-xs font-semibold text-gray-500 dark:text-slate-400 pt-2" id="pointsLabel">Spieler / Status am Ende des Abends:</p>
-                    <p class="text-[10px] text-gray-400 dark:text-slate-505 -mt-1 font-medium select-none" id="dragHint">💡 Spieler per Drag &amp; Drop (⠿) in die gewünschte Sitzreihenfolge ziehen.</p>
+                    <p class="text-[10px] text-gray-400 dark:text-slate-500 -mt-1 font-medium select-none" id="dragHint">💡 Spieler per Drag &amp; Drop (⠿) in die gewünschte Sitzreihenfolge ziehen.</p>
                     <div id="matchPlayersContainer" class="space-y-2"></div>
 
                     <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200/50 dark:border-slate-700"></div>
@@ -318,7 +350,7 @@
             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Spieler dieser Saison</h2>
                 <div class="flex gap-2 mb-4">
-                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
                     <button onclick="addPlayer()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
                 </div>
                 <div id="playerList" class="flex flex-wrap gap-2"></div>
@@ -328,18 +360,18 @@
                 <h2 class="text-lg font-semibold border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Saison-Einstellungen</h2>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Ausgewählte Saison bearbeiten:</label>
-                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
+                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Erforderliche Gesamt-Teilnahmequote (%):</label>
-                    <input id="seasonMinQuota" type="number" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" onchange="updateSeasonMinQuota()">
+                    <input id="seasonMinQuota" type="number" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" onchange="updateSeasonMinQuota()">
                 </div>
                 <div class="pt-2 border-t border-gray-100 dark:border-slate-700 space-y-2">
                     <p class="text-xs text-gray-500 dark:text-slate-400 font-medium">Neue Saison anlegen:</p>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] text-gray-500 dark:text-slate-400">Halbjahr:</label>
-                            <select id="newSeasonHalf" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs">
+                            <select id="newSeasonHalf" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs">
                                 <option value="Erstes Halbjahr">Erstes Halbjahr</option>
                                 <option value="Zweites Halbjahr">Zweites Halbjahr</option>
                             </select>
@@ -351,7 +383,7 @@
                     </div>
                     <div>
                         <label class="block text-[10px] text-gray-500 dark:text-slate-400">Mindestquote für Wertung (%):</label>
-                        <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-101 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
+                        <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
                     </div>
                     <div class="flex items-center gap-2 pt-1">
                         <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
@@ -458,20 +490,20 @@
                 <label for="mainSeasonSelect" class="text-sm font-semibold text-slate-600 dark:text-slate-300 shrink-0">📅 Saison:</label>
                 <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 dark:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-56"></select>
             </div>
-            <button onclick="toggleAdminModal(true)" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
+            <button onclick="toggleAdminModal(true)" id="adminOpenBtn" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
                 ⚙️ Verwaltung & Eingabe
             </button>
         </div>
 
         <div class="space-y-6">
 
-            <div id="liveMatchViewer" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-955/20 dark:to-orange-955/30 p-4 md:p-6 rounded-2xl shadow-md border border-amber-200 dark:border-amber-900/60 hidden">
+            <div id="liveMatchViewer" class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/30 p-4 md:p-6 rounded-2xl shadow-md border border-amber-200 dark:border-amber-900/60 hidden">
                 <div class="flex items-center justify-between mb-4 border-b border-amber-200/60 dark:border-amber-900/40 pb-3 flex-wrap gap-2">
                     <div class="flex items-center gap-2">
                         <div class="w-3.5 h-3.5 bg-red-500 rounded-full animate-pulse shadow-sm border border-red-200 dark:border-red-800"></div>
                         <h2 class="text-xl font-bold text-amber-900 dark:text-amber-200">LIVE: Laufender Abend</h2>
                     </div>
-                    <span class="text-xs font-bold text-amber-800 dark:text-amber-350 bg-amber-100 dark:bg-amber-955/50 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-900 shadow-sm">
+                    <span class="text-xs font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/50 px-2.5 py-1 rounded-lg border border-amber-200 dark:border-amber-900 shadow-sm">
                         Spiele: <span id="liveViewerCount">0</span>
                     </span>
                 </div>
@@ -479,11 +511,11 @@
                 <div class="overflow-x-auto border border-amber-200 dark:border-amber-900/60 rounded-xl bg-white dark:bg-slate-800 shadow-sm">
                     <table class="w-full text-left border-collapse text-sm min-w-[600px]">
                         <thead>
-                            <tr class="bg-amber-100/50 dark:bg-amber-955/50 text-amber-955 dark:text-amber-100 border-b border-amber-200 dark:border-amber-900/60 font-bold" id="liveTableHeader">
+                            <tr class="bg-amber-100/50 dark:bg-amber-950/50 text-amber-950 dark:text-amber-100 border-b border-amber-200 dark:border-amber-900/60 font-bold" id="liveTableHeader">
                                 <!-- Wird dynamisch befüllt -->
                             </tr>
                         </thead>
-                        <tbody id="liveTableBody" class="divide-y divide-amber-100 dark:divide-amber-955/40">
+                        <tbody id="liveTableBody" class="divide-y divide-amber-100 dark:divide-amber-950/40">
                             <!-- Wird dynamisch befüllt -->
                         </tbody>
                     </table>
@@ -501,11 +533,11 @@
                 <div class="flex justify-between items-center mb-4 border-b dark:border-slate-700 pb-3 flex-wrap gap-2">
                     <h2 id="tableTitle" class="text-xl font-bold text-slate-900 dark:text-white">🏆 Live Saison-Tabelle</h2>
                     <div class="flex gap-2">
-                        <label id="blitztabelleToggleContainer" class="hidden items-center gap-1.5 cursor-pointer bg-amber-100 dark:bg-amber-955 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-amber-300 dark:border-amber-800 shadow-sm transition">
+                        <label id="blitztabelleToggleContainer" class="hidden items-center gap-1.5 cursor-pointer bg-amber-100 dark:bg-amber-950 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-amber-300 dark:border-amber-800 shadow-sm transition">
                             <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
                             ⚡ Blitztabelle
                         </label>
-                        <button id="excelExportBtn" onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-201 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-301 dark:border-slate-600 shadow-sm transition flex items-center gap-1 cursor-pointer">
+                        <button id="excelExportBtn" onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm transition flex items-center gap-1 cursor-pointer">
                             📊 Excel-Export
                         </button>
                     </div>
@@ -522,7 +554,7 @@
                                 <th class="p-3 text-right">Saison-Pkt</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardBody" class="divide-y divide-gray-101 dark:divide-slate-700 text-sm"></tbody>
+                        <tbody id="leaderboardBody" class="divide-y divide-gray-100 dark:divide-slate-700 text-sm"></tbody>
                     </table>
                 </div>
                 <p id="tableHint" class="text-[11px] text-gray-500 dark:text-slate-400 mt-3 italic"></p>
@@ -635,7 +667,8 @@
         let entryMode = 'simple';
         let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
         let detailedGames = [];
-        
+        let editingGameIndex = null; // Index des aktuell im Formular bearbeiteten Spiels (null = neues Spiel)
+
         // Lokaler Formularzwischenspeicher zum Erhalt von Eingaben bei Rendering-Schleifen
         let tempScores = {};
         let tempJokers = {};
@@ -644,9 +677,88 @@
         // Zustand für ein- und auszublendende Spieler in der Verlaufsgrafik
         let hiddenChartPlayers = {};
 
+        // ==============================
+        // Eingabebereich-Sperre (verhindert gleichzeitiges Bearbeiten durch mehrere Spieler)
+        // ==============================
+        const mySessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        let editLockInfo = null;       // { session, name, ts } aus der Cloud (null = frei)
+        let hasEditLock = false;       // true, wenn DIESE Sitzung die Sperre hält
+        let editLockListenerAttached = false;
+
+        // ==============================
+        // Toast- & Bestätigungs-System (Ersatz für native alert()/confirm())
+        // ==============================
+
+        /**
+         * Zeigt eine nicht-blockierende Toast-Meldung an.
+         * @param {string} message - Anzuzeigender Text
+         * @param {'success'|'error'|'info'} type - Steuert Farbe/Icon
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const styles = {
+                success: { bg: 'bg-emerald-600', icon: '✅' },
+                error: { bg: 'bg-red-600', icon: '⚠️' },
+                info: { bg: 'bg-slate-800 dark:bg-slate-700', icon: 'ℹ️' }
+            };
+            const s = styles[type] || styles.info;
+
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto ${s.bg} text-white text-sm font-semibold rounded-xl shadow-2xl px-4 py-3 w-full flex items-start gap-2 transition-all duration-300 opacity-0 translate-y-2`;
+            toast.innerHTML = `<span class="shrink-0">${s.icon}</span><span class="leading-snug">${message}</span>`;
+            container.appendChild(toast);
+
+            // Einblenden
+            requestAnimationFrame(() => {
+                toast.classList.remove('opacity-0', 'translate-y-2');
+            });
+
+            // Automatisch nach 3.5s ausblenden und entfernen
+            const duration = type === 'error' ? 4500 : 3000;
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        /**
+         * Ersetzt den nativen confirm()-Dialog durch ein Tailwind-Modal.
+         * @param {string} message
+         * @returns {Promise<boolean>} true = bestätigt, false = abgebrochen
+         */
+        function showConfirm(message) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('confirmModal');
+                const msgEl = document.getElementById('confirmModalMessage');
+                const okBtn = document.getElementById('confirmModalOkBtn');
+                const cancelBtn = document.getElementById('confirmModalCancelBtn');
+
+                msgEl.textContent = message;
+                modal.classList.remove('hidden');
+
+                const cleanup = (result) => {
+                    modal.classList.add('hidden');
+                    okBtn.removeEventListener('click', onOk);
+                    cancelBtn.removeEventListener('click', onCancel);
+                    modal.removeEventListener('click', onBackdrop);
+                    resolve(result);
+                };
+                const onOk = () => cleanup(true);
+                const onCancel = () => cleanup(false);
+                const onBackdrop = (e) => { if (e.target === modal) cleanup(false); };
+
+                okBtn.addEventListener('click', onOk);
+                cancelBtn.addEventListener('click', onCancel);
+                modal.addEventListener('click', onBackdrop);
+            });
+        }
+
         let eveningCharts = {};
         let liveStatsExpanded = false;
         let expandedMatchStats = {};
+        let expandedMatches = {};
 
         const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit', 'hängen gelassen'];
         const SOLO_KINDS = ['pflicht', 'lust'];
@@ -655,6 +767,14 @@
             if (kind === 'lust') return 'Lust';
             if (kind === 'pflicht') return 'Pflicht';
             return kind || '';
+        }
+
+        function soloDisplayLabel(kind, type) {
+            const label = soloKindLabel(kind);
+            const t = type || '';
+            if (label === 'Lust') return `Lustsolo ${t}`;
+            if (label === 'Pflicht') return `Pflichtsolo ${t}`;
+            return `Solo ${t}`;
         }
 
         // Steuerung Changelog Modal
@@ -754,10 +874,10 @@
                                 valStr = `${item.value} Ansagen`;
                             }
 
-                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-955 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-101 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-505 dark:bg-slate-850 dark:text-slate-400'));
+                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-900 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400'));
                             
                             return `
-                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-101 dark:border-slate-800 hover:bg-slate-101/50 dark:hover:bg-slate-700/50 transition">
+                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
                                     <div class="flex items-center gap-3 truncate mr-2">
                                         <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${index + 1}</span>
                                         <div class="truncate">
@@ -1009,9 +1129,9 @@
                                                 return `<td class="p-2 text-center text-gray-400 dark:text-slate-600 border-r border-slate-200/60 dark:border-slate-700">-</td>`;
                                             }
                                             const avg = cell.sum / cell.count;
-                                            const colorCls = avg > 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : (avg < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-505');
+                                            const colorCls = avg > 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : (avg < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-500');
                                             const sign = avg > 0 ? '+' : '';
-                                            return `<td class="p-2 text-center border-r border-slate-200/60 dark:border-slate-700 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 dark:text-slate-505 font-normal">(${cell.count})</span></td>`;
+                                            return `<td class="p-2 text-center border-r border-slate-200/60 dark:border-slate-700 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 dark:text-slate-500 font-normal">(${cell.count})</span></td>`;
                                         }).join('')}
                                     </tr>
                                 `).join('')}
@@ -1057,7 +1177,7 @@
                                     const stat = soloStats[p];
                                     const quote = stat.played > 0 ? Math.round((stat.won / stat.played) * 100) : null;
                                     const quoteStr = quote !== null ? `${quote} %` : '-';
-                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-505 font-semibold') : 'text-gray-400 dark:text-slate-600';
+                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-500 font-semibold') : 'text-gray-400 dark:text-slate-600';
                                     return `
                                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
                                             <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${p}</td>
@@ -1195,6 +1315,16 @@
             renderEveningStatsComponent('liveStatsContainer', 'liveEveningCourseChart', detailedOrder, detailedGames, 'live');
         }
 
+        function toggleMatchCard(matchId) {
+            const body = document.getElementById(`matchbody-${matchId}`);
+            const chevron = document.getElementById(`matchchevron-${matchId}`);
+            if (!body) return;
+            const isHidden = body.classList.contains('hidden');
+            body.classList.toggle('hidden', !isHidden);
+            expandedMatches[matchId] = isHidden;
+            if (chevron) chevron.style.transform = isHidden ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
         function toggleMatchStats(matchId) {
             const container = document.getElementById(`statscontainer-${matchId}`);
             const btn = document.getElementById(`toggleStatsBtn-${matchId}`);
@@ -1256,14 +1386,14 @@
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") {
-                alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+                showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
                 render();
                 return;
             }
             const input = document.getElementById('seasonMinQuota');
             const val = parseInt(input.value);
             if (isNaN(val) || val < 0 || val > 100) {
-                alert("Bitte einen Wert zwischen 0 und 100 eingeben.");
+                showToast("Bitte einen Wert zwischen 0 und 100 eingeben.", 'error');
                 render();
                 return;
             }
@@ -1366,24 +1496,24 @@
                         <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-200/60 dark:border-slate-800">
                             <p class="text-xs text-gray-500 dark:text-slate-400 uppercase font-bold mb-2">Teilnahmen / Spieltagspunkte</p>
                             <div class="flex justify-between items-center text-sm font-semibold">
-                                <span class="text-gray-600 dark:text-slate-355">Teilnahmen:</span>
+                                <span class="text-gray-600 dark:text-slate-400">Teilnahmen:</span>
                                 <span class="text-lg font-bold">${history.length}</span>
                             </div>
                             <div class="flex justify-between items-center text-sm font-semibold mt-1">
-                                <span class="text-gray-600 dark:text-slate-355">Spieltagspunkte:</span>
+                                <span class="text-gray-600 dark:text-slate-400">Spieltagspunkte:</span>
                                 <span class="text-lg font-bold ${totalPoints > 0 ? 'text-emerald-600 dark:text-emerald-400' : totalPoints < 0 ? 'text-red-600' : ''}">${pointsSign}${totalPoints}</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="bg-emerald-50 dark:bg-emerald-955/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-400">
+                            <div class="bg-emerald-50 dark:bg-emerald-950/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-400">
                                 <p class="text-[10px] uppercase font-bold">Bester</p>
                                 <p class="font-bold">${bestSign}${best.score}</p>
                                 <p class="text-[10px] text-emerald-600 dark:text-emerald-500">${padDateString(best.date)}</p>
                             </div>
-                            <div class="bg-red-50 dark:bg-red-955/20 p-3 rounded-lg border border-red-200 dark:border-red-900/60 text-red-900 dark:text-red-400">
+                            <div class="bg-red-50 dark:bg-red-950/20 p-3 rounded-lg border border-red-200 dark:border-red-900/60 text-red-900 dark:text-red-400">
                                 <p class="text-[10px] uppercase font-bold">Schlechtester</p>
                                 <p class="font-bold">${worstSign}${worst.score}</p>
-                                <p class="text-[10px] text-red-600 dark:text-red-505">${padDateString(worst.date)}</p>
+                                <p class="text-[10px] text-red-600 dark:text-red-400">${padDateString(worst.date)}</p>
                             </div>
                         </div>
                         <div class="bg-slate-800 dark:bg-slate-900 text-white p-3 rounded-lg flex justify-between items-center border dark:border-slate-800">
@@ -1417,12 +1547,20 @@
             const modal = document.getElementById('adminModal');
             const drawer = document.getElementById('adminDrawer');
             if (show) {
+                // Höhere Datensicherheit: Der Eingabebereich darf nicht gleichzeitig von
+                // mehreren Spielern geöffnet werden.
+                if (editLockInfo && !hasEditLock) {
+                    showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Bitte kurz warten.', 'error');
+                    return;
+                }
+                acquireEditLock();
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     drawer.classList.remove('translate-x-full');
                 }, 10);
             } else {
+                releaseEditLock();
                 modal.classList.add('opacity-0');
                 drawer.classList.add('translate-x-full');
                 setTimeout(() => {
@@ -1599,10 +1737,20 @@
             });
         }
 
-        function saveToCloud() {
+        function writeSeasonsToCloudRaw() {
             db.ref('doko_v2_data').set({
                 seasons: state.seasons
             });
+        }
+
+        function saveToCloud() {
+            // Höhere Datensicherheit: Nur wer aktuell den Eingabebereich geöffnet hat
+            // (und damit die Sperre hält), darf Daten in die Cloud hochladen.
+            if (!hasEditLock) {
+                console.warn('Schreibzugriff verweigert: Eingabebereich ist nicht durch diese Sitzung gesperrt.');
+                return;
+            }
+            writeSeasonsToCloudRaw();
         }
 
         // === LOGIN / AUTHENTIFIZIERUNG ===
@@ -1610,6 +1758,71 @@
             const trimmed = (username || '').trim();
             if (trimmed.includes('@')) return trimmed;
             return trimmed + '@doko-app.local';
+        }
+
+        // ==============================
+        // Eingabebereich-Sperre: Cloud-Listener & Steuerung
+        // ==============================
+        function startEditLockListener() {
+            if (editLockListenerAttached) return;
+            editLockListenerAttached = true;
+            db.ref('editLock').on('value', (snapshot) => {
+                editLockInfo = snapshot.val();
+                hasEditLock = !!(editLockInfo && editLockInfo.session === mySessionId);
+                updateEntryButtonLockUI();
+            });
+        }
+
+        function stopEditLockListener() {
+            db.ref('editLock').off();
+            editLockListenerAttached = false;
+            editLockInfo = null;
+            hasEditLock = false;
+        }
+
+        function updateEntryButtonLockUI() {
+            const btn = document.getElementById('adminOpenBtn');
+            if (!btn) return;
+            const modal = document.getElementById('adminModal');
+            const modalIsOpen = modal && !modal.classList.contains('hidden');
+
+            if (editLockInfo && !hasEditLock) {
+                btn.disabled = true;
+                btn.classList.add('opacity-60', 'cursor-not-allowed', 'grayscale');
+                btn.classList.remove('cursor-pointer');
+                btn.innerHTML = `🔒 Gesperrt`;
+                // Falls sich der Bereich gerade öffnet, während eine fremde Sperre eintrifft
+                // (Race Condition), sofort wieder schließen und informieren.
+                if (modalIsOpen && !hasEditLock) {
+                    toggleAdminModal(false);
+                    showToast('Der Eingabebereich wurde soeben von jemand anderem übernommen.', 'error');
+                }
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60', 'cursor-not-allowed', 'grayscale');
+                btn.classList.add('cursor-pointer');
+                btn.innerHTML = '⚙️ Verwaltung & Eingabe';
+            }
+        }
+
+        function acquireEditLock() {
+            const lockRef = db.ref('editLock');
+            lockRef.set({
+                session: mySessionId,
+                ts: firebase.database.ServerValue.TIMESTAMP
+            });
+            lockRef.onDisconnect().remove();
+        }
+
+        function releaseEditLockRaw() {
+            const lockRef = db.ref('editLock');
+            lockRef.onDisconnect().cancel();
+            lockRef.remove();
+        }
+
+        function releaseEditLock() {
+            if (!hasEditLock) return;
+            releaseEditLockRaw();
         }
 
         function handleLogin(event) {
@@ -1646,8 +1859,9 @@
             return false;
         }
 
-        function handleLogout() {
-            if (!confirm('Möchtest du dich wirklich abmelden?')) return;
+        async function handleLogout() {
+            if (!await showConfirm('Möchtest du dich wirklich abmelden?')) return;
+            releaseEditLock();
             auth.signOut();
         }
 
@@ -1668,7 +1882,7 @@
                 }
                 // Kurz auf den bestätigten Auth-Token warten, damit die Datenbank-Regeln
                 // beim ersten Verbindungsaufbau bereits den angemeldeten Zustand sehen.
-                user.getIdToken().then(() => startDatabaseListener()).catch(() => startDatabaseListener());
+                user.getIdToken().then(() => { startDatabaseListener(); startEditLockListener(); }).catch(() => { startDatabaseListener(); startEditLockListener(); });
             } else {
                 // Nicht angemeldet: App verstecken, Login-Fenster zeigen
                 if (appContent) appContent.classList.add('hidden');
@@ -1678,13 +1892,14 @@
                 // wieder eine frische Verbindung aufgebaut wird.
                 db.ref('doko_v2_data').off();
                 dbListenerAttached = false;
+                stopEditLockListener();
             }
         });
 
         function addPlayer() {
-            if (!state.currentSeasonKey) return alert("Bitte wähle oder erstelle zuerst eine Saison!");
+            if (!state.currentSeasonKey) return showToast("Bitte wähle oder erstelle zuerst eine Saison!", 'error');
             const season = state.seasons[state.currentSeasonKey];
-            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
 
             const input = document.getElementById('newPlayerName');
             const name = input.value.trim();
@@ -1697,12 +1912,12 @@
             }
         }
 
-        function removePlayer(name) {
+        async function removePlayer(name) {
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
-            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
 
-            if (confirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
+            if (await showConfirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
                 season.players = (season.players || []).filter(p => p !== name);
                 saveToCloud();
             }
@@ -1715,11 +1930,11 @@
             const minQuotaInput = document.getElementById('newSeasonMinQuota');
             const minQuota = minQuotaInput ? parseInt(minQuotaInput.value) : 40;
 
-            if (!year || year < 1900 || year > 2100) return alert("Ungültiges Jahr!");
-            if (isNaN(minQuota) || minQuota < 0 || minQuota > 100) return alert("Ungültige Quote (0-100 erlaubt)!");
+            if (!year || year < 1900 || year > 2100) return showToast("Ungültiges Jahr!", 'error');
+            if (isNaN(minQuota) || minQuota < 0 || minQuota > 100) return showToast("Ungültige Quote (0-100 erlaubt)!", 'error');
 
             const seasonKey = `${half} ${year}`;
-            if (state.seasons[seasonKey]) return alert("Existiert bereits!");
+            if (state.seasons[seasonKey]) return showToast("Existiert bereits!", 'error');
 
             state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, minQuota: minQuota, matches: {}, players: [] };
             state.currentSeasonKey = seasonKey;
@@ -1731,6 +1946,7 @@
         function changeSeasonView(selectId) {
             state.currentSeasonKey = document.getElementById(selectId).value;
             const live = state.seasons[state.currentSeasonKey]?.liveDraft;
+            editingGameIndex = null;
             if (live) {
                 entryMode = live.entryMode || 'simple';
                 detailedOrder = live.detailedOrder || [];
@@ -1745,19 +1961,19 @@
             render();
         }
 
-        function toggleSeasonStatus() {
+        async function toggleSeasonStatus() {
             if (!state.currentSeasonKey) return;
             const currentStatus = state.seasons[state.currentSeasonKey].status;
             const newStatus = currentStatus === "aktiv" ? "abgeschlossen" : "aktiv";
-            if (confirm(`Saison auf "${newStatus}" setzen?`)) {
+            if (await showConfirm(`Saison auf "${newStatus}" setzen?`)) {
                 state.seasons[state.currentSeasonKey].status = newStatus;
                 saveToCloud();
             }
         }
 
-        function deleteCurrentSeason() {
+        async function deleteCurrentSeason() {
             if (!state.currentSeasonKey) return;
-            if (confirm(`Möchtest du die Saison "${state.currentSeasonKey}" wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
+            if (await showConfirm(`Möchtest du die Saison "${state.currentSeasonKey}" wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
                 delete state.seasons[state.currentSeasonKey];
                 const keys = Object.keys(state.seasons);
                 if (keys.length > 0) {
@@ -1770,14 +1986,25 @@
             }
         }
 
-        function deleteMatch(matchId) {
+        async function deleteMatch(matchId) {
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
-            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
-            if (confirm("Möchtest du diesen Abend unwiderruflich löschen?")) {
+            if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
+            if (editLockInfo && !hasEditLock) {
+                return showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Löschen ist gerade nicht möglich.', 'error');
+            }
+            if (await showConfirm("Möchtest du diesen Abend unwiderruflich löschen?")) {
                 if (season.matches && season.matches[matchId]) {
                     delete season.matches[matchId];
-                    saveToCloud();
+                    if (hasEditLock) {
+                        saveToCloud();
+                    } else {
+                        // Sperre kurz belegen, damit der Löschvorgang sicher hochgeladen werden darf.
+                        acquireEditLock();
+                        writeSeasonsToCloudRaw();
+                        releaseEditLockRaw();
+                    }
+                    showToast("Abend gelöscht.", 'success');
                 }
             }
         }
@@ -1785,11 +2012,12 @@
         function editMatch(matchId) {
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
-            if (season.status === "abgeschlossen") return alert("Abgeschlossene Saisons können nicht bearbeitet werden!");
+            if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
             const match = season.matches[matchId];
             if (!match) return;
 
             editingMatchId = matchId;
+            editingGameIndex = null;
             tempScores = {};
             tempJokers = {};
             matchBelowSixty = match.belowSixty || {};
@@ -2133,14 +2361,15 @@
             };
         }
 
-        function setEntryMode(mode) {
+        async function setEntryMode(mode) {
             if (mode === entryMode) return;
             if (detailedOrder.length > 0 || detailedGames.length > 0) {
-                if (!confirm('Beim Wechsel des Eingabe-Modus gehen bereits erfasste Einzelspiele für diesen Abend verloren. Fortfahren?')) return;
+                if (!await showConfirm('Beim Wechsel des Eingabe-Modus gehen bereits erfasste Einzelspiele für diesen Abend verloren. Fortfahren?')) return;
             }
             entryMode = mode;
             detailedOrder = [];
             detailedGames = [];
+            editingGameIndex = null;
             matchBelowSixty = {};
             updateLiveDraft();
             render();
@@ -2171,15 +2400,16 @@
             }
         }
 
-        function togglePlayerSelected(name, checked) {
+        async function togglePlayerSelected(name, checked) {
             saveFormToTemp();
             if (entryMode === 'detailed' && detailedGames.length > 0) {
-                if (!confirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
+                if (!await showConfirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb) cb.checked = !checked;
                     return;
                 }
                 detailedGames = [];
+                editingGameIndex = null;
             }
 
             if (!checked) {
@@ -2286,23 +2516,68 @@
             if (typeWrap) typeWrap.classList.toggle('hidden', hidden);
             if (kindWrap) kindWrap.classList.toggle('hidden', hidden);
             if (ansageWrap) ansageWrap.classList.toggle('hidden', hidden);
+            autoFillZeroSumInDraft();
+        }
+
+        // Berechnet live den fehlenden vierten Punktwert, sobald drei der vier
+        // aktiven Spieler eine Punktzahl eingetragen haben, und zeigt ihn als
+        // grau hinterlegten Platzhalter-Vorschlag an (wird bei "Spiel speichern"
+        // automatisch übernommen, falls das Feld leer bleibt).
+        function autoFillZeroSumInDraft() {
+            const activeNames = detailedOrder.filter(name => {
+                const cb = document.getElementById('sitout-' + name);
+                return !(cb && cb.checked);
+            });
+            if (activeNames.length !== 4) return;
+
+            let sum = 0;
+            let emptyNames = [];
+
+            activeNames.forEach(name => {
+                const input = document.getElementById('gamepoint-' + name);
+                if (!input) return;
+                const raw = input.value.trim();
+                if (raw === '') {
+                    emptyNames.push(name);
+                } else {
+                    const val = parseInt(raw);
+                    if (!isNaN(val)) sum += val;
+                }
+            });
+
+            // Platzhalter zunächst zurücksetzen
+            activeNames.forEach(name => {
+                const input = document.getElementById('gamepoint-' + name);
+                if (input && input.value.trim() === '') input.placeholder = '0';
+            });
+
+            if (emptyNames.length === 1) {
+                const suggestion = -sum;
+                const input = document.getElementById('gamepoint-' + emptyNames[0]);
+                if (input) input.placeholder = `${suggestion > 0 ? '+' : ''}${suggestion} (Vorschlag)`;
+            }
         }
 
         function addGameRound() {
-            const suggestedOut = computeSittingOut(detailedGames.length);
+            const isEditing = editingGameIndex !== null;
+            const editingGame = isEditing ? detailedGames[editingGameIndex] : null;
+            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(detailedGames.length);
+
             let points = {};
             let solo = {};
             let soloKind = {};
             let soloType = {};
             let ansage = {};
+            let rawValues = {};
+            const activeNames = [];
 
             detailedOrder.forEach(name => {
                 const sitCb = document.getElementById('sitout-' + name);
                 const isSittingOut = sitCb ? sitCb.checked : suggestedOut.includes(name);
                 if (!isSittingOut) {
+                    activeNames.push(name);
                     const input = document.getElementById('gamepoint-' + name);
-                    const val = input ? parseInt(input.value) : NaN;
-                    points[name] = isNaN(val) ? 0 : val;
+                    rawValues[name] = input ? input.value.trim() : '';
 
                     const soloCb = document.getElementById('gamesolo-' + name);
                     const soloKindEl = document.getElementById('gamesolokind-' + name);
@@ -2320,38 +2595,90 @@
                 }
             });
 
-            const activeCount = Object.keys(points).length;
-            if (activeCount !== 4) {
-                return alert(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeCount}). Bitte die „aussetzen"-Auswahl prüfen.`);
+            if (activeNames.length !== 4) {
+                return showToast(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeNames.length}). Bitte die „aussetzen"-Auswahl prüfen.`, 'error');
             }
 
-            // Nullsummenprüfung für das einzelne Spiel
+            // Automatische Nullsummen-Ergänzung: Es muss maximal ein Feld leer bleiben,
+            // die App berechnet dessen Wert dann selbst aus den anderen drei.
+            const emptyNames = activeNames.filter(n => rawValues[n] === '');
+            const filledNames = activeNames.filter(n => rawValues[n] !== '');
+
+            if (emptyNames.length > 1) {
+                return showToast('Bitte trage mindestens drei der vier Punktzahlen ein – den vierten Wert ergänzt die App automatisch.', 'error');
+            }
+
+            filledNames.forEach(n => {
+                const val = parseInt(rawValues[n]);
+                points[n] = isNaN(val) ? 0 : val;
+            });
+
+            let autoFilledInfo = null;
+            if (emptyNames.length === 1) {
+                const knownSum = filledNames.reduce((acc, n) => acc + points[n], 0);
+                const auto = -knownSum;
+                points[emptyNames[0]] = auto;
+                autoFilledInfo = { name: emptyNames[0], value: auto };
+            }
+
+            // Nullsummenprüfung als letztes Sicherheitsnetz (sollte durch die Auto-Ergänzung immer erfüllt sein)
             let gameSum = 0;
             Object.values(points).forEach(v => gameSum += v);
             if (gameSum !== 0) {
-                return alert(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`);
+                return showToast(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`, 'error');
             }
 
-            detailedGames.push({
+            const gameData = {
                 sittingOut: detailedOrder.filter(name => points[name] === undefined),
                 points,
                 solo,
                 soloKind,
                 soloType,
                 ansage
-            });
+            };
+
+            if (isEditing) {
+                detailedGames[editingGameIndex] = gameData;
+                editingGameIndex = null;
+                showToast('Spiel aktualisiert.', 'success');
+            } else {
+                const info = autoFilledInfo ? ` (${autoFilledInfo.name}: ${autoFilledInfo.value > 0 ? '+' : ''}${autoFilledInfo.value} automatisch ergänzt)` : '';
+                showToast(`Spiel gespeichert${info}.`, 'success');
+                detailedGames.push(gameData);
+            }
 
             updateLiveDraft();
             if (isBlitztabelleActive) render();
             else renderDetailedSection();
         }
 
-        function deleteGame(index) {
-            if (!confirm("Möchtest du dieses Spiel unwiderruflich löschen?")) return;
+        async function deleteGame(index) {
+            if (!await showConfirm("Möchtest du dieses Spiel unwiderruflich löschen?")) return;
+            if (editingGameIndex === index) {
+                editingGameIndex = null;
+            } else if (editingGameIndex !== null && index < editingGameIndex) {
+                editingGameIndex--;
+            }
             detailedGames.splice(index, 1);
             updateLiveDraft();
             if (isBlitztabelleActive) render();
             else renderDetailedSection();
+        }
+
+        // Öffnet ein bereits erfasstes Spiel im Eingabeformular zum direkten Bearbeiten,
+        // statt es löschen und neu anlegen zu müssen.
+        function editGame(index) {
+            const game = detailedGames[index];
+            if (!game || game.isRoundMarker) return;
+            editingGameIndex = index;
+            renderDetailedSection();
+            const formEl = document.getElementById('gameEntryForm');
+            if (formEl) formEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function cancelEditGame() {
+            editingGameIndex = null;
+            renderDetailedSection();
         }
 
         function renderDetailedSection() {
@@ -2363,7 +2690,7 @@
 
             if (!countOk) {
                 section.innerHTML = `
-                    <div class="bg-amber-50 dark:bg-amber-955/30 border border-amber-200 dark:border-amber-900 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300 space-y-1">
+                    <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300 space-y-1">
                         <p class="font-bold">⚠️ Zu wenige/viele Teilnehmer ausgewählt</p>
                         <p>Bitte wähle oben in der Liste genau 4 bis 7 aktive Spieler aus, um die Spiel-für-Spiel-Eingabe zu nutzen.</p>
                     </div>
@@ -2373,16 +2700,19 @@
 
             const totals = computeDetailedTotals();
             const nextGameIndex = detailedGames.filter(g => !g.isRoundMarker).length;
-            const suggestedOut = computeSittingOut(detailedGames.length);
-            const nextDealerIdx = getNextDealerIndex(detailedOrder, detailedGames);
+            const isEditing = editingGameIndex !== null;
+            const editingGame = isEditing ? detailedGames[editingGameIndex] : null;
+            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(detailedGames.length);
+            const nextDealerIdx = isEditing ? -1 : getNextDealerIndex(detailedOrder, detailedGames);
 
             const processedGames = processGamesList(detailedOrder, detailedGames);
 
             let detailedGameNum = 1;
+            let editingDisplayNumber = null;
             const gamesListHtml = processedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : processedGames.map((g, idx) => {
                 if (g.isRoundMarker) {
                     return `
-                        <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-955/30 border border-indigo-200 dark:border-indigo-900 rounded-lg p-2 text-xs text-indigo-900 dark:text-indigo-300 font-bold">
+                        <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900 rounded-lg p-2 text-xs text-indigo-900 dark:text-indigo-300 font-bold">
                             <span class="flex items-center gap-1">Runde ${g.roundNumber}</span>
                             ${g.isVirtualPlaceholder ? '' : `
                             <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde loeschen">🗑️</button>
@@ -2391,25 +2721,29 @@
                     `;
                 }
                 const originalIdx = (detailedOrder.length >= 4 && detailedOrder.length <= 7) ? g._indexInGamesOnly : idx;
+                const isBeingEdited = isEditing && originalIdx === editingGameIndex;
+                if (isBeingEdited) editingDisplayNumber = detailedGameNum;
                 const html = `
-                    <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg p-2 text-xs">
+                    <div class="bg-white dark:bg-slate-900 border ${isBeingEdited ? 'border-blue-400 dark:border-blue-600 ring-2 ring-blue-100 dark:ring-blue-950' : 'border-gray-200 dark:border-slate-700'} rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''}</span>
-                            <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''} ${isBeingEdited ? '<span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold ml-1">✏️ wird bearbeitet</span>' : ''}</span>
+                            <span class="flex items-center gap-2 shrink-0">
+                                <button onclick="editGame(${originalIdx})" class="text-blue-500 hover:text-blue-700 cursor-pointer" title="Spiel bearbeiten">✏️</button>
+                                <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
+                            </span>
                         </div>
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
                                 if (g.points[name] === undefined) {
-                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-505 border border-gray-200 dark:border-slate-700">${name} (aus)</span>`;
+                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-700">${name} (aus)</span>`;
                                 }
                                 const val = g.points[name];
-                                const cls = val >= 0 ? 'bg-emerald-50 dark:bg-emerald-955/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-955/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900';
+                                const cls = val >= 0 ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900';
                                 
                                 const extras = [];
                                 if (g.solo && g.solo[name]) {
-                                    const kind = soloKindLabel(g.soloKind?.[name]) || '';
                                     const type = g.soloType?.[name] || '';
-                                    extras.push(`Solo ${type} (${kind})`);
+                                    extras.push(soloDisplayLabel(g.soloKind?.[name], type));
                                 }
                                 if (g.ansage && g.ansage[name]) {
                                     extras.push('Ansage');
@@ -2436,16 +2770,25 @@
                 `;
             }).join('');
 
+            const formAccent = isEditing
+                ? { wrap: 'bg-blue-50/70 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900', title: 'text-blue-800 dark:text-blue-300', hint: 'text-blue-700 dark:text-slate-500', row: 'border-blue-100 dark:border-slate-800' }
+                : { wrap: 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900', title: 'text-amber-800 dark:text-amber-300', hint: 'text-amber-700 dark:text-slate-500', row: 'border-amber-100 dark:border-slate-800' };
+
             const newRoundHtml = `
-                <div class="bg-amber-50/70 dark:bg-amber-955/20 border border-amber-200 dark:border-amber-900 rounded-xl p-3 space-y-2">
-                    <p class="text-xs font-bold text-amber-800 dark:text-amber-350">➕ Spiel ${nextGameIndex + 1} erfassen</p>
-                    ${detailedOrder.length > 4 ? '<p class="text-[10px] text-amber-700 dark:text-slate-505">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>' : ''}
+                <div id="gameEntryForm" class="${formAccent.wrap} border rounded-xl p-3 space-y-2">
+                    <p class="text-xs font-bold ${formAccent.title}">${isEditing ? `✏️ Spiel ${editingDisplayNumber || ''} bearbeiten` : `➕ Spiel ${nextGameIndex + 1} erfassen`}</p>
+                    ${detailedOrder.length > 4 ? `<p class="text-[10px] ${formAccent.hint}">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>` : ''}
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
                             const isOut = suggestedOut.includes(name);
-                            const isNextDealer = (detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
+                            const isNextDealer = (!isEditing && detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
+                            const prefillPoint = (isEditing && editingGame.points && editingGame.points[name] !== undefined) ? editingGame.points[name] : null;
+                            const prefillSoloChecked = !!(isEditing && editingGame.solo && editingGame.solo[name]);
+                            const prefillSoloKind = (isEditing && editingGame.soloKind) ? editingGame.soloKind[name] : null;
+                            const prefillSoloType = (isEditing && editingGame.soloType) ? editingGame.soloType[name] : null;
+                            const prefillAnsage = !!(isEditing && editingGame.ansage && editingGame.ansage[name]);
                             return `
-                                <div class="bg-white dark:bg-slate-900 border ${isNextDealer ? 'border-amber-300 dark:border-amber-700 ring-2 ring-amber-100 dark:ring-amber-955' : 'border-amber-100 dark:border-slate-800'} rounded-lg p-2 space-y-2">
+                                <div class="bg-white dark:bg-slate-900 border ${isNextDealer ? 'border-amber-300 dark:border-amber-700 ring-2 ring-amber-100 dark:ring-amber-950' : formAccent.row} rounded-lg p-2 space-y-2">
                                     <div class="flex items-center gap-2">
                                         ${detailedOrder.length > 4 ? `
                                         <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 w-16 cursor-pointer">
@@ -2456,39 +2799,40 @@
                                             ${name}
                                         </span>
                                         ${isNextDealer ? `
-                                        <span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-955/50 text-amber-800 dark:text-amber-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 shadow-sm tracking-wide">
+                                        <span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 shadow-sm tracking-wide">
                                             🃏 GEBER
                                         </span>
                                         ` : ''}
                                         <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow">
-                                            <input type="number" id="gamepoint-${name}" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
+                                            <input type="number" id="gamepoint-${name}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
                                         </span>
                                     </div>
                                     <div id="gamesolowrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400"><input type="checkbox" id="gamesolo-${name}" onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
-                                        <span id="gamesolokindwrap-${name}" class="hidden">
-                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded p-1 text-[10px] bg-white">
-                                                <option value="pflicht">Pflichtsolo</option>
-                                                <option value="lust">Lustsolo</option>
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400"><input type="checkbox" id="gamesolo-${name}" ${prefillSoloChecked ? 'checked' : ''} onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
+                                        <span id="gamesolokindwrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
+                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
+                                                <option value="pflicht" ${prefillSoloKind === 'pflicht' ? 'selected' : ''}>Pflichtsolo</option>
+                                                <option value="lust" ${prefillSoloKind === 'lust' ? 'selected' : ''}>Lustsolo</option>
                                             </select>
                                         </span>
-                                        <span id="gamesolotypewrap-${name}" class="hidden">
-                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-101 rounded p-1 text-[10px] bg-white">
-                                                ${SOLO_TYPES.map(t => `<option value="${t}">${t}</option>`).join('')}
+                                        <span id="gamesolotypewrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
+                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
+                                                ${SOLO_TYPES.map(t => `<option value="${t}" ${prefillSoloType === t ? 'selected' : ''}>${t}</option>`).join('')}
                                             </select>
                                         </span>
                                     </div>
                                     <div id="gameansagewrap-${name}" class="${isOut ? 'hidden' : ''} pt-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gameansage-${name}" class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
+                                            <input type="checkbox" id="gameansage-${name}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
                                         </label>
                                     </div>
                                 </div>
                             `;
                         }).join('')}
                     </div>
-                    <div>
-                        <button onclick="addGameRound()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-1.5 rounded-lg text-xs font-bold shadow transition mt-2 cursor-pointer">Spiel speichern</button>
+                    <div class="flex gap-2">
+                        ${isEditing ? `<button onclick="cancelEditGame()" class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-1.5 rounded-lg text-xs font-bold shadow transition mt-2 cursor-pointer">✖ Abbrechen</button>` : ''}
+                        <button onclick="addGameRound()" class="flex-1 ${isEditing ? 'bg-blue-600 hover:bg-blue-700' : 'bg-amber-600 hover:bg-amber-700'} text-white py-1.5 rounded-lg text-xs font-bold shadow transition mt-2 cursor-pointer">${isEditing ? '💾 Änderungen speichern' : 'Spiel speichern'}</button>
                     </div>
                 </div>
             `;
@@ -2529,12 +2873,12 @@
             if (el) el.classList.toggle('hidden');
         }
 
-        function saveMatch() {
-            if (!state.currentSeasonKey) return alert("Keine Saison gewählt!");
+        async function saveMatch() {
+            if (!state.currentSeasonKey) return showToast("Keine Saison gewählt!", 'error');
             const season = state.seasons[state.currentSeasonKey];
-            if (season.status === "abgeschlossen") return alert("Saison ist abgeschlossen!");
+            if (season.status === "abgeschlossen") return showToast("Saison ist abgeschlossen!", 'error');
 
-            if (!confirm("Möchtest du diesen Abend speichern?")) return;
+            if (!await showConfirm("Möchtest du diesen Abend speichern?")) return;
 
             let matchScores = {};
             let matchJokers = {};
@@ -2547,7 +2891,7 @@
             const host = hostSelect ? hostSelect.value : '';
 
             if (!season.isHistorical) {
-                if (!rawDate || !host) return alert("Datum und Gastgeber fehlen!");
+                if (!rawDate || !host) return showToast("Datum und Gastgeber fehlen!", 'error');
                 const dateObj = new Date(rawDate);
                 const d = String(dateObj.getDate()).padStart(2, '0');
                 const m = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -2563,7 +2907,7 @@
                     formattedDate = `${d}.${m}.${y}`;
                     timestamp = dateObj.getTime();
                 } else if (rawDate || host) {
-                    return alert("Bitte bei historischen Saisons entweder BEIDE Felder (Datum & Gastgeber) ausfüllen oder BEIDE leer lassen.");
+                    return showToast("Bitte bei historischen Saisons entweder BEIDE Felder (Datum & Gastgeber) ausfüllen oder BEIDE leer lassen.", 'error');
                 } else {
                     let existingCount = season.matches ? Object.keys(season.matches).length : 0;
                     formattedDate = `Alter Abend Nr. ${existingCount + 1}`;
@@ -2577,8 +2921,8 @@
             let detailedOrderForSave = null;
 
             if (useDetailedMode) {
-                if (detailedOrder.length === 0) return alert("Bitte wähle mindestens 4 Teilnehmer aus!");
-                if (detailedGames.length === 0) return alert("Bitte erfasse mindestens ein Spiel des Abends, oder wechsle in den Modus „Nur Endergebnis“!");
+                if (detailedOrder.length === 0) return showToast("Bitte wähle mindestens 4 Teilnehmer aus!", 'error');
+                if (detailedGames.length === 0) return showToast("Bitte erfasse mindestens ein Spiel des Abends, oder wechsle in den Modus „Nur Endergebnis“!", 'error');
                 matchScores = computeDetailedTotals();
                 count = detailedOrder.length;
 
@@ -2624,7 +2968,7 @@
                 let eveningSum = 0;
                 Object.values(matchScores).forEach(v => eveningSum += v);
                 if (eveningSum !== 0) {
-                    return alert("Die Summe aller Endergebnisse des Abends muss 0 ergeben!");
+                    return showToast("Die Summe aller Endergebnisse des Abends muss 0 ergeben!", 'error');
                 }
             }
 
@@ -2636,16 +2980,16 @@
                     });
                 }
                 if (alreadyUsed) {
-                    alert(`Fehler: ${name} hat das „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`);
+                    showToast(`Fehler: ${name} hat das „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`, 'error');
                     doubleJokerError = true;
                 }
             });
 
             if (doubleJokerError) return;
-            if (count < 4 || count > 7) return alert("4 bis 7 Spieler erlaubt!");
+            if (count < 4 || count > 7) return showToast("4 bis 7 Spieler erlaubt!", 'error');
             
             // Wenn der Gastgeber "Extern/App" ist, überspringen wir die Überprüfung [11]
-            if (host && host !== 'Extern/App' && !matchScores.hasOwnProperty(host)) return alert("Der Gastgeber muss mitgespielt haben!");
+            if (host && host !== 'Extern/App' && !matchScores.hasOwnProperty(host)) return showToast("Der Gastgeber muss mitgespielt haben!", 'error');
 
             const matchId = editingMatchId ? editingMatchId : 'match_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
 
@@ -2675,6 +3019,7 @@
             entryMode = 'simple';
             detailedOrder = [];
             detailedGames = [];
+            editingGameIndex = null;
             tempScores = {};
             tempJokers = {};
             matchBelowSixty = {};
@@ -2686,6 +3031,7 @@
             if (liveStatsB) liveStatsB.textContent = "📊 Live-Statistiken dieses Abends einblenden";
 
             saveToCloud();
+            showToast("Abend gespeichert!", 'success');
         }
 
         function updateSeasonCourseChart(season) {
@@ -3221,10 +3567,11 @@
                 
                 // XLSX abspeichern
                 XLSX.writeFile(wb, `Doko_Gesamtexport_${new Date().toISOString().slice(0, 10)}.xlsx`);
+                showToast("Excel-Export erfolgreich erstellt!", 'success');
                 
             } catch (error) {
                 console.error(error);
-                alert("Fehler beim Excel-Export: " + error.message);
+                showToast("Fehler beim Excel-Export: " + error.message, 'error');
             } finally {
                 // UI zurücksetzen
                 btn.disabled = false;
@@ -3300,9 +3647,9 @@
             }
 
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-955/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
                     ${name}
-                    <button onclick="removePlayer('${name}')" class="text-emerald-600 dark:text-emerald-505 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
+                    <button onclick="removePlayer('${name}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
                 </span>
             `).join('');
 
@@ -3344,7 +3691,7 @@
                 statusContainer.innerHTML = `
                     <div class="flex flex-col">
                         <span class="text-[10px] text-gray-400 font-bold">STATUS:</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded ${season.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-955 dark:text-emerald-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${season.status.toUpperCase()}</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${season.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${season.status.toUpperCase()}</span>
                     </div>
                     <div class="flex gap-1.5">
                         <button onclick="toggleSeasonStatus()" class="${season.status === 'aktiv' ? 'bg-gray-600' : 'bg-emerald-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${season.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
@@ -3407,8 +3754,8 @@
                     <button type="button" onclick="toggleBelowSixty('${name}')" ${isChecked ? '' : 'disabled'} 
                         class="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border select-none transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed
                         ${belowSixtyActive 
-                            ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-955/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
-                            : 'bg-slate-100 text-slate-600 border-slate-201 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800'
+                            ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
+                            : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800'
                         }"
                         title="Klicken, um den Spieler manuell von der Wertung auszuschließen (Spitzenwerte & Quoten unberücksichtigt)">
                         ⏳ Teilnahme &lt; 60%
@@ -3416,7 +3763,7 @@
                 ` : '';
 
                 const sogHtml = isHist ? '' : `
-                    <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-955/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                    <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
                         <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                     </label>
                 `;
@@ -3478,7 +3825,7 @@
                     const badgeTitle = playedPflicht ? `Pflichtsolo bereits gespielt: ${pflichtType}` : 'Pflichtsolo noch offen';
 
                     headerHtml += `
-                        <th class="p-3 border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-955 dark:text-amber-100 font-bold">
+                        <th class="p-3 border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
                             <span class="inline-flex items-center justify-center gap-1">
                                 <span>${name}</span>
                                 <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
@@ -3490,8 +3837,8 @@
                 liveTableHeader.innerHTML = headerHtml;
 
                 // 2. Gesamtpunkte-Zeile ganz oben vorbereiten
-                let tableRowsHtml = `<tr class="bg-amber-100/70 dark:bg-amber-955/40 font-extrabold border-b-2 border-amber-200 dark:border-amber-900/60">
-                    <td class="p-3 font-extrabold text-amber-955 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-xs text-left">GESAMTPUNKTE</td>`;
+                let tableRowsHtml = `<tr class="bg-amber-100/70 dark:bg-amber-950/40 font-extrabold border-b-2 border-amber-200 dark:border-amber-900/60">
+                    <td class="p-3 font-extrabold text-amber-950 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-xs text-left">GESAMTPUNKTE</td>`;
 
                 detailedOrder.forEach(name => {
                     const score = totals[name] || 0;
@@ -3513,7 +3860,7 @@
                     if (g.isRoundMarker) {
                         const colSpan = detailedOrder.length + 1;
                         tableRowsHtml += `
-                            <tr class="bg-indigo-50 dark:bg-indigo-955/20 border-y border-indigo-100 dark:border-indigo-900/40">
+                            <tr class="bg-indigo-50 dark:bg-indigo-950/20 border-y border-indigo-100 dark:border-indigo-900/40">
                                 <td colspan="${colSpan}" class="p-2 text-center text-indigo-900 dark:text-indigo-300 text-[10px] font-black uppercase tracking-widest">
                                     Runde ${g.roundNumber}
                                 </td>
@@ -3521,18 +3868,18 @@
                         return;
                     }
 
-                    const pointTypeBadge = g.pointType === 'platzierung' ? ' <span class="text-[8px] bg-amber-100 dark:bg-amber-955 text-amber-800 dark:text-amber-300 font-bold px-1 rounded border border-amber-200 dark:border-amber-900">🏆 Platzierung</span>' : '';
+                    const pointTypeBadge = g.pointType === 'platzierung' ? ' <span class="text-[8px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold px-1 rounded border border-amber-200 dark:border-amber-900">🏆 Platzierung</span>' : '';
                     const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 font-semibold block leading-tight mt-0.5">Geber: ${g._dealerName}</span>` : '';
                     tableRowsHtml += `
-                        <tr class="hover:bg-amber-50/20 dark:hover:bg-amber-955/20 transition text-xs">
-                            <td class="p-2.5 font-bold text-amber-955 dark:text-amber-200 border-r border-amber-100 dark:border-amber-900/40 text-left align-top">
+                        <tr class="hover:bg-amber-50/20 dark:hover:bg-amber-950/20 transition text-xs">
+                            <td class="p-2.5 font-bold text-amber-950 dark:text-amber-200 border-r border-amber-100 dark:border-amber-900/40 text-left align-top">
                                 <span>Spiel ${liveGameNumber} ${pointTypeBadge}</span>
                                 ${dealerText}
                             </td>`;
 
                     detailedOrder.forEach(name => {
                         if (g.points[name] === undefined) {
-                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-101/40 align-top">-</td>`;
+                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-100/40 align-top">-</td>`;
                         } else {
                             const val = g.points[name];
                             const cls = val > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (val < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-500');
@@ -3540,17 +3887,16 @@
 
                             const extras = [];
                             if (g.solo && g.solo[name]) {
-                                const kind = soloKindLabel(g.soloKind?.[name]) || '';
                                 const type = g.soloType?.[name] || '';
-                                extras.push(`Solo ${type} (${kind})`);
+                                extras.push(soloDisplayLabel(g.soloKind?.[name], type));
                             }
                             if (g.ansage && g.ansage[name]) {
                                 extras.push('Ansage');
                             }
-                            const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-955 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
+                            const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
 
                             tableRowsHtml += `
-                                <td class="p-2.5 text-center border-r border-amber-101/40 align-top">
+                                <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
                                     <span class="font-mono ${cls}">${sign}${val}</span>
                                     ${extraText}
                                 </td>`;
@@ -3614,7 +3960,7 @@
 
                 const mapRow = (p, isQ) => {
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
-                    const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-955/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
+                    const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
 
                     const playerNameContent = hasSpieltagspunkte
                         ? `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${p.name}</button>`
@@ -3629,15 +3975,15 @@
                                 ${jokerBadge}
                             </td>
                             <td class="p-3 text-right font-bold text-emerald-700 dark:text-emerald-400 text-base">${p.avg.toFixed(2)}</td>
-                            <td class="p-3 text-center text-gray-550 dark:text-slate-355">${p.played} / ${totalMatchesCount}</td>
+                            <td class="p-3 text-center text-gray-500 dark:text-slate-400">${p.played} / ${totalMatchesCount}</td>
                             <td class="p-3 text-center text-emerald-600 dark:text-emerald-400 font-bold">${Math.round(p.ratio * 100)} %</td>
                             <td class="p-3 text-right text-gray-500 dark:text-slate-400">${p.pts} Pkt.</td>
                         </tr>
                         `;
                     } else {
                         const playerNameContentUnqual = hasSpieltagspunkte
-                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-550 dark:text-slate-400">${p.name}</button>`
-                            : `<span class="text-gray-550 dark:text-slate-400">${p.name}</span>`;
+                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${p.name}</button>`
+                            : `<span class="text-gray-500 dark:text-slate-400">${p.name}</span>`;
 
                         return `
                         <tr class="bg-gray-50/50 dark:bg-slate-800/40 text-gray-400 dark:text-slate-500 italic">
@@ -3648,8 +3994,8 @@
                             </td>
                             <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
                             <td class="p-3 text-center">${p.played} / ${totalMatchesCount}</td>
-                            <td class="p-3 text-center text-amber-600 dark:text-amber-505 font-semibold">${Math.round(p.ratio * 100)} %</td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-505">${p.pts} Pkt.</td>
+                            <td class="p-3 text-center text-amber-600 dark:text-amber-500 font-semibold">${Math.round(p.ratio * 100)} %</td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-500">${p.pts} Pkt.</td>
                         </tr>
                         `;
                     }
@@ -3728,12 +4074,12 @@
                     });
 
                     recordsContainer.innerHTML = `
-                        <div class="bg-blue-50 dark:bg-blue-955/20 p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 text-blue-900 dark:text-blue-300">
+                        <div class="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 text-blue-900 dark:text-blue-300">
                             <p class="text-xs text-blue-700 dark:text-blue-400 font-bold uppercase tracking-wider">📢 Ansage-Guru (Saison)</p>
                             <p class="text-lg font-bold mt-1">${maxAnsagen > 0 ? `${maxAnsagen} Ansagen` : '0 Ansagen'}</p>
                             <p class="text-xs mt-0.5">Vorne: <b>${bestAnsagenPlayer}</b></p>
                         </div>
-                        <div class="bg-indigo-50 dark:bg-indigo-955/20 p-4 rounded-xl border border-indigo-200 dark:border-indigo-900/60 text-indigo-900 dark:text-indigo-300">
+                        <div class="bg-indigo-50 dark:bg-indigo-950/20 p-4 rounded-xl border border-indigo-200 dark:border-indigo-900/60 text-indigo-900 dark:text-indigo-300">
                             <p class="text-xs text-indigo-700 dark:text-indigo-400 font-bold uppercase tracking-wider">🔥 Siegesserie (Spiele)</p>
                             <p class="text-lg font-bold mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Spiele'}</p>
                             <p class="text-xs mt-0.5">Längste Serie: <b>${bestStreakPlayer}</b></p>
@@ -3741,7 +4087,7 @@
                     `;
                 }
             } else {
-                leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 dark:text-slate-505 italic">Keine Daten.</td></tr>';
+                leaderboardBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-400 dark:text-slate-500 italic">Keine Daten.</td></tr>';
             }
 
             const {
@@ -3791,8 +4137,8 @@
                 const matchesEntries = Object.entries(season.matches);
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
-                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-955/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
-                    let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-955/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
+                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
+                    let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-950/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
 
                     let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
                         name: pName,
@@ -3836,51 +4182,53 @@
 
                     return `
                         <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 text-xs shadow-sm overflow-hidden">
-                            <div class="p-3 bg-slate-101 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700">
+                            <div onclick="toggleMatchCard('${id}')" class="p-3 bg-slate-100 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700 cursor-pointer">
                                 <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
-                                    <span class="font-bold text-gray-700 dark:text-slate-201 text-sm">${padDateString(match.date)}</span>
-                                    ${match.host ? `<span class="bg-amber-100 dark:bg-amber-955/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${match.host}</span>` : ''}
+                                    <svg id="matchchevron-${id}" class="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0 transition-transform" style="transform: ${expandedMatches[id] ? 'rotate(90deg)' : 'rotate(0deg)'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
+                                    <span class="font-bold text-gray-700 dark:text-slate-200 text-sm">${padDateString(match.date)}</span>
+                                    ${match.host ? `<span class="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${match.host}</span>` : ''}
                                     ${jokerInfo}
                                     ${modeBadge}
+                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${sortedEveningPlayers[0].name}</span>` : ''}
                                 </div>
                                 <div class="flex gap-1 shrink-0">
-                                    <button onclick="editMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-blue-500 hover:text-blue-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend bearbeiten">✏️</button>
-                                    <button onclick="deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend loeschen">🗑️</button>
+                                    <button onclick="event.stopPropagation(); editMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-blue-500 hover:text-blue-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend bearbeiten">✏️</button>
+                                    <button onclick="event.stopPropagation(); deleteMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-red-500 hover:text-red-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend loeschen">🗑️</button>
                                 </div>
                             </div>
-                            <div class="p-3 bg-white dark:bg-slate-800">
+                            <div id="matchbody-${id}" class="${expandedMatches[id] ? '' : 'hidden'} p-3 bg-white dark:bg-slate-800">
                                 <p class="font-bold text-gray-500 dark:text-slate-400 text-[10px] uppercase tracking-wider mb-2">Ergebnisse:</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <div class="flex flex-col gap-1">
                                     ${sortedEveningPlayers.map((playerObj) => {
                                         const p = playerObj.name;
                                         const score = playerObj.score;
                                         const scoreClass = score >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400';
                                         const prefix = score > 0 ? '+' : '';
                                         const rankNum = playerObj.rank;
-                                        let rankBadgeClass = "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-305";
-                                        if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-955 font-black shadow-xs";
-                                        else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-101 font-extrabold";
+                                        let rankBadgeClass = "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300";
+                                        if (rankNum === 1) rankBadgeClass = "bg-amber-400 text-amber-900 font-black shadow-xs";
+                                        else if (rankNum === 2) rankBadgeClass = "bg-slate-300 text-slate-900 dark:bg-slate-700 dark:text-slate-100 font-extrabold";
                                         else if (rankNum === 3) rankBadgeClass = "bg-amber-600 text-amber-50 font-extrabold";
-                                        else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 dark:bg-red-955/50 dark:text-red-400 font-bold border border-red-300 dark:border-red-900";
+                                        else if (rankNum === 'DQ') rankBadgeClass = "bg-red-200 text-red-900 dark:bg-red-950/50 dark:text-red-400 font-bold border border-red-300 dark:border-red-900";
 
                                         return `
-                                            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 p-2 rounded-lg flex flex-col justify-between">
-                                                <div class="flex justify-between items-center gap-1">
+                                            <div class="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 px-2 py-1.5 rounded-lg flex items-center justify-between gap-2">
+                                                <div class="flex items-center gap-2 min-w-0">
+                                                    <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter shrink-0 ${rankBadgeClass}">#${rankNum}</span>
                                                     <span class="font-semibold text-gray-800 dark:text-slate-200 text-sm truncate">${p}</span>
-                                                    <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter ${rankBadgeClass}">#${rankNum}</span>
                                                 </div>
-                                                <div class="mt-1 flex justify-between items-center flex-wrap gap-1">
-                                                    <span class="${scoreClass} font-bold block text-xs">${prefix}${score} ${pointsLabelText}</span>
+                                                <div class="flex items-center gap-1.5 shrink-0">
                                                     ${(() => {
                                                         const info = getEveningParticipationInfo(match, p);
                                                         if (info) {
-                                                            const cls = info.isQualified ? 'bg-emerald-50 dark:bg-emerald-955/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold';
+                                                            const cls = info.isQualified ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold';
                                                             return `<span class="text-[8px] px-1 py-0.5 rounded border ${cls}" title="Abendbeteiligung: ${info.ratePercent} % (Mind. 60 % erforderlich)">${info.ratePercent} % Bet.</span>`;
                                                         } else if (match.belowSixty && match.belowSixty[p] === true) {
-                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-955/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60% Bet.</span>`;
+                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60% Bet.</span>`;
                                                         }
                                                         return '';
                                                     })()}
+                                                    <span class="${scoreClass} font-bold text-xs whitespace-nowrap">${prefix}${score} ${pointsLabelText}</span>
                                                 </div>
                                             </div>
                                         `;
@@ -3901,9 +4249,9 @@
                                             if (g.isRoundMarker) {
                                                 return `
                                                 <div class="relative flex py-1.5 items-center">
-                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
-                                                    <span class="flex-shrink mx-3 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-955/40 px-2 py-0.5 rounded border border-indigo-101 dark:border-indigo-900/60 shadow-sm">Runde ${g.roundNumber}</span>
-                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-955"></div>
+                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-950"></div>
+                                                    <span class="flex-shrink mx-3 text-indigo-700 dark:text-indigo-300 text-[9px] font-bold uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/40 px-2 py-0.5 rounded border border-indigo-100 dark:border-indigo-900/60 shadow-sm">Runde ${g.roundNumber}</span>
+                                                    <div class="flex-grow border-t border-indigo-200 dark:border-indigo-950"></div>
                                                 </div>`;
                                             }
                                             const gm = normalizeGame(g);
@@ -3916,18 +4264,17 @@
                                                             const v = gm.points[pName];
                                                             const extras = [];
                                                             if (gm.solo && gm.solo[pName]) {
-                                                                const kind = soloKindLabel(gm.soloKind?.[pName]) || '';
                                                                 const type = gm.soloType?.[pName] || '';
-                                                                extras.push("Solo " + type + " (" + kind + ")");
+                                                                extras.push(soloDisplayLabel(gm.soloKind?.[pName], type));
                                                             }
                                                             if (gm.ansage && gm.ansage[pName]) {
                                                                 extras.push('Ansage');
                                                             }
-                                                            const extraText = extras.length ? ` <span class="text-slate-550 dark:text-slate-400">(${extras.join(', ')})</span>` : '';
+                                                            const extraText = extras.length ? ` <span class="text-slate-400 dark:text-slate-400">(${extras.join(', ')})</span>` : '';
                                                             return `<span class="${v >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
                                                         }).join(' · ')}
                                                     </div>
-                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-955/30 border border-amber-100 dark:border-amber-900 rounded px-1 shrink-0">Geber: ${g._dealerName}</span>` : ''}
+                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 rounded px-1 shrink-0">Geber: ${g._dealerName}</span>` : ''}
                                                 </div>
                                             `;
                                             gameNum++;
