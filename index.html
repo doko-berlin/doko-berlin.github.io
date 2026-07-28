@@ -79,7 +79,7 @@
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">27.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Menü:</strong> Buttons zu einem Hamburger-Menü zusammengefasst (Nachtmodus, Regeln, What's new).</li>
+                        <li><strong>Menü:</strong> Buttons zu einem Hamburger-Menü zusammengefasst (Nachtmodus, Excel-Export, Regeln, What's new).</li>
                         <li><strong>Spieltage-Ansicht:</strong> Ergebnisse pro Abend jetzt einzeilig untereinander statt im Raster.</li>
                         <li><strong>Spieltage einklappbar:</strong> Abende sind standardmäßig eingeklappt, Sieger direkt in der Kopfzeile sichtbar.</li>
                         <li><strong>Dark-Mode:</strong> Zahlreiche fehlerhafte Farbwerte im Dunkelmodus korrigiert.</li>
@@ -129,7 +129,7 @@
                         <li><strong>Regelwerk:</strong> Integration eines Infofensters mit den vollständigen Doko-Hausregeln.</li>
                         <li><strong>Saisonspezifische Mindestquote:</strong> Option zur Konfiguration der erforderlichen Mindestquote pro Saison im Admin-Bereich.</li>
                         <li><strong>Abend-Beteiligungsquote:</strong> Disqualifikation (0 Platzierungspunkte) bei unter 60 % Rundenbeteiligung an Abenden ab 5 Spielern im Detailmodus.</li>
-                        <li><strong>Ewige Bestenliste:</strong> Anzeige des Punkteschnitts pro Abend im Detail-Ranking des „Punktesammelgott“.</li>
+                        <li><strong>Ewige Bestenliste:</strong> Anzeige des Punkteschnitts pro Abend im entsprechenden Detail-Ranking.</li>
                         <li><strong>GUI-Optimierungen:</strong> Auslagerung der Menü-Buttons in eine obere Leiste und Behebung von Höhenverschiebungen bei der Anzeige von Solos.</li>
                     </ul>
                 </div>
@@ -143,7 +143,7 @@
                     <ul class="list-disc list-inside text-xs text-slate-400 dark:text-slate-500 space-y-1.5 mt-2">
                         <li><strong>Live-Ansicht:</strong> Umstellung auf eine tabellarische Ergebnis-Matrix. Die kumulierten Gesamtpunkte stehen dauerhaft in der obersten Zeile.</li>
                         <li><strong>Pflichtsolos:</strong> Status-Badge hinter den Spielernamen im Tabellenkopf platziert. Anzeige des Solo-Typs direkt bei den Punkten im jeweiligen Spiel.</li>
-                        <li><strong>Anpassungen Ergebnis-Eingabe:</strong> Tracking der Sonderspiele (Hochzeit, Armut, Abgabe) entfernt. Einführung der Option „Ansage“ pro Spieler und Spiel sowie des neuen Solos „hängen gelassen“.</li>
+                        <li><strong>Anpassungen Ergebnis-Eingabe:</strong> Tracking der Sonderspiele (Hochzeit, Armut, Abgabe) entfernt. Einführung der Option „Ansage“ pro Spieler und Spiel sowie des Solos „hängen gelassen“.</li>
                         <li><strong>Historische Saisons:</strong> Beschränkung auf Endergebnis-Eingabe. Wahlmöglichkeit zwischen Spieltagspunkten (mit Nullsummenprüfung) oder Platzierungspunkten.</li>
                         <li><strong>Tabellen-Logik:</strong> Einheitliche Berechnung von Schnitt und Saisonpunkten auf Basis von Platzierungspunkten für alle Saison-Typen.</li>
                         <li><strong>Ewige Bestenliste:</strong> Kacheln sind anklickbar und öffnen eine Rangliste aller Spieler. Neue Statistik „Ansagekönig“ hinzugefügt.</li>
@@ -306,7 +306,7 @@
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 shrink-0">
-                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2"⚙️ Admin-Verwaltung</h2>
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
@@ -469,6 +469,9 @@
                     <button onclick="toggleDarkMode(); closeHeaderMenu();" id="darkModeToggleBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         🌙 Nachtmodus
                     </button>
+                    <button onclick="exportToExcel(); closeHeaderMenu();" id="excelExportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        📊 Excel-Export
+                    </button>
                     <button onclick="openRegelnModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         📜 Regeln
                     </button>
@@ -537,9 +540,6 @@
                             <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
                             ⚡ Blitztabelle
                         </label>
-                        <button id="excelExportBtn" onclick="exportToExcel()" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-slate-300 dark:border-slate-600 shadow-sm transition flex items-center gap-1 cursor-pointer">
-                            📊 Excel-Export
-                        </button>
                     </div>
                 </div>
                 <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -829,7 +829,7 @@
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
             } else if (metricType === 'totalPoints') {
-                title = '⚡ Punktesammelgott';
+                title = '⚡ Punktegott';
                 sortedList = Object.keys(records.globalTotalPoints)
                     .map(player => {
                         const pts = records.globalTotalPoints[player] || 0;
@@ -2246,7 +2246,7 @@
                         });
                     }
 
-                    // 2. Host-Statistik & Punktesammelgott (ohne disqualifizierte Leistungen) [11]
+                    // 2. Host-Statistik & Punktegott (ohne disqualifizierte Leistungen) [11]
                     const isMatchdayData = !isHist || match.pointType === 'spieltag';
                     if (isMatchdayData) {
                         Object.keys(match.scores).forEach(name => {
@@ -2321,7 +2321,7 @@
                 }
             });
 
-            // Find Punktesammelgott
+            // Find Punktegott
             let bestPointsPlayer = "-";
             let maxTotalPoints = -Infinity;
             Object.keys(globalTotalPoints).forEach(p => {
@@ -3101,7 +3101,7 @@
                                 : 'bg-white text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700'
                             }">
                             <span class="w-2.5 h-2.5 rounded-full mr-2 shrink-0 transition" style="background-color: ${isHidden ? '#94a3b8' : color}"></span>
-                            <span class="${isHidden ? 'line-through' : ''}">${name}</span>
+                            <span>${name}</span>
                         </button>
                     `;
                 }).join('');
@@ -4121,7 +4121,7 @@
                     <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${bestTagessiegPlayer}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktesammelgott</p>
+                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
                     <p class="text-xl font-black text-white mt-1">${maxTotalPoints > -Infinity ? `${maxTotalPoints > 0 ? '+' : ''}${maxTotalPoints}` : '0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${bestPointsPlayer}</b></p>
                 </div>
