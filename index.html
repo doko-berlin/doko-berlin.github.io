@@ -306,7 +306,7 @@
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 shrink-0">
-                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2⚙️ Admin-Verwaltung</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
@@ -1369,6 +1369,8 @@
                 matchDate: dateInput ? dateInput.value : '',
                 host: host,
                 belowSixty: matchBelowSixty,
+                scores: tempScores,
+                jokers: tempJokers,
                 timestamp: Date.now()
             };
 
@@ -1421,6 +1423,26 @@
                     if (cb && !cb.checked) {
                         cb.checked = true;
                         cb.dispatchEvent(new Event('change'));
+                    }
+                });
+            }
+
+            // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben
+            if (live.scores) {
+                Object.keys(live.scores).forEach(name => {
+                    tempScores[name] = live.scores[name];
+                    const input = document.getElementById(`score-${name}`);
+                    if (input) input.value = live.scores[name];
+                });
+            }
+            if (live.jokers) {
+                Object.keys(live.jokers).forEach(name => {
+                    tempJokers[name] = live.jokers[name];
+                    const cb = document.getElementById(`joker-${name}`);
+                    if (cb && !cb.disabled) {
+                        cb.checked = live.jokers[name];
+                        cb.parentElement.classList.toggle('opacity-100', cb.checked);
+                        cb.parentElement.classList.toggle('opacity-40', !cb.checked);
                     }
                 });
             }
@@ -3781,7 +3803,7 @@
 
                 const sogHtml = isHist ? '' : `
                     <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
-                        <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked);" class="rounded text-red-600 w-3 h-3"> 💥 SoG
+                        <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked); saveFormToTemp(); updateLiveDraft();" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                     </label>
                 `;
 
