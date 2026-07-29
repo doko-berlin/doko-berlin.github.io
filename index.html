@@ -3049,10 +3049,10 @@
 
             const sortedMatches = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             const seasonPlayers = season.players || [];
-            const playerLimit = seasonPlayers.length || 4;
             let rankHistory = {};
             seasonPlayers.forEach(p => { rankHistory[p] = []; });
             let labels = [];
+            let playerLimit = 1; // wird unten auf die höchste am Abend vergebene Platzierung angehoben
 
             sortedMatches.forEach((match, index) => {
                 labels.push(padDateString(match.date));
@@ -3074,6 +3074,9 @@
                     }
                     eveningRanks[p.name] = lastRank;
                 });
+
+                // Y-Achse muss nur so viele Plätze abdecken wie am teilnehmerstärksten Abend vergeben wurden
+                if (lastRank > playerLimit) playerLimit = lastRank;
 
                 seasonPlayers.forEach(name => {
                     if (eveningRanks[name] !== undefined) rankHistory[name].push(eveningRanks[name]);
