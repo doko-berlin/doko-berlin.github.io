@@ -72,13 +72,24 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.5 -->
+                <!-- Version 1.5.5 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.5</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">27.07.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.5.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Bugfixes</strong> und GUI-Verbesserungen.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">27.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Menü:</strong> Buttons zu einem Hamburger-Menü zusammengefasst (Nachtmodus, Excel-Export, Regeln, What's new).</li>
                         <li><strong>Spieltage-Ansicht:</strong> Ergebnisse pro Abend jetzt einzeilig untereinander statt im Raster.</li>
                         <li><strong>Spieltage einklappbar:</strong> Abende sind standardmäßig eingeklappt, Sieger direkt in der Kopfzeile sichtbar.</li>
@@ -661,6 +672,7 @@
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
         let editingMatchId = null;
+        let isPopulatingEditForm = false;
 
         let entryMode = 'simple';
         let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
@@ -2062,6 +2074,8 @@
             render();
 
             setTimeout(() => {
+                isPopulatingEditForm = true;
+
                 const seasonPlayers = season.players || [];
                 seasonPlayers.forEach(name => {
                     const cb = document.getElementById(`check-${name}`);
@@ -2090,6 +2104,8 @@
                         }
                     });
                 }
+
+                isPopulatingEditForm = false;
 
                 if (match.mode === 'detailed' && match.games && match.games.length > 0) {
                     detailedGames = match.games.map(normalizeGame);
@@ -2422,7 +2438,7 @@
 
         async function togglePlayerSelected(name, checked) {
             saveFormToTemp();
-            if (entryMode === 'detailed' && detailedGames.length > 0) {
+            if (entryMode === 'detailed' && detailedGames.length > 0 && !isPopulatingEditForm) {
                 if (!await showConfirm('Das Ändern der Teilnehmerauswahl löscht die bereits erfassten Einzelspiele für diesen Abend. Fortfahren?')) {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb) cb.checked = !checked;
@@ -3749,8 +3765,21 @@
                 placeholderText = (currentType === 'spieltag') ? 'Spieltag-Pkt' : 'Platz-Pkt';
             }
 
-            // Bedingung für die Anzeige des "Teilnahme < 60%"-Buttons ermitteln [11]
+            // Bedingung für die Anzeige des "Teilnahme < 60 %"-Buttons ermitteln [11]
             const showBelowSixtyBtn = (!isHist) || (isHist && currentPointType === 'spieltag');
+
+            // Anzahl der aktuell aktiven Teilnehmer dieses Abends ermitteln.
+            // Die manuelle "Teilnahme < 60 %"-Option ist nur relevant, wenn überhaupt jemand
+            // aussetzen kann – das ist erst ab 5 Teilnehmern der Fall.
+            let activePlayerCount;
+            if (entryMode === 'detailed') {
+                activePlayerCount = detailedOrder.length;
+            } else if (editingMatchId && season.matches[editingMatchId]) {
+                activePlayerCount = Object.keys(season.matches[editingMatchId].scores || {}).length;
+            } else {
+                activePlayerCount = detailedOrder.length;
+            }
+            const belowSixtyEligibleByCount = activePlayerCount >= 5;
 
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
                 const hasUsedJokerAlready = seasonJokers[name] || false;
@@ -3790,14 +3819,14 @@
                 const belowSixtyActive = matchBelowSixty[name] === true;
 
                 const belowSixtyBtnHtml = showBelowSixtyBtn ? `
-                    <button type="button" onclick="toggleBelowSixty('${name}')" ${isChecked ? '' : 'disabled'} 
+                    <button type="button" onclick="toggleBelowSixty('${name}')" ${isChecked && belowSixtyEligibleByCount ? '' : 'disabled'} 
                         class="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border select-none transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed
                         ${belowSixtyActive 
                             ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
                             : 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800'
                         }"
-                        title="Klicken, um den Spieler manuell von der Wertung auszuschließen (Spitzenwerte & Quoten unberücksichtigt)">
-                        ⏳ Teilnahme &lt; 60%
+                        title="${belowSixtyEligibleByCount ? 'Klicken, um den Spieler manuell von der Wertung auszuschließen (Spitzenwerte & Quoten unberücksichtigt)' : 'Erst ab 5 Teilnehmern an diesem Abend relevant'}">
+                        ⏳ Teilnahme &lt; 60 %
                     </button>
                 ` : '';
 
@@ -4261,7 +4290,7 @@
                                                             const cls = info.isQualified ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold';
                                                             return `<span class="text-[8px] px-1 py-0.5 rounded border ${cls}" title="Abendbeteiligung: ${info.ratePercent} % (Mind. 60 % erforderlich)">${info.ratePercent} % Bet.</span>`;
                                                         } else if (match.belowSixty && match.belowSixty[p] === true) {
-                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60% Bet.</span>`;
+                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60 % Bet.</span>`;
                                                         }
                                                         return '';
                                                     })()}
