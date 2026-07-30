@@ -923,12 +923,12 @@
             render();
         }
 
-        // Berechnet den nächsten Geber-Index basierend auf dem Pflichtsolo-Automatismus (für 4-7 Spieler)
-        function getNextDealerIndex(order, games) {
-            const N = order ? order.length : 0;
-            if (N < 4 || N > 7) return -1;
+        // Berechnet den effektiven Rundenzähler unter Berücksichtigung des Pflichtsolo-Automatismus:
+        // Ein Pflichtsolo zählt NICHT als Fortschritt, da Geber (und damit auch die Aussetzer-Rotation)
+        // beim darauffolgenden Spiel unverändert bleiben.
+        function getEffectiveRoundStep(games) {
             const gamesOnly = (games || []).filter(g => !g.isRoundMarker);
-            let currentDealerIdx = 0;
+            let nonPflichtCount = 0;
             gamesOnly.forEach(g => {
                 const gm = normalizeGame(g);
                 let isPflichtSolo = false;
@@ -940,10 +940,17 @@
                     });
                 }
                 if (!isPflichtSolo) {
-                    currentDealerIdx = (currentDealerIdx + 1) % N;
+                    nonPflichtCount++;
                 }
             });
-            return currentDealerIdx;
+            return nonPflichtCount;
+        }
+
+        // Berechnet den nächsten Geber-Index basierend auf dem Pflichtsolo-Automatismus (für 4-7 Spieler)
+        function getNextDealerIndex(order, games) {
+            const N = order ? order.length : 0;
+            if (N < 4 || N > 7) return -1;
+            return getEffectiveRoundStep(games) % N;
         }
 
         // Verarbeitet die Spieleliste für die Anzeige und berechnet dynamisch Runden und Geber (für 4-7 Spieler)
@@ -1057,8 +1064,10 @@
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
         // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
         // Gibt den Typ des gespielten Pflichtsolos zurück (z.B. 'Damen'), oder null falls noch offen.
-        function getPlayedPflichtsoloType(name) {
-            const playedGame = detailedGames.find(g => !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
+        // excludeIndex: optionaler Index (in detailedGames), der bei der Prüfung ignoriert wird –
+        // wird benötigt, wenn genau das gerade bearbeitete Spiel selbst das Pflichtsolo enthält.
+        function getPlayedPflichtsoloType(name, excludeIndex) {
+            const playedGame = detailedGames.find((g, idx) => idx !== excludeIndex && !g.isRoundMarker && g.solo && g.solo[name] && g.soloKind && g.soloKind[name] === 'pflicht');
             return playedGame ? (playedGame.soloType?.[name] || 'Pflicht') : null;
         }
 
@@ -2521,6 +2530,9 @@
             }
         }
 
+        // gameIndex muss der EFFEKTIVE Rundenschritt sein (siehe getEffectiveRoundStep), nicht die
+        // rohe Anzahl bereits erfasster Spiele – sonst würde die Aussetzer-Rotation bei einem
+        // Pflichtsolo trotzdem weiterspringen, obwohl der Geber (und damit die Runde) unverändert bleibt.
         function computeSittingOut(gameIndex) {
             const n = detailedOrder.length;
             const k = n - 4;
@@ -2611,7 +2623,7 @@
         function addGameRound() {
             const isEditing = editingGameIndex !== null;
             const editingGame = isEditing ? detailedGames[editingGameIndex] : null;
-            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(detailedGames.length);
+            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(getEffectiveRoundStep(detailedGames));
 
             let points = {};
             let solo = {};
@@ -2647,6 +2659,17 @@
 
             if (activeNames.length !== 4) {
                 return showToast(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeNames.length}). Bitte die „aussetzen"-Auswahl prüfen.`, 'error');
+            }
+
+            // Pro Abend darf jeder Spieler nur genau ein Pflichtsolo spielen.
+            const excludeIdx = isEditing ? editingGameIndex : undefined;
+            for (const name of activeNames) {
+                if (soloKind[name] === 'pflicht') {
+                    const alreadyType = getPlayedPflichtsoloType(name, excludeIdx);
+                    if (alreadyType) {
+                        return showToast(`${name} hat sein Pflichtsolo an diesem Abend bereits gespielt (${alreadyType}). Pro Abend ist nur ein Pflichtsolo pro Spieler erlaubt.`, 'error');
+                    }
+                }
             }
 
             // Automatische Nullsummen-Ergänzung: Es muss maximal ein Feld leer bleiben,
@@ -2754,7 +2777,7 @@
             const nextGameIndex = detailedGames.filter(g => !g.isRoundMarker).length;
             const isEditing = editingGameIndex !== null;
             const editingGame = isEditing ? detailedGames[editingGameIndex] : null;
-            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(detailedGames.length);
+            const suggestedOut = isEditing ? (editingGame.sittingOut || []) : computeSittingOut(getEffectiveRoundStep(detailedGames));
             const nextDealerIdx = isEditing ? -1 : getNextDealerIndex(detailedOrder, detailedGames);
 
             const processedGames = processGamesList(detailedOrder, detailedGames);
@@ -2839,6 +2862,8 @@
                             const prefillSoloKind = (isEditing && editingGame.soloKind) ? editingGame.soloKind[name] : null;
                             const prefillSoloType = (isEditing && editingGame.soloType) ? editingGame.soloType[name] : null;
                             const prefillAnsage = !!(isEditing && editingGame.ansage && editingGame.ansage[name]);
+                            const alreadyPflichtType = getPlayedPflichtsoloType(name, isEditing ? editingGameIndex : undefined);
+                            const pflichtBlocked = !!alreadyPflichtType && prefillSoloKind !== 'pflicht';
                             return `
                                 <div class="bg-white dark:bg-slate-900 border ${isNextDealer ? 'border-amber-300 dark:border-amber-700 ring-2 ring-amber-100 dark:ring-amber-950' : formAccent.row} rounded-lg p-2 space-y-2">
                                     <div class="flex items-start gap-2">
@@ -2867,8 +2892,8 @@
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400"><input type="checkbox" id="gamesolo-${name}" ${prefillSoloChecked ? 'checked' : ''} onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
                                         <span id="gamesolokindwrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
                                             <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
-                                                <option value="pflicht" ${prefillSoloKind === 'pflicht' ? 'selected' : ''}>Pflichtsolo</option>
-                                                <option value="lust" ${prefillSoloKind === 'lust' ? 'selected' : ''}>Lustsolo</option>
+                                                <option value="pflicht" ${prefillSoloKind === 'pflicht' ? 'selected' : ''} ${pflichtBlocked ? 'disabled' : ''}>Pflichtsolo${pflichtBlocked ? ' (bereits gespielt)' : ''}</option>
+                                                <option value="lust" ${prefillSoloKind === 'lust' || pflichtBlocked ? 'selected' : ''}>Lustsolo</option>
                                             </select>
                                         </span>
                                         <span id="gamesolotypewrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
