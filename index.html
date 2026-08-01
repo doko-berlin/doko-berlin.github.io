@@ -62,11 +62,11 @@
     </div>
 
     <!-- All-Time stats Detail Modal -->
-    <div id="allTimeStatsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeAllTimeModal()">
-        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onclick="event.stopPropagation()">
-            <h2 id="allTimeModalTitle" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2">Kachel Titel</h2>
-            <div class="overflow-y-auto max-h-[350px] pr-1" id="allTimeModalContent"></div>
-            <button onclick="closeAllTimeModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+    <div id="allTimeStatsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeAllTimeModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
+            <h2 id="allTimeModalTitle" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Kachel Titel</h2>
+            <div class="overflow-y-auto flex-1 min-h-0 pr-1" id="allTimeModalContent"></div>
+            <button onclick="closeAllTimeModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
         </div>
     </div>
 
@@ -76,14 +76,32 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.5.5 -->
+                <!-- Version 1.6 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.5.5</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.07.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.6</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">01.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Bugfixes</strong> und GUI-Verbesserungen.</li>
+                        <li><strong>Eingabe Spiel für Spiel überarbeitet:</strong> Nur noch Pflichtsolo/Lustsolo/Ansage als Checkboxen (keine Soloart mehr), kleinerer Geber-Badge, Punkte-Buttons −3 bis +3 mit fester 0-Taste.</li>
+                        <li><strong>Bugfix Synchronisation:</strong> Bearbeitungssperre erholt sich jetzt selbst nach kurzen Verbindungsabbrüchen; fehlgeschlagenes Speichern wird sichtbar gemeldet statt still zu scheitern.</li>
+                        <li><strong>Schnellere Cloud-Speicherung:</strong> Laufende Einträge schreiben nur noch den aktuellen Abend statt der kompletten Historie – deutlich zuverlässiger bei langen Abenden.</li>
+                        <li><strong>60 %-Teilnahmequote:</strong> Berechnungslogik korrigiert; Beteiligungs-Badge erscheint nur noch bei Disqualifikation.</li>
+                        <li><strong>Live-Anzeige:</strong> Pflichtsolo/Lustsolo und Ansage als zwei getrennte Badges statt kombiniert.</li>
+                        <li><strong>Bugfix Ewiger Ansage-Guru:</strong> Kachel war nicht klickbar, öffnet jetzt korrekt die Rangliste.</li>
+                        <li><strong>Bugfix Statistik-Modal:</strong> Fenster passt sich jetzt der Bildschirmhöhe an, Überschrift und Schließen-Button bleiben im Querformat sichtbar.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.5.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.5.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.07.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                        <li><strong>Bugfix Aussetzer-Rotation:</strong> Nach einem Pflichtsolo setzt bei 5+ Spielern jetzt wieder dieselbe Person aus, statt dass die Rotation fälschlich weiterspringt.</li>
+                        <li><strong>Pflichtsolo pro Abend begrenzt:</strong> Jeder Spieler darf nur noch ein Pflichtsolo pro Abend eintragen; die Option ist danach ausgegraut.</li>
                     </ul>
                 </div>
 
@@ -1016,19 +1034,54 @@
             return processedList;
         }
 
-        // Berechnet die Beteiligung eines Spielers an einem Abend (nur für detailed matches)
+        // Berechnet die Beteiligung eines Spielers an einem Abend (nur für detailed matches).
+        // Zählt NICHT mehr einzelne Spiele, sondern Runden: Eine Runde besteht aus genau N
+        // regulären (Nicht-Pflichtsolo) Spielen, ergänzt um ggf. dazwischen gespielte Pflichtsoli
+        // (die die Runde nicht verlängern - siehe processGamesList/roundNum-Logik). Ein Spieler
+        // gilt für eine Runde als teilgenommen, sobald er mindestens ein Spiel dieser Runde
+        // mitgespielt hat (nicht ausgesetzt hat).
         function getEveningParticipation(match, player) {
             if (!match || !match.games) return 1.0;
             const gamesOnly = match.games.filter(g => !g.isRoundMarker);
             if (gamesOnly.length === 0) return 1.0;
-            let playedCount = 0;
+
+            const N = match.order ? match.order.length : 0;
+            if (!N || N < 4) {
+                // Fallback ohne bekannte Spieleranzahl: alte spielbasierte Berechnung
+                let playedCount = 0;
+                gamesOnly.forEach(g => {
+                    const gm = normalizeGame(g);
+                    if (gm.points && gm.points[player] !== undefined) playedCount++;
+                });
+                return playedCount / gamesOnly.length;
+            }
+
+            let nonPflichtCount = 0;
+            const allRounds = new Set();
+            const roundsPlayed = new Set();
+
             gamesOnly.forEach(g => {
                 const gm = normalizeGame(g);
+                const roundNum = Math.floor(nonPflichtCount / N) + 1;
+                allRounds.add(roundNum);
+
                 if (gm.points && gm.points[player] !== undefined) {
-                    playedCount++;
+                    roundsPlayed.add(roundNum);
                 }
+
+                let isPflichtSolo = false;
+                if (gm.solo && gm.soloKind) {
+                    Object.keys(gm.solo).forEach(pName => {
+                        if (gm.solo[pName] && gm.soloKind[pName] === 'pflicht') {
+                            isPflichtSolo = true;
+                        }
+                    });
+                }
+                if (!isPflichtSolo) nonPflichtCount++;
             });
-            return playedCount / gamesOnly.length;
+
+            if (allRounds.size === 0) return 1.0;
+            return roundsPlayed.size / allRounds.size;
         }
 
         // Hilfsfunktion zur Ermittlung des Beteiligungs-Status
@@ -1404,7 +1457,7 @@
             // Offline-Backup-Logik (Verbindung mit localStorage)
             localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
             
-            saveToCloud();
+            saveLiveDraftToCloud();
         }
 
         function updateSeasonMinQuota() {
@@ -1788,14 +1841,59 @@
             });
         }
 
+        let lockWarningToastShownAt = 0;
         function saveToCloud() {
             // Höhere Datensicherheit: Nur wer aktuell den Eingabebereich geöffnet hat
             // (und damit die Sperre hält), darf Daten in die Cloud hochladen.
             if (!hasEditLock) {
                 console.warn('Schreibzugriff verweigert: Eingabebereich ist nicht durch diese Sitzung gesperrt.');
+                // Sichtbare Warnung statt eines stillen Fehlschlags: Sonst könnte jemand
+                // munter weiter Spiele eintragen, ohne zu merken, dass nichts davon bei den
+                // anderen ankommt (z.B. nach einer kurzen Verbindungsunterbrechung, falls die
+                // Selbstheilung noch nicht gegriffen hat). Höchstens alle 5s anzeigen, damit
+                // es bei mehreren schnell aufeinanderfolgenden Aufrufen nicht spammt.
+                const now = Date.now();
+                if (now - lockWarningToastShownAt > 5000) {
+                    lockWarningToastShownAt = now;
+                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade nicht (mehr) für dich gesperrt. Bitte schließen und neu öffnen.', 'error');
+                }
                 return;
             }
             writeSeasonsToCloudRaw();
+        }
+
+        // Schreibt gezielt NUR den Live-Entwurf des aktuell laufenden Abends (statt bei jeder
+        // einzelnen Spiel-Eingabe die komplette Mehrjahres-Historie aller Saisons neu hochzuladen).
+        // Das hält den Schreibzugriff klein und schnell, auch wenn ein Abend schon viele Spiele
+        // enthält oder die App insgesamt schon sehr viel Historie angesammelt hat. Zusätzlich wird
+        // der Schreibvorgang überwacht: schlägt er fehl (z.B. kurzer Netzwerk-Hänger), wird
+        // automatisch erneut versucht, statt dass die Eingabe unbemerkt verloren geht.
+        let liveDraftRetryTimeout = null;
+        function saveLiveDraftToCloud(retryCount) {
+            retryCount = retryCount || 0;
+            if (!hasEditLock) {
+                console.warn('Schreibzugriff verweigert: Eingabebereich ist nicht durch diese Sitzung gesperrt.');
+                const now = Date.now();
+                if (now - lockWarningToastShownAt > 5000) {
+                    lockWarningToastShownAt = now;
+                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade nicht (mehr) für dich gesperrt. Bitte schließen und neu öffnen.', 'error');
+                }
+                return;
+            }
+            if (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey]) return;
+
+            const seasonKey = state.currentSeasonKey;
+            const payload = state.seasons[seasonKey].liveDraft;
+            clearTimeout(liveDraftRetryTimeout);
+
+            db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).set(payload).catch(err => {
+                console.error('Fehler beim Speichern des Live-Entwurfs:', err);
+                if (retryCount < 3 && hasEditLock) {
+                    liveDraftRetryTimeout = setTimeout(() => saveLiveDraftToCloud(retryCount + 1), 1200);
+                } else {
+                    showToast('⚠️ Speichern fehlgeschlagen – bitte Internetverbindung prüfen. Das zuletzt erfasste Spiel notfalls erneut speichern.', 'error');
+                }
+            });
         }
 
         // === LOGIN / AUTHENTIFIZIERUNG ===
@@ -1814,6 +1912,18 @@
             db.ref('editLock').on('value', (snapshot) => {
                 editLockInfo = snapshot.val();
                 hasEditLock = !!(editLockInfo && editLockInfo.session === mySessionId);
+
+                // Selbstheilung: Bei einer kurzen Verbindungsunterbrechung (z.B. Bildschirm
+                // gesperrt / App im Hintergrund) entfernt Firebase die Sperre automatisch
+                // (onDisconnect). Ist der Eingabebereich hier noch offen und hält aktuell
+                // niemand sonst die Sperre, wird sie automatisch neu beansprucht – sonst
+                // würden weitere Eingaben unbemerkt nicht mehr synchronisiert werden.
+                const modal = document.getElementById('adminModal');
+                const modalIsOpen = modal && !modal.classList.contains('hidden');
+                if (modalIsOpen && !hasEditLock && !editLockInfo) {
+                    acquireEditLock();
+                }
+
                 updateEntryButtonLockUI();
             });
         }
@@ -2406,7 +2516,8 @@
                 bestPointsPlayer,
                 maxTotalPoints,
                 bestAllTimeAnsagenPlayer,
-                maxAllTimeAnsagen
+                maxAllTimeAnsagen,
+                globalAnsagen
             };
         }
 
@@ -2558,16 +2669,10 @@
             const cb = document.getElementById('sitout-' + name);
             const wrap = document.getElementById('gamepointwrap-' + name);
             const soloWrap = document.getElementById('gamesolowrap-' + name);
-            const typeWrap = document.getElementById('gamesolotypewrap-' + name);
-            const kindWrap = document.getElementById('gamesolokindwrap-' + name);
-            const ansageWrap = document.getElementById('gameansagewrap-' + name);
             if (!cb || !wrap) return;
             const hidden = cb.checked;
             wrap.classList.toggle('hidden', hidden);
             if (soloWrap) soloWrap.classList.toggle('hidden', hidden);
-            if (typeWrap) typeWrap.classList.toggle('hidden', hidden);
-            if (kindWrap) kindWrap.classList.toggle('hidden', hidden);
-            if (ansageWrap) ansageWrap.classList.toggle('hidden', hidden);
             autoFillZeroSumInDraft();
         }
 
@@ -2578,6 +2683,15 @@
             if (!input) return;
             const current = parseInt(input.value.trim());
             input.value = (isNaN(current) ? 0 : current) + delta;
+            autoFillZeroSumInDraft();
+        }
+
+        // Setzt das Punktefeld auf einen festen Wert (aktuell nur für den 0-Button genutzt),
+        // statt den bestehenden Wert zu verändern.
+        function setGamePointAbsolute(name, value) {
+            const input = document.getElementById('gamepoint-' + name);
+            if (!input) return;
+            input.value = value;
             autoFillZeroSumInDraft();
         }
 
@@ -2641,15 +2755,16 @@
                     const input = document.getElementById('gamepoint-' + name);
                     rawValues[name] = input ? input.value.trim() : '';
 
-                    const soloCb = document.getElementById('gamesolo-' + name);
-                    const soloKindEl = document.getElementById('gamesolokind-' + name);
-                    const soloTypeEl = document.getElementById('gamesolotype-' + name);
+                    const pflichtCb = document.getElementById('gamepflicht-' + name);
+                    const lustCb = document.getElementById('gamelust-' + name);
                     const ansageCb = document.getElementById('gameansage-' + name);
 
-                    if (soloCb && soloCb.checked) {
+                    if (pflichtCb && pflichtCb.checked) {
                         solo[name] = true;
-                        soloKind[name] = soloKindEl ? soloKindEl.value : 'pflicht';
-                        soloType[name] = soloTypeEl ? soloTypeEl.value : 'Damen';
+                        soloKind[name] = 'pflicht';
+                    } else if (lustCb && lustCb.checked) {
+                        solo[name] = true;
+                        soloKind[name] = 'lust';
                     }
                     if (ansageCb && ansageCb.checked) {
                         ansage[name] = true;
@@ -2858,9 +2973,7 @@
                             const isOut = suggestedOut.includes(name);
                             const isNextDealer = (!isEditing && detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
                             const prefillPoint = (isEditing && editingGame.points && editingGame.points[name] !== undefined) ? editingGame.points[name] : null;
-                            const prefillSoloChecked = !!(isEditing && editingGame.solo && editingGame.solo[name]);
                             const prefillSoloKind = (isEditing && editingGame.soloKind) ? editingGame.soloKind[name] : null;
-                            const prefillSoloType = (isEditing && editingGame.soloType) ? editingGame.soloType[name] : null;
                             const prefillAnsage = !!(isEditing && editingGame.ansage && editingGame.ansage[name]);
                             const alreadyPflichtType = getPlayedPflichtsoloType(name, isEditing ? editingGameIndex : undefined);
                             const pflichtBlocked = !!alreadyPflichtType && prefillSoloKind !== 'pflicht';
@@ -2876,33 +2989,30 @@
                                             ${name}
                                         </span>
                                         ${isNextDealer ? `
-                                        <span class="inline-flex items-center gap-1 bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[9px] font-extrabold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 shadow-sm tracking-wide mt-1">
-                                            🃏 GEBER
+                                        <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[8px] font-bold px-1 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide mt-1">
+                                            🃏 Geber
                                         </span>
                                         ` : ''}
                                         <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow space-y-1">
                                             <input type="number" id="gamepoint-${name}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
-                                            <div class="flex gap-1">
-                                                <button type="button" onclick="adjustGamePoint('${name}', -1)" class="flex-1 text-xs font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', 1)" class="flex-1 text-xs font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
+                                            <div class="flex gap-0.5">
+                                                <button type="button" onclick="adjustGamePoint('${name}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
+                                                <button type="button" onclick="adjustGamePoint('${name}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
+                                                <button type="button" onclick="adjustGamePoint('${name}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
+                                                <button type="button" onclick="setGamePointAbsolute('${name}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
+                                                <button type="button" onclick="adjustGamePoint('${name}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
+                                                <button type="button" onclick="adjustGamePoint('${name}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
+                                                <button type="button" onclick="adjustGamePoint('${name}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
                                             </div>
                                         </span>
                                     </div>
                                     <div id="gamesolowrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400"><input type="checkbox" id="gamesolo-${name}" ${prefillSoloChecked ? 'checked' : ''} onchange="document.getElementById('gamesolokindwrap-${name}').classList.toggle('hidden', !this.checked);document.getElementById('gamesolotypewrap-${name}').classList.toggle('hidden', !this.checked);" class="rounded text-emerald-600 w-3 h-3"> Solo</label>
-                                        <span id="gamesolokindwrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
-                                            <select id="gamesolokind-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
-                                                <option value="pflicht" ${prefillSoloKind === 'pflicht' ? 'selected' : ''} ${pflichtBlocked ? 'disabled' : ''}>Pflichtsolo${pflichtBlocked ? ' (bereits gespielt)' : ''}</option>
-                                                <option value="lust" ${prefillSoloKind === 'lust' || pflichtBlocked ? 'selected' : ''}>Lustsolo</option>
-                                            </select>
-                                        </span>
-                                        <span id="gamesolotypewrap-${name}" class="${prefillSoloChecked ? '' : 'hidden'}">
-                                            <select id="gamesolotype-${name}" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded p-1 text-[10px] bg-white">
-                                                ${SOLO_TYPES.map(t => `<option value="${t}" ${prefillSoloType === t ? 'selected' : ''}>${t}</option>`).join('')}
-                                            </select>
-                                        </span>
-                                    </div>
-                                    <div id="gameansagewrap-${name}" class="${isOut ? 'hidden' : ''} pt-1">
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
+                                            <input type="checkbox" id="gamepflicht-${name}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="if(this.checked){document.getElementById('gamelust-${name}').checked=false;}" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
+                                        </label>
+                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
+                                            <input type="checkbox" id="gamelust-${name}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="if(this.checked){document.getElementById('gamepflicht-${name}').checked=false;}" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
+                                        </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
                                             <input type="checkbox" id="gameansage-${name}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
                                         </label>
@@ -3982,15 +4092,15 @@
                             const cls = val > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (val < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-500');
                             const sign = val > 0 ? '+' : '';
 
-                            const extras = [];
+                            const badges = [];
                             if (g.solo && g.solo[name]) {
-                                const type = g.soloType?.[name] || '';
-                                extras.push(soloDisplayLabel(g.soloKind?.[name], type));
+                                const kindLabel = soloKindLabel(g.soloKind?.[name]) === 'Pflicht' ? 'Pflichtsolo' : 'Lustsolo';
+                                badges.push(`<span class="text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-1 py-0.5 rounded shadow-xs">${kindLabel}</span>`);
                             }
                             if (g.ansage && g.ansage[name]) {
-                                extras.push('Ansage');
+                                badges.push(`<span class="text-[8px] text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-950 px-1 py-0.5 rounded shadow-xs">Ansage</span>`);
                             }
-                            const extraText = extras.length ? `<span class="block text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-1 py-0.5 rounded mt-1 shadow-xs">${extras.join(', ')}</span>` : '';
+                            const extraText = badges.length ? `<span class="flex flex-wrap justify-center gap-0.5 mt-1">${badges.join('')}</span>` : '';
 
                             tableRowsHtml += `
                                 <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
@@ -4315,9 +4425,8 @@
                                                 <div class="flex items-center gap-1.5 shrink-0">
                                                     ${(() => {
                                                         const info = getEveningParticipationInfo(match, p);
-                                                        if (info) {
-                                                            const cls = info.isQualified ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300 border-emerald-100 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold';
-                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border ${cls}" title="Abendbeteiligung: ${info.ratePercent} % (Mind. 60 % erforderlich)">${info.ratePercent} % Bet.</span>`;
+                                                        if (info && !info.isQualified) {
+                                                            return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Abendbeteiligung: ${info.ratePercent} % (Mind. 60 % erforderlich)">${info.ratePercent} % Bet.</span>`;
                                                         } else if (match.belowSixty && match.belowSixty[p] === true) {
                                                             return `<span class="text-[8px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border-red-100 dark:border-red-900 font-bold" title="Manuell als unter 60 % Teilnahme deklariert">&lt; 60 % Bet.</span>`;
                                                         }
