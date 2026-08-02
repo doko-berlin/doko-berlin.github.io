@@ -1837,19 +1837,18 @@
                     const cloudTs = cloudLive.timestamp || 0;
                     const localTs = localLive.timestamp || 0;
                     if (localTs > cloudTs) {
-                        // Der lokale Entwurf ist neuer: Verwende ihn und synchronisiere ihn hoch
                         finalLive = localLive;
                         season.liveDraft = localLive;
-                        saveToCloud();
+                        if (hasEditLock) saveToCloud();
                     } else {
                         finalLive = cloudLive;
                         localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
                     }
                 } else if (localLive) {
-                    // Kein Cloud-Entwurf vorhanden (z.B. offline erstellt)
+                    // Wenn der Nutzer die Sperre nicht hat, alten lokalen Entwurf nicht in die Cloud drücken
                     finalLive = localLive;
                     season.liveDraft = localLive;
-                    saveToCloud();
+                    if (hasEditLock) saveToCloud();
                 } else if (cloudLive) {
                     finalLive = cloudLive;
                     localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
