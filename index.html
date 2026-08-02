@@ -1484,6 +1484,22 @@
             }
         }
 
+        function getLiveDraftSnapshot() {
+            const dateInput = document.getElementById('matchDate');
+            const hostSelect = document.getElementById('matchHostSelect');
+            return {
+                entryMode: entryMode,
+                detailedOrder: detailedOrder,
+                detailedGames: detailedGames,
+                matchDate: dateInput ? dateInput.value : '',
+                host: hostSelect ? hostSelect.value : '',
+                belowSixty: matchBelowSixty,
+                scores: tempScores,
+                jokers: tempJokers,
+                timestamp: Date.now()
+            };
+        }
+
         function updateLiveDraft() {
             // Während restoreFormState()/editMatch() das Formular programmatisch befüllen, lösen
             // die dabei dispatchten Change-Events (z.B. auf check-${name}) sonst unberechtigte
@@ -1494,21 +1510,7 @@
             const season = state.seasons[state.currentSeasonKey];
             if (!season || season.status === "abgeschlossen") return;
 
-            const dateInput = document.getElementById('matchDate');
-            const hostSelect = document.getElementById('matchHostSelect');
-            const host = hostSelect ? hostSelect.value : '';
-
-            const draftObj = {
-                entryMode: entryMode,
-                detailedOrder: detailedOrder,
-                detailedGames: detailedGames,
-                matchDate: dateInput ? dateInput.value : '',
-                host: host,
-                belowSixty: matchBelowSixty,
-                scores: tempScores,
-                jokers: tempJokers,
-                timestamp: Date.now()
-            };
+            const draftObj = getLiveDraftSnapshot();
 
             season.liveDraft = draftObj;
             
@@ -1787,6 +1789,20 @@
 
             db.ref('doko_v2_data').on('value', (snapshot) => {
             const data = snapshot.val();
+
+            // Während der Eingabe im Admin-Modal darf ein eintreffender Cloud-Snapshot
+            // (z. B. von einem noch nicht abgeschlossenen saveLiveDraftToCloud()) den lokalen
+            // Formularzustand nicht überschreiben – sonst verschwinden schnell erfasste Spiele.
+            const skipLiveDraftSync = isAdminModalOpen && !editingMatchId;
+            let activeLocalDraft = null;
+            if (skipLiveDraftSync && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
+                activeLocalDraft = getLiveDraftSnapshot();
+                const prevTs = state.seasons[state.currentSeasonKey].liveDraft?.timestamp || 0;
+                if (prevTs > activeLocalDraft.timestamp) {
+                    activeLocalDraft.timestamp = prevTs;
+                }
+            }
+
             if (data && data.seasons) {
                 state.seasons = data.seasons;
                 Object.keys(state.seasons).forEach(key => {
@@ -1809,7 +1825,9 @@
                 }
             }
 
-            if (!editingMatchId && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
+            if (skipLiveDraftSync && activeLocalDraft && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
+                state.seasons[state.currentSeasonKey].liveDraft = activeLocalDraft;
+            } else if (!editingMatchId && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
                 const season = state.seasons[state.currentSeasonKey];
                 const cloudLive = season.liveDraft;
                 
