@@ -76,13 +76,30 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.6 -->
+                <!-- Version 1.7 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.6</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">01.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.7</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">02.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Spieltage:</strong> Spielverlauf und Statistiken sind jetzt gegenseitig exklusiv (immer nur eins von beidem sichtbar).</li>
+                        <li><strong>Saison-Rekorde entfernt:</strong> Stattdessen „Längste Siegesserie" in die Ewige Bestenliste integriert, saisonübergreifend über die komplette Historie berechnet.</li>
+                        <li><strong>Neue Rekord-Kachel „Dreamteam":</strong> Bestes Zweierteam nach Punkteschnitt, ermittelt über alle Abende und Saisons hinweg.</li>
+                        <li><strong>Abend-Verlauf-Chart:</strong> Punkte verkleinert und nicht mehr anklickbar/hoverbar.</li>
+                        <li><strong>Spiel für Spiel ist jetzt Standard-Eingabemodus</strong> bei aktiven Saisons (statt „Nur Endergebnis").</li>
+                        <li><strong>„Teilnahme < 60 %"-Button</strong> nur noch im „Nur Endergebnis"-Modus sichtbar (automatische Berechnung im Spiel-für-Spiel-Modus).</li>
+                        <li><strong>GUI- & Textkorrekturen:</strong> u. a. gekürzte Kachel-Titel.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.6 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.6</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">01.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Eingabe Spiel für Spiel überarbeitet:</strong> Nur noch Pflichtsolo/Lustsolo/Ansage als Checkboxen (keine Soloart mehr), kleinerer Geber-Badge, Punkte-Buttons −3 bis +3 mit fester 0-Taste.</li>
                         <li><strong>Bugfix Synchronisation:</strong> Bearbeitungssperre erholt sich jetzt selbst nach kurzen Verbindungsabbrüchen; fehlgeschlagenes Speichern wird sichtbar gemeldet statt still zu scheitern.</li>
                         <li><strong>Schnellere Cloud-Speicherung:</strong> Laufende Einträge schreiben nur noch den aktuellen Abend statt der kompletten Historie – deutlich zuverlässiger bei langen Abenden.</li>
@@ -228,7 +245,7 @@
                         </div>
 
                         <div>
-                            <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-wider mb-1">Große Vorbehalte (Soli)</h4>
+                            <h4 class="font-bold text-slate-800 dark:text-slate-200 text-[11px] uppercase tracking-wider mb-1">Große Vorbehalte (Solos)</h4>
                             <ul class="list-disc list-inside space-y-1 pl-1">
                                 <li><strong>Fleischlos (Farblos):</strong> Kein Trumpf im Spiel. Reihenfolge: Ass, Zehn, König, Dame, Bube.</li>
                                 <li><strong>Kreuz / Pik / Herz / Karo:</strong> Farbsolos. Trumpf sind die Herz-Zehnen, die Damen, die Buben sowie alle Karten der angesagten Trumpffarbe.</li>
@@ -279,9 +296,9 @@
                     </ul>
                 </div>
 
-                <!-- 4. Pflichtsoli & Ausnahmen -->
+                <!-- 4. Pflichtsolos & Ausnahmen -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">4. Pflichtsoli & Ausnahmen</h3>
+                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">4. Pflichtsolos & Ausnahmen</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Pflichtsolo pro Abend:</strong> Jeder aktive Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
                         <li><strong>Spaßspieler:</strong> Personen, die sich zu Beginn des Abends als Spaßspieler deklarieren, spielen außerhalb der Wertung. Sie dürfen kein Pflichtsolo spielen und maximal 3 Runden mitspielen.</li>
@@ -604,14 +621,9 @@
                 <div id="historyContainer" class="space-y-4 max-h-120 overflow-y-auto pr-1"></div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700" id="recordsBox">
-                <h2 class="text-xl font-bold mb-4 border-b dark:border-slate-700 pb-3 text-slate-900 dark:text-white">✨ Saison-Rekorde</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="recordsContainer"></div>
-            </div>
-
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
                 <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-5 gap-4" id="allTimeRecordsContainer"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
             </div>
 
         </div>
@@ -832,7 +844,7 @@
             let sortedList = [];
 
             if (metricType === 'solo') {
-                title = '🃏 Ewiger Solo-Meister';
+                title = '🃏 Solo-Meister';
                 sortedList = Object.keys(records.globalSoloStats)
                     .map(player => {
                         const stats = records.globalSoloStats[player];
@@ -842,7 +854,7 @@
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value || b.detail.localeCompare(a.detail));
             } else if (metricType === 'host') {
-                title = '🏰 Ewige Festung (Heim-Schnitt)';
+                title = '🏰 Festung (Heim-Schnitt)';
                 sortedList = Object.keys(records.globalHostStats)
                     .map(player => {
                         const stats = records.globalHostStats[player];
@@ -877,7 +889,7 @@
                     .filter(item => item.value !== 0)
                     .sort((a, b) => b.value - a.value);
             } else if (metricType === 'ansagen') {
-                title = '📢 Ewiger Ansage-Guru';
+                title = '📢 Ansage-Guru';
                 sortedList = Object.keys(records.globalAnsagen)
                     .map(player => {
                         const count = records.globalAnsagen[player] || 0;
@@ -885,11 +897,41 @@
                     })
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
+            } else if (metricType === 'streak') {
+                title = '🔥 Längste Siegesserie';
+                sortedList = Object.keys(records.globalLongestStreak)
+                    .map(player => {
+                        const count = records.globalLongestStreak[player] || 0;
+                        return { player, value: count, detail: 'Siege in Folge' };
+                    })
+                    .filter(item => item.value > 0)
+                    .sort((a, b) => b.value - a.value);
+            } else if (metricType === 'dreamteam') {
+                title = '🤝 Dreamteam';
+                sortedList = Object.values(records.globalPairStats)
+                    .filter(ps => ps.count > 0)
+                    .map(ps => {
+                        const avg = ps.sum / ps.count;
+                        return { player: ps.players.join(' & '), value: avg, detail: `${ps.count} gemeinsame Spiele` };
+                    })
+                    .sort((a, b) => b.value - a.value);
             }
 
             if (sortedList.length === 0) {
                 listHtml = `<p class="text-xs text-gray-500 italic text-center p-4">Noch keine Daten vorhanden.</p>`;
             } else {
+                // Bei gleichem Wert (z.B. zwei Spieler mit je 6 Siegen in Serie) sollen beide
+                // denselben Platz belegen, statt fortlaufend durchnummeriert zu werden.
+                let lastValue = null;
+                let lastRank = 0;
+                const ranks = sortedList.map((item, index) => {
+                    if (lastValue === null || Math.abs(item.value - lastValue) > 0.0001) {
+                        lastRank = index + 1;
+                        lastValue = item.value;
+                    }
+                    return lastRank;
+                });
+
                 listHtml = `
                     <div class="space-y-2">
                         ${sortedList.map((item, index) => {
@@ -899,19 +941,24 @@
                             } else if (metricType === 'totalPoints') {
                                 valStr = `${item.value > 0 ? '+' : ''}${item.value} Pkt.`;
                             } else if (metricType === 'solo') {
-                                valStr = `${item.value} Soli`;
+                                valStr = `${item.value} ${item.value === 1 ? 'Solo' : 'Solos'}`;
                             } else if (metricType === 'tagessiege') {
                                 valStr = `${item.value} Tagessiege`;
                             } else if (metricType === 'ansagen') {
                                 valStr = `${item.value} Ansagen`;
+                            } else if (metricType === 'streak') {
+                                valStr = `${item.value} Siege`;
+                            } else if (metricType === 'dreamteam') {
+                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(2)} Pkt.`;
                             }
 
-                            const placeCls = index === 0 ? 'bg-amber-400 text-amber-900 font-black' : (index === 1 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (index === 2 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400'));
+                            const rank = ranks[index];
+                            const placeCls = rank === 1 ? 'bg-amber-400 text-amber-900 font-black' : (rank === 2 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (rank === 3 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400'));
                             
                             return `
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
                                     <div class="flex items-center gap-3 truncate mr-2">
-                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${index + 1}</span>
+                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${rank}</span>
                                         <div class="truncate">
                                             <p class="font-bold text-slate-800 dark:text-slate-200 truncate">${item.player}</p>
                                             ${item.detail ? `<p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${item.detail}</p>` : ''}
@@ -1036,7 +1083,7 @@
 
         // Berechnet die Beteiligung eines Spielers an einem Abend (nur für detailed matches).
         // Zählt NICHT mehr einzelne Spiele, sondern Runden: Eine Runde besteht aus genau N
-        // regulären (Nicht-Pflichtsolo) Spielen, ergänzt um ggf. dazwischen gespielte Pflichtsoli
+        // regulären (Nicht-Pflichtsolo) Spielen, ergänzt um ggf. dazwischen gespielte Pflichtsolos
         // (die die Runde nicht verlängern - siehe processGamesList/roundNum-Logik). Ein Spieler
         // gilt für eine Runde als teilgenommen, sobald er mindestens ein Spiel dieser Runde
         // mitgespielt hat (nicht ausgesetzt hat).
@@ -1115,7 +1162,7 @@
         }
 
         // Prüft anhand der bereits erfassten Einzelspiele dieses Abends, ob ein Spieler
-        // sein Pflichtsolo bereits gespielt hat. Lustsoli verändern diesen Status nicht.
+        // sein Pflichtsolo bereits gespielt hat. Lustsolos verändern diesen Status nicht.
         // Gibt den Typ des gespielten Pflichtsolos zurück (z.B. 'Damen'), oder null falls noch offen.
         // excludeIndex: optionaler Index (in detailedGames), der bei der Prüfung ignoriert wird –
         // wird benötigt, wenn genau das gerade bearbeitete Spiel selbst das Pflichtsolo enthält.
@@ -1329,9 +1376,9 @@
                 cubicInterpolationMode: 'monotone', // Verhindert Überschwingen der Linien
                 spanGaps: true,
                 borderWidth: 2,
-                pointRadius: 3,
-                pointHoverRadius: 6,
-                pointHitRadius: 10,
+                pointRadius: 1.5,
+                pointHoverRadius: 0,
+                pointHitRadius: 0,
                 borderCapStyle: 'round',
                 borderJoinStyle: 'round'
             }));
@@ -1409,8 +1456,12 @@
             const isHidden = container.classList.contains('hidden');
             if (isHidden) {
                 container.classList.remove('hidden');
-                btn.textContent = "📊 Statistiken ausblenden";
                 expandedMatchStats[matchId] = true;
+
+                // Spielverlauf und Statistiken sind gegenseitig exklusiv: Beim Einblenden der
+                // Statistiken den Spielverlauf (falls offen) automatisch ausblenden.
+                const gameLogEl = document.getElementById(`gamelog-${matchId}`);
+                if (gameLogEl) gameLogEl.classList.add('hidden');
 
                 const season = state.seasons[state.currentSeasonKey];
                 if (season && season.matches && season.matches[matchId]) {
@@ -1421,7 +1472,6 @@
                 }
             } else {
                 container.classList.add('hidden');
-                btn.textContent = "📊 Statistiken einblenden";
                 expandedMatchStats[matchId] = false;
                 if (eveningCharts[matchId]) {
                     eveningCharts[matchId].destroy();
@@ -1793,7 +1843,7 @@
                     detailedGames = (finalLive.detailedGames || []).map(normalizeGame);
                     matchBelowSixty = finalLive.belowSixty || {};
                 } else {
-                    entryMode = 'simple';
+                    entryMode = season.isHistorical ? 'simple' : 'detailed';
                     detailedOrder = [];
                     detailedGames = [];
                     matchBelowSixty = {};
@@ -2100,7 +2150,8 @@
 
         function changeSeasonView(selectId) {
             state.currentSeasonKey = document.getElementById(selectId).value;
-            const live = state.seasons[state.currentSeasonKey]?.liveDraft;
+            const season = state.seasons[state.currentSeasonKey];
+            const live = season?.liveDraft;
             editingGameIndex = null;
             if (live) {
                 entryMode = live.entryMode || 'simple';
@@ -2108,7 +2159,7 @@
                 detailedGames = (live.detailedGames || []).map(normalizeGame);
                 matchBelowSixty = live.belowSixty || {};
             } else {
-                entryMode = 'simple';
+                entryMode = (season && season.isHistorical) ? 'simple' : 'detailed';
                 detailedOrder = [];
                 detailedGames = [];
                 matchBelowSixty = {};
@@ -2359,6 +2410,14 @@
             return { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats };
         }
 
+        // Findet alle Spieler, die einen gegebenen Höchstwert erreichen (für Gleichstände in der
+        // Ewigen Bestenliste), statt nur den ersten gefundenen Namen zu behalten.
+        function namesAtMax(valuesObj, maxValue, epsilon) {
+            epsilon = epsilon || 0.0001;
+            if (maxValue === -Infinity || maxValue <= 0) return [];
+            return Object.keys(valuesObj).filter(p => Math.abs(valuesObj[p] - maxValue) < epsilon);
+        }
+
         function calculateAllTimeRecords() {
             let globalHostStats = {};
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
@@ -2448,15 +2507,20 @@
             // Find best All-Time Host (Ewige Festung)
             let bestAllTimeHostName = "-";
             let bestAllTimeHostAvg = -Infinity;
+            let hostAverages = {};
             Object.keys(globalHostStats).forEach(name => {
                 if (globalHostStats[name].count > 0) {
                     let avg = globalHostStats[name].totalScore / globalHostStats[name].count;
+                    hostAverages[name] = avg;
                     if (avg > bestAllTimeHostAvg) {
                         bestAllTimeHostAvg = avg;
                         bestAllTimeHostName = name;
                     }
                 }
             });
+            const bestAllTimeHostNames = bestAllTimeHostAvg > -Infinity
+                ? Object.keys(hostAverages).filter(p => Math.abs(hostAverages[p] - bestAllTimeHostAvg) < 0.0001)
+                : [];
 
             // Find Ewiger Solo-Meister
             let bestSoloPlayer = "-";
@@ -2469,6 +2533,9 @@
                     bestSoloQuote = globalSoloStats[p].played > 0 ? Math.round((globalSoloStats[p].won / globalSoloStats[p].played) * 100) : 0;
                 }
             });
+            const soloPlayedCounts = {};
+            Object.keys(globalSoloStats).forEach(p => { soloPlayedCounts[p] = globalSoloStats[p].played; });
+            const bestSoloPlayers = namesAtMax(soloPlayedCounts, bestSoloCount);
 
             // Find Tagessieg-König
             let bestTagessiegPlayer = "-";
@@ -2479,6 +2546,7 @@
                     bestTagessiegPlayer = p;
                 }
             });
+            const bestTagessiegPlayers = namesAtMax(globalTagessiege, maxTagessiege);
 
             // Find Punktegott
             let bestPointsPlayer = "-";
@@ -2489,6 +2557,9 @@
                     bestPointsPlayer = p;
                 }
             });
+            const bestPointsPlayers = maxTotalPoints > -Infinity
+                ? Object.keys(globalTotalPoints).filter(p => Math.abs(globalTotalPoints[p] - maxTotalPoints) < 0.0001)
+                : [];
 
             // Find Ewiger Ansage-Guru
             let bestAllTimeAnsagenPlayer = "-";
@@ -2497,6 +2568,87 @@
                 if (globalAnsagen[p] > maxAllTimeAnsagen) {
                     maxAllTimeAnsagen = globalAnsagen[p];
                     bestAllTimeAnsagenPlayer = p;
+                }
+            });
+            const bestAllTimeAnsagenPlayers = namesAtMax(globalAnsagen, maxAllTimeAnsagen);
+
+            // Längste Siegesserie (über alle Saisons hinweg, chronologisch sortiert)
+            let globalLongestStreak = {};
+            allUniquePlayers.forEach(p => { globalLongestStreak[p] = 0; });
+
+            let allDetailedMatches = [];
+            Object.values(state.seasons).forEach(s => {
+                if (!s.matches) return;
+                Object.values(s.matches).forEach(m => {
+                    if (m.mode === 'detailed' && m.games) allDetailedMatches.push(m);
+                });
+            });
+            allDetailedMatches.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+            allUniquePlayers.forEach(player => {
+                let currentStreak = 0;
+                let maxStreak = 0;
+                allDetailedMatches.forEach(match => {
+                    match.games.forEach(g => {
+                        if (g.isRoundMarker) return;
+                        if (g.points && g.points[player] !== undefined) {
+                            if (g.points[player] >= 0) {
+                                currentStreak++;
+                                if (currentStreak > maxStreak) maxStreak = currentStreak;
+                            } else {
+                                currentStreak = 0;
+                            }
+                        }
+                    });
+                });
+                globalLongestStreak[player] = maxStreak;
+            });
+
+            let bestStreakPlayer = "-";
+            let maxStreakValue = 0;
+            Object.keys(globalLongestStreak).forEach(p => {
+                if (globalLongestStreak[p] > maxStreakValue) {
+                    maxStreakValue = globalLongestStreak[p];
+                    bestStreakPlayer = p;
+                }
+            });
+            const bestStreakPlayers = namesAtMax(globalLongestStreak, maxStreakValue);
+
+            // Dreamteam: alle Zweierteams, die je in einem Spiel zusammen gespielt haben (gleiche
+            // Punktzahl im selben Spiel = gleiches Team), gerankt nach erreichtem Punkteschnitt.
+            let globalPairStats = {}; // key: "A|||B" -> { players: [A, B], sum, count }
+            allDetailedMatches.forEach(match => {
+                const matchOrder = match.order || [];
+                match.games.forEach(g => {
+                    if (g.isRoundMarker) return;
+                    const gm = normalizeGame(g);
+                    for (let i = 0; i < matchOrder.length; i++) {
+                        for (let j = i + 1; j < matchOrder.length; j++) {
+                            const p1 = matchOrder[i], p2 = matchOrder[j];
+                            if (gm.points[p1] === undefined || gm.points[p2] === undefined) continue;
+                            if (gm.points[p1] === gm.points[p2]) {
+                                const pairKey = [p1, p2].sort().join('|||');
+                                if (!globalPairStats[pairKey]) {
+                                    globalPairStats[pairKey] = { players: [p1, p2].sort(), sum: 0, count: 0 };
+                                }
+                                globalPairStats[pairKey].sum += gm.points[p1];
+                                globalPairStats[pairKey].count += 1;
+                            }
+                        }
+                    }
+                });
+            });
+
+            let bestDreamteamAvg = -Infinity;
+            let bestDreamteamPairs = [];
+            Object.values(globalPairStats).forEach(ps => {
+                if (ps.count === 0) return;
+                const avg = ps.sum / ps.count;
+                if (avg > bestDreamteamAvg + 0.0001) {
+                    bestDreamteamAvg = avg;
+                    bestDreamteamPairs = [ps.players.join(' & ')];
+                } else if (Math.abs(avg - bestDreamteamAvg) < 0.0001) {
+                    bestDreamteamPairs.push(ps.players.join(' & '));
                 }
             });
 
@@ -2508,16 +2660,28 @@
                 globalTotalPointsMatchCount,
                 bestAllTimeHostName,
                 bestAllTimeHostAvg,
+                bestAllTimeHostNames,
                 bestSoloPlayer,
                 bestSoloCount,
                 bestSoloQuote,
+                bestSoloPlayers,
                 bestTagessiegPlayer,
                 maxTagessiege,
+                bestTagessiegPlayers,
                 bestPointsPlayer,
                 maxTotalPoints,
+                bestPointsPlayers,
                 bestAllTimeAnsagenPlayer,
                 maxAllTimeAnsagen,
-                globalAnsagen
+                bestAllTimeAnsagenPlayers,
+                globalAnsagen,
+                globalLongestStreak,
+                bestStreakPlayer,
+                maxStreakValue,
+                bestStreakPlayers,
+                globalPairStats,
+                bestDreamteamAvg,
+                bestDreamteamPairs
             };
         }
 
@@ -3061,7 +3225,23 @@
 
         function toggleGameLog(matchId) {
             const el = document.getElementById(`gamelog-${matchId}`);
-            if (el) el.classList.toggle('hidden');
+            if (!el) return;
+            const willShow = el.classList.contains('hidden');
+            el.classList.toggle('hidden');
+
+            // Spielverlauf und Statistiken sind gegenseitig exklusiv: Wird der eine
+            // eingeblendet, blendet sich der andere (falls offen) automatisch aus.
+            if (willShow) {
+                const statsContainer = document.getElementById(`statscontainer-${matchId}`);
+                if (statsContainer && !statsContainer.classList.contains('hidden')) {
+                    statsContainer.classList.add('hidden');
+                    expandedMatchStats[matchId] = false;
+                    if (eveningCharts[matchId]) {
+                        eveningCharts[matchId].destroy();
+                        delete eveningCharts[matchId];
+                    }
+                }
+            }
         }
 
         async function saveMatch() {
@@ -3207,7 +3387,7 @@
             if (hSelect) hSelect.value = "";
             editingMatchId = null;
             document.getElementById('saveMatchBtn').textContent = "Abend speichern";
-            entryMode = 'simple';
+            entryMode = season.isHistorical ? 'simple' : 'detailed';
             detailedOrder = [];
             detailedGames = [];
             editingGameIndex = null;
@@ -3742,7 +3922,7 @@
                             style.font.color = { rgb: "94A3B8" };
                             style.font.italic = true;
                         }
-                        // Soli hervorheben
+                        // Solos hervorheben
                         const isSoloAddress = XLSX.utils.encode_cell({ r: row, c: 7 });
                         const isSoloVal = ws[isSoloAddress] ? ws[isSoloAddress].v : '';
                         if (isSoloVal === 'Ja') {
@@ -3805,7 +3985,6 @@
             if (season) {
                 document.getElementById('formTitle').textContent = editingMatchId ? "Abend bearbeiten" : (isHist ? "Alten Abend eintragen" : "Abend eintragen");
                 document.getElementById('modernFormFields').style.display = "block";
-                document.getElementById('recordsBox').style.display = isHist ? "none" : "block";
 
                 if (isHist) {
                     modeToggle.classList.add('hidden');
@@ -3904,8 +4083,11 @@
                 placeholderText = (currentType === 'spieltag') ? 'Spieltag-Pkt' : 'Platz-Pkt';
             }
 
-            // Bedingung für die Anzeige des "Teilnahme < 60 %"-Buttons ermitteln [11]
-            const showBelowSixtyBtn = (!isHist) || (isHist && currentPointType === 'spieltag');
+            // Bedingung für die Anzeige des "Teilnahme < 60 %"-Buttons ermitteln.
+            // Im Spiel-für-Spiel-Modus ermittelt die App die Beteiligung automatisch anhand der
+            // erfassten Runden (siehe getEveningParticipation) - die manuelle Option ist daher nur
+            // im einfachen Modus nötig, wo keine Einzelspieldaten vorliegen.
+            const showBelowSixtyBtn = ((!isHist) || (isHist && currentPointType === 'spieltag')) && entryMode !== 'detailed';
 
             // Anzahl der aktuell aktiven Teilnehmer dieses Abends ermitteln.
             // Die manuelle "Teilnahme < 60 %"-Option ist nur relevant, wenn überhaupt jemand
@@ -4136,7 +4318,6 @@
             }
 
             const leaderboardBody = document.getElementById('leaderboardBody');
-            const recordsContainer = document.getElementById('recordsContainer');
             const tableHint = document.getElementById('tableHint');
 
             if (season) {
@@ -4213,127 +4394,65 @@
                     }
                     return mapRow(p, true);
                 }).join('') + unqualified.map(p => mapRow(p, false)).join('');
-
-                if (!isHist) {
-                    let ansagen = {};
-                    let longestStreaks = {};
-                    seasonPlayers.forEach(p => {
-                        ansagen[p] = 0;
-                        longestStreaks[p] = 0;
-                    });
-
-                    if (season.matches) {
-                        Object.values(season.matches).forEach(match => {
-                            if (match.mode === 'detailed' && match.games) {
-                                match.games.forEach(g => {
-                                    if (g.isRoundMarker) return;
-                                    const gm = normalizeGame(g);
-                                    if (gm.ansage) {
-                                        Object.keys(gm.ansage).forEach(p => {
-                                            if (ansagen[p] !== undefined && gm.ansage[p] === true) ansagen[p]++;
-                                        });
-                                    }
-                                });
-                            }
-                        });
-
-                        const sortedMatchesForStreak = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-                        seasonPlayers.forEach(player => {
-                            let currentStreak = 0;
-                            let maxStreak = 0;
-                            sortedMatchesForStreak.forEach(match => {
-                                if (match.mode === 'detailed' && match.games) {
-                                    match.games.forEach(g => {
-                                        if (g.isRoundMarker) return;
-                                        if (g.points && g.points[player] !== undefined) {
-                                            if (g.points[player] >= 0) {
-                                                currentStreak++;
-                                                if (currentStreak > maxStreak) maxStreak = currentStreak;
-                                            } else {
-                                                currentStreak = 0;
-                                            }
-                                        }
-                                    });
-                                }
-                            });
-                            longestStreaks[player] = maxStreak;
-                        });
-                    }
-
-                    let bestAnsagenPlayer = "-";
-                    let maxAnsagen = 0;
-                    Object.keys(ansagen).forEach(p => {
-                        if (ansagen[p] > maxAnsagen) {
-                            maxAnsagen = ansagen[p];
-                            bestAnsagenPlayer = p;
-                        }
-                    });
-
-                    let bestStreakPlayer = "-";
-                    let maxStreakValue = 0;
-                    Object.keys(longestStreaks).forEach(p => {
-                        if (longestStreaks[p] > maxStreakValue) {
-                            maxStreakValue = longestStreaks[p];
-                            bestStreakPlayer = p;
-                        }
-                    });
-
-                    recordsContainer.innerHTML = `
-                        <div class="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 text-blue-900 dark:text-blue-300">
-                            <p class="text-xs text-blue-700 dark:text-blue-400 font-bold uppercase tracking-wider">📢 Ansage-Guru (Saison)</p>
-                            <p class="text-lg font-bold mt-1">${maxAnsagen > 0 ? `${maxAnsagen} Ansagen` : '0 Ansagen'}</p>
-                            <p class="text-xs mt-0.5">Vorne: <b>${bestAnsagenPlayer}</b></p>
-                        </div>
-                        <div class="bg-indigo-50 dark:bg-indigo-950/20 p-4 rounded-xl border border-indigo-200 dark:border-indigo-900/60 text-indigo-900 dark:text-indigo-300">
-                            <p class="text-xs text-indigo-700 dark:text-indigo-400 font-bold uppercase tracking-wider">🔥 Siegesserie (Spiele)</p>
-                            <p class="text-lg font-bold mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Spiele'}</p>
-                            <p class="text-xs mt-0.5">Längste Serie: <b>${bestStreakPlayer}</b></p>
-                        </div>
-                    `;
-                }
             } else {
                 leaderboardBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-400 dark:text-slate-500 italic">Keine Daten.</td></tr>';
             }
 
             const {
-                bestAllTimeHostName,
                 bestAllTimeHostAvg,
-                bestSoloPlayer,
+                bestAllTimeHostNames,
                 bestSoloCount,
                 bestSoloQuote,
-                bestTagessiegPlayer,
+                bestSoloPlayers,
                 maxTagessiege,
-                bestPointsPlayer,
+                bestTagessiegPlayers,
                 maxTotalPoints,
-                bestAllTimeAnsagenPlayer,
-                maxAllTimeAnsagen
+                bestPointsPlayers,
+                maxAllTimeAnsagen,
+                bestAllTimeAnsagenPlayers,
+                maxStreakValue,
+                bestStreakPlayers,
+                bestDreamteamAvg,
+                bestDreamteamPairs
             } = calculateAllTimeRecords();
+
+            const joinNames = (arr) => arr && arr.length > 0 ? arr.join(', ') : '-';
 
             document.getElementById('allTimeRecordsContainer').innerHTML = `
                 <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Ewiger Solo-Meister</p>
-                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} Soli` : '0 Soli'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${bestSoloPlayer}</b> (${bestSoloQuote} % gewonnen)</p>
+                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Meister</p>
+                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} ${bestSoloCount === 1 ? 'Solo' : 'Solos'}` : '0 Solos'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloPlayers.length === 1 ? ` (${bestSoloQuote} % gewonnen)` : ''}</p>
                 </div>
                 <div onclick="showAllTimeDetail('host')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Ewige Festung</p>
+                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
                     <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${bestAllTimeHostName}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${joinNames(bestAllTimeHostNames)}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('tagessiege')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
                     <p class="text-xl font-black text-white mt-1">${maxTagessiege > 0 ? `${maxTagessiege} Siege` : '0 Siege'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${bestTagessiegPlayer}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${joinNames(bestTagessiegPlayers)}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
                     <p class="text-xl font-black text-white mt-1">${maxTotalPoints > -Infinity ? `${maxTotalPoints > 0 ? '+' : ''}${maxTotalPoints}` : '0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${bestPointsPlayer}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${joinNames(bestPointsPlayers)}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('ansagen')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ewiger Ansage-Guru</p>
+                    <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ansage-Guru</p>
                     <p class="text-xl font-black text-white mt-1">${maxAllTimeAnsagen > 0 ? `${maxAllTimeAnsagen} Ansagen` : '0 Ansagen'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${bestAllTimeAnsagenPlayer}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestAllTimeAnsagenPlayers)}</b></p>
+                </div>
+                <div onclick="showAllTimeDetail('streak')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
+                    <p class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">🔥 Längste Siegesserie</p>
+                    <p class="text-xl font-black text-white mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Siege'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestStreakPlayers)}</b></p>
+                </div>
+                <div onclick="showAllTimeDetail('dreamteam')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
+                    <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
+                    <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${bestDreamteamAvg.toFixed(2)}` : '0.00'} Pkt.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
                 </div>
             `;
 
@@ -4442,7 +4561,7 @@
                                 <div class="flex flex-wrap gap-2.5 mt-3 items-center">
                                     <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.filter(g => !g.isRoundMarker).length} Spiele)</button>
                                     <span class="text-gray-300 dark:text-slate-600">|</span>
-                                    <button onclick="toggleMatchStats('${id}')" id="toggleStatsBtn-${id}" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-0.5 font-bold">📊 Statistiken einblenden</button>
+                                    <button onclick="toggleMatchStats('${id}')" id="toggleStatsBtn-${id}" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-0.5 font-bold">📊 Statistiken</button>
                                 </div>
                                 <div id="gamelog-${id}" class="hidden mt-2 space-y-1">
                                     ${(() => {
@@ -4498,7 +4617,6 @@
                         const container = document.getElementById(`statscontainer-${matchId}`);
                         const btn = document.getElementById(`toggleStatsBtn-${matchId}`);
                         if (container && btn) {
-                            btn.textContent = "📊 Statistiken ausblenden";
                             const match = season.matches[matchId];
                             if (match) {
                                 const order = match.order || Object.keys(match.scores || {});
