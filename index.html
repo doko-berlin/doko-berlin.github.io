@@ -728,6 +728,10 @@
         let editLockInfo = null;       // { session, name, ts } aus der Cloud (null = frei)
         let hasEditLock = false;       // true, wenn DIESE Sitzung die Sperre hält
         let editLockListenerAttached = false;
+        // Logische Öffnungs-Absicht des Admin-Modals (unabhängig von der CSS-Transition/.hidden-Klasse).
+        // Wird sofort gesetzt/gelöscht, damit die Selbstheilung in startEditLockListener() nicht auf
+        // die 300ms-Ausblend-Animation hereinfällt (siehe toggleAdminModal).
+        let isAdminModalOpen = false;
 
         // ==============================
         // Toast- & Bestätigungs-System (Ersatz für native alert()/confirm())
@@ -1481,6 +1485,10 @@
         }
 
         function updateLiveDraft() {
+            // Während restoreFormState()/editMatch() das Formular programmatisch befüllen, lösen
+            // die dabei dispatchten Change-Events (z.B. auf check-${name}) sonst unberechtigte
+            // updateLiveDraft()-Aufrufe aus – auch in Instanzen, die den Bereich gar nicht bearbeiten.
+            if (isPopulatingEditForm) return;
             if (editingMatchId) return;
             if (!state.currentSeasonKey) return;
             const season = state.seasons[state.currentSeasonKey];
@@ -1546,6 +1554,10 @@
             }
 
             if (live.detailedOrder && live.detailedOrder.length > 0) {
+                // Verhindert, dass das Nachbilden des Entwurfs (z.B. durch einen Hintergrund-Update
+                // in einer anderen, nicht bearbeitenden Instanz) über die dispatchten Change-Events
+                // ungewollt einen neuen updateLiveDraft()-Aufruf auslöst.
+                isPopulatingEditForm = true;
                 live.detailedOrder.forEach(name => {
                     const cb = document.getElementById(`check-${name}`);
                     if (cb && !cb.checked) {
@@ -1553,6 +1565,7 @@
                         cb.dispatchEvent(new Event('change'));
                     }
                 });
+                isPopulatingEditForm = false;
             }
 
             // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben
@@ -1701,6 +1714,7 @@
                     showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Bitte kurz warten.', 'error');
                     return;
                 }
+                isAdminModalOpen = true;
                 acquireEditLock();
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -1708,6 +1722,10 @@
                     drawer.classList.remove('translate-x-full');
                 }, 10);
             } else {
+                // Selbstheilung SOFORT deaktivieren, bevor die Sperre in Firebase gelöscht wird –
+                // sonst greift der editLock-Listener während der 300ms-Ausblend-Transition fälschlich
+                // ein und fordert die gerade freigegebene Sperre direkt wieder an.
+                isAdminModalOpen = false;
                 releaseEditLock();
                 modal.classList.add('opacity-0');
                 drawer.classList.add('translate-x-full');
@@ -1965,12 +1983,12 @@
 
                 // Selbstheilung: Bei einer kurzen Verbindungsunterbrechung (z.B. Bildschirm
                 // gesperrt / App im Hintergrund) entfernt Firebase die Sperre automatisch
-                // (onDisconnect). Ist der Eingabebereich hier noch offen und hält aktuell
-                // niemand sonst die Sperre, wird sie automatisch neu beansprucht – sonst
-                // würden weitere Eingaben unbemerkt nicht mehr synchronisiert werden.
-                const modal = document.getElementById('adminModal');
-                const modalIsOpen = modal && !modal.classList.contains('hidden');
-                if (modalIsOpen && !hasEditLock && !editLockInfo) {
+                // (onDisconnect). Ist der Eingabebereich hier noch (beabsichtigt) offen und
+                // hält aktuell niemand sonst die Sperre, wird sie automatisch neu beansprucht –
+                // sonst würden weitere Eingaben unbemerkt nicht mehr synchronisiert werden.
+                // Wichtig: isAdminModalOpen statt DOM-Klasse prüfen, da toggleAdminModal(false)
+                // die .hidden-Klasse erst nach der 300ms-Transition setzt.
+                if (isAdminModalOpen && !hasEditLock && !editLockInfo) {
                     acquireEditLock();
                 }
 
