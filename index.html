@@ -53,11 +53,11 @@
         </div>
     </div>
 
-    <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative">
-            <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2">Spieler Name</h2>
-            <div id="playerModalContent" class="space-y-4"></div>
-            <button onclick="closePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+    <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closePlayerModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
+            <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
+            <div id="playerModalContent" class="space-y-4 overflow-y-auto flex-1 min-h-0 pr-1"></div>
+            <button onclick="closePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
         </div>
     </div>
 
@@ -71,18 +71,37 @@
     </div>
 
     <!-- What's New Modal -->
-    <div id="whatsNewModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative">
+    <div id="whatsNewModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeWhatsNewModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onclick="event.stopPropagation()">
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.7 -->
+                <!-- Version 1.8 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.7</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">02.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.8</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">04.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Saisonwechsel neu platziert:</strong> Das Saison-Dropdown befindet sich jetzt direkt in der Überschrift der Tabelle statt in einer separaten Leiste darüber.</li>
+                        <li><strong>„Spieltag hinzufügen" statt „Verwaltung & Eingabe":</strong> Der Eingabebereich wurde umbenannt und ist jetzt direkt über der Tabelle erreichbar; die alte Leiste zwischen Menü und Tabelle entfällt komplett.</li>
+                        <li><strong>Saison-Einstellungen ins Menü verschoben:</strong> Saison anlegen/bearbeiten, Mindestquote und Saisonstatus sind jetzt über „🛠️ Saison-Einstellungen" im Menü statt in der Admin-Verwaltung erreichbar.</li>
+                        <li><strong>Spielerdetails im Querformat repariert:</strong> Das Fenster wird am Smartphone im Querformat nicht mehr oben/unten abgeschnitten, sondern scrollt bei Bedarf innerhalb einer festen Höhe.</li>
+                        <li><strong>Hintergrund-Scrollsperre:</strong> Die Seite hinter einem geöffneten Modal lässt sich nicht mehr versehentlich mitscrollen.</li>
+                        <li><strong>Zurück-Button am Smartphone:</strong> Schließt jetzt nur das offene Modal, statt die App zu verlassen.</li>
+                        <li><strong>Saisonverlauf um „Gesamtverlauf" erweitert:</strong> Neue Ansicht zeigt den laufenden Punkteschnitt je Spieler nach jedem Abend, umschaltbar neben „Abend-Platzierungen".</li>
+                        <li><strong>Konsistentes Schließen per Klick auf den Hintergrund</strong> jetzt bei allen Modals möglich (u. a. Spielerdetails, Changelog).</li>
+                        <li><strong>Diverse Fehlerbehebungen:</strong> u. a. korrekte Speicherung in den Saison-Einstellungen unabhängig vom Eingabe-Lock, Absturz bei Spielernamen mit Apostroph behoben, Datenverlust-Risiko beim Offline-Speichern eines Abends beseitigt sowie ein Fehler behoben, bei dem ein abgebrochener Bearbeitungsvorgang den laufenden Live-Entwurf beschädigen konnte.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.7 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.7</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">02.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Spieltage:</strong> Spielverlauf und Statistiken sind jetzt gegenseitig exklusiv (immer nur eins von beidem sichtbar).</li>
                         <li><strong>Saison-Rekorde entfernt:</strong> Stattdessen „Längste Siegesserie" in die Ewige Bestenliste integriert, saisonübergreifend über die komplette Historie berechnet.</li>
                         <li><strong>Neue Rekord-Kachel „Dreamteam":</strong> Bestes Zweierteam nach Punkteschnitt, ermittelt über alle Abende und Saisons hinweg.</li>
@@ -356,7 +375,7 @@
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
             <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3 shrink-0">
-                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">⚙️ Admin-Verwaltung</h2>
+                <h2 class="text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">➕ Spieltag hinzufügen</h2>
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
@@ -406,11 +425,20 @@
                 <div id="playerList" class="flex flex-wrap gap-2"></div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
-                <h2 class="text-lg font-semibold border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Saison-Einstellungen</h2>
+        </div>
+    </div>
+
+    <!-- Saison-Einstellungen Modal -->
+    <div id="seasonSettingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeSeasonSettingsModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative flex flex-col max-h-[90vh] my-auto space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2 shrink-0">
+                <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">⚙️ Saison-Einstellungen</h2>
+                <button onclick="closeSeasonSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+            <div class="overflow-y-auto flex-1 min-h-0 pr-1 space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Ausgewählte Saison bearbeiten:</label>
-                    <select id="seasonSelect" onchange="changeSeasonView('seasonSelect')" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
+                    <select id="seasonSelect" onchange="changeSettingsSeasonView()" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Erforderliche Gesamt-Teilnahmequote (%):</label>
@@ -441,10 +469,9 @@
                     </div>
                     <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
                 </div>
-                
+
                 <div id="seasonStatusContainer" class="pt-2 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between gap-2 flex-wrap"></div>
             </div>
-
         </div>
     </div>
 
@@ -518,6 +545,9 @@
                     <button onclick="toggleDarkMode(); closeHeaderMenu();" id="darkModeToggleBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         🌙 Nachtmodus
                     </button>
+                    <button onclick="openSeasonSettingsModal(); closeHeaderMenu();" id="seasonSettingsBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        🛠️ Saison-Einstellungen
+                    </button>
                     <button onclick="exportToExcel(); closeHeaderMenu();" id="excelExportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         📊 Excel-Export
                     </button>
@@ -535,16 +565,6 @@
                     Abmelden
                 </button>
             </div>
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-3 justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-700">
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <label for="mainSeasonSelect" class="text-sm font-semibold text-slate-600 dark:text-slate-300 shrink-0">📅 Saison:</label>
-                <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 dark:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none w-full sm:w-56"></select>
-            </div>
-            <button onclick="toggleAdminModal(true)" id="adminOpenBtn" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
-                ⚙️ Verwaltung & Eingabe
-            </button>
         </div>
 
         <div class="space-y-6">
@@ -582,13 +602,19 @@
             </div>
             
             <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
-                <div class="flex justify-between items-center mb-4 border-b dark:border-slate-700 pb-3 flex-wrap gap-2">
-                    <h2 id="tableTitle" class="text-xl font-bold text-slate-900 dark:text-white">🏆 Live Saison-Tabelle</h2>
-                    <div class="flex gap-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b dark:border-slate-700 pb-3 gap-3">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 id="tableTitle" class="text-xl font-bold text-slate-900 dark:text-white">🏆 Live Saison-Tabelle</h2>
+                        <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 dark:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl p-1.5 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none"></select>
+                    </div>
+                    <div class="flex gap-2 items-center flex-wrap w-full sm:w-auto justify-between sm:justify-end">
                         <label id="blitztabelleToggleContainer" class="hidden items-center gap-1.5 cursor-pointer bg-amber-100 dark:bg-amber-950 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-amber-300 dark:border-amber-800 shadow-sm transition">
                             <input type="checkbox" id="blitztabelleToggle" onchange="toggleBlitztabelle()" class="rounded text-amber-600 w-3 h-3">
                             ⚡ Blitztabelle
                         </label>
+                        <button onclick="toggleAdminModal(true)" id="adminOpenBtn" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-sm tracking-wide">
+                            ➕ Spieltag hinzufügen
+                        </button>
                     </div>
                 </div>
                 <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
@@ -609,7 +635,13 @@
             </div>
 
             <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
-                <h2 class="text-xl font-bold mb-4 border-b dark:border-slate-700 pb-3 text-slate-900 dark:text-white">📈 Saisonverlauf (Abend-Platzierungen)</h2>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b dark:border-slate-700 pb-3 gap-3">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">📈 Saisonverlauf</h2>
+                    <div class="grid grid-cols-2 gap-1.5 bg-gray-100 dark:bg-slate-900 p-1 rounded-lg text-xs font-bold w-full sm:w-auto">
+                        <button type="button" id="chartModeRankingBtn" onclick="setChartViewMode('ranking')" class="py-1.5 px-3 rounded-md transition cursor-pointer whitespace-nowrap">📍 Abend-Platzierungen</button>
+                        <button type="button" id="chartModeTotalBtn" onclick="setChartViewMode('total')" class="py-1.5 px-3 rounded-md transition cursor-pointer whitespace-nowrap">📈 Gesamtverlauf</button>
+                    </div>
+                </div>
                 <div id="chartLegendContainer" class="flex flex-wrap gap-2 mb-4"></div>
                 <div class="relative w-full" style="height: 320px;">
                     <canvas id="saisonVerlaufChart"></canvas>
@@ -656,8 +688,40 @@
             }
         });
 
+        // Robuste Wrapper um localStorage: In manchen Browsern/Kontexten (u.a. Safari Privates
+        // Surfen älterer Versionen, randvoller Speicher auf älteren Smartphones) wirft JEDER
+        // Zugriff auf localStorage eine Exception. Ohne Absicherung würde diese Exception die
+        // jeweils aufrufende Funktion komplett abbrechen – inklusive nachfolgendem Code wie
+        // render() oder saveLiveDraftToCloud() – und damit die UI in einem inkonsistenten
+        // Zustand hängen lassen. Diese Wrapper fangen das ab und degradieren stattdessen sanft
+        // (Offline-Backup/Dark-Mode-Persistenz entfällt dann einfach, statt die App zu blockieren).
+        function safeLocalStorageGet(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                console.warn('LocalStorage nicht verfügbar (getItem):', e);
+                return null;
+            }
+        }
+        function safeLocalStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.warn('LocalStorage nicht verfügbar (setItem):', e);
+                return false;
+            }
+        }
+        function safeLocalStorageRemove(key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) {
+                console.warn('LocalStorage nicht verfügbar (removeItem):', e);
+            }
+        }
+
         function initDarkMode() {
-            const savedMode = localStorage.getItem('doko_dark_mode');
+            const savedMode = safeLocalStorageGet('doko_dark_mode');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             const isDark = savedMode === 'true' || (savedMode === null && systemPrefersDark);
             
@@ -671,7 +735,7 @@
 
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('doko_dark_mode', isDark ? 'true' : 'false');
+            safeLocalStorageSet('doko_dark_mode', isDark ? 'true' : 'false');
             updateDarkModeToggleUI();
             render();
         }
@@ -720,6 +784,14 @@
 
         // Zustand für ein- und auszublendende Spieler in der Verlaufsgrafik
         let hiddenChartPlayers = {};
+        // Zustand für die Ansicht des Saisonverlaufs: 'ranking' (Abend-Platzierungen) oder 'total' (Gesamtverlauf)
+        let chartViewMode = 'ranking';
+        // Eigene, vom Hauptdashboard entkoppelte "welche Saison wird gerade administriert"-Variable
+        // für das Saison-Einstellungen-Modal. Bewusst getrennt von state.currentSeasonKey, damit das
+        // Auswählen einer alten Saison dort NICHT die im Hintergrund aktive Saison (Tabelle, laufender
+        // Live-Entwurf im Eingabedrawer) verändert. Wird per render() automatisch auf eine gültige
+        // Saison zurückgesetzt, falls sie leer oder (z.B. nach Löschung) ungültig geworden ist.
+        let settingsSeasonKey = null;
 
         // ==============================
         // Eingabebereich-Sperre (verhindert gleichzeitiges Bearbeiten durch mehrere Spieler)
@@ -736,6 +808,94 @@
         // ==============================
         // Toast- & Bestätigungs-System (Ersatz für native alert()/confirm())
         // ==============================
+
+        /**
+         * Verhindert das Scrollen der dahinterliegenden Seite, während ein Modal
+         * geöffnet ist. Ein Zähler erlaubt es, dass mehrere Modals gleichzeitig
+         * offen sein können (z. B. eine Bestätigungsabfrage über der Admin-Verwaltung),
+         * ohne dass das Scrollen vorzeitig wieder freigegeben wird.
+         */
+        let openModalCount = 0;
+        function lockBodyScroll() {
+            openModalCount++;
+            document.body.classList.add('overflow-hidden');
+        }
+        function unlockBodyScroll() {
+            openModalCount = Math.max(0, openModalCount - 1);
+            if (openModalCount === 0) {
+                document.body.classList.remove('overflow-hidden');
+            }
+        }
+
+        /**
+         * Sorgt dafür, dass der mobile "Zurück"-Button (Android/Browser) ein offenes
+         * Modal schließt statt die Seite/App zu verlassen. Beim Öffnen eines Modals
+         * wird ein zusätzlicher Verlaufseintrag angelegt; der Zurück-Button ruft
+         * dadurch nur "popstate" auf, statt die Seite tatsächlich zu wechseln.
+         * Wird ein Modal stattdessen per Klick (X, Abbrechen, Backdrop) geschlossen,
+         * wird dieser Verlaufseintrag wieder sauber entfernt (history.back()),
+         * damit der Zurück-Button beim nächsten Mal wieder normal funktioniert.
+         */
+        let closingModalViaBackButton = false;
+        let ignoreNextPopstate = false;
+        let activeConfirmCancel = null;
+
+        function registerModalOpen() {
+            history.pushState({ dokoModal: true }, '');
+        }
+
+        function registerModalClose() {
+            if (closingModalViaBackButton) return; // Verlauf wurde bereits durch den Zurück-Button entfernt
+            if (history.state && history.state.dokoModal) {
+                ignoreNextPopstate = true;
+                history.back();
+            }
+        }
+
+        function closeTopmostOpenModal() {
+            if (activeConfirmCancel) {
+                activeConfirmCancel();
+                return;
+            }
+            const modalCloseMap = [
+                ['whatsNewModal', closeWhatsNewModal],
+                ['regelnModal', closeRegelnModal],
+                ['seasonSettingsModal', closeSeasonSettingsModal],
+                ['allTimeStatsModal', closeAllTimeModal],
+                ['playerDetailsModal', closePlayerModal],
+                ['adminModal', () => toggleAdminModal(false)],
+            ];
+            for (const [id, closeFn] of modalCloseMap) {
+                const el = document.getElementById(id);
+                if (el && !el.classList.contains('hidden')) {
+                    closeFn();
+                    return;
+                }
+            }
+        }
+
+        window.addEventListener('popstate', () => {
+            if (ignoreNextPopstate) {
+                ignoreNextPopstate = false;
+                return;
+            }
+            closingModalViaBackButton = true;
+            closeTopmostOpenModal();
+            closingModalViaBackButton = false;
+        });
+
+        /**
+         * Maskiert einen Wert (z.B. Spielername) für die sichere Einbettung als
+         * einfach-gequotetes Argument innerhalb eines generierten onclick/onchange-
+         * HTML-Attributs, z.B. onclick="foo('${escapeJsString(name)}')". Ohne diese
+         * Maskierung würde ein Name wie "O'Connor" das umschließende Attribut
+         * vorzeitig beenden und zu einem JavaScript-Syntaxfehler führen, wodurch
+         * der Button/das Handler-Event nicht mehr funktioniert.
+         */
+        function escapeJsString(str) {
+            if (str === null || str === undefined) return '';
+            return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
 
         /**
          * Zeigt eine nicht-blockierende Toast-Meldung an.
@@ -785,14 +945,20 @@
 
                 msgEl.textContent = message;
                 modal.classList.remove('hidden');
+                lockBodyScroll();
+                registerModalOpen();
 
                 const cleanup = (result) => {
                     modal.classList.add('hidden');
+                    unlockBodyScroll();
+                    activeConfirmCancel = null;
+                    registerModalClose();
                     okBtn.removeEventListener('click', onOk);
                     cancelBtn.removeEventListener('click', onCancel);
                     modal.removeEventListener('click', onBackdrop);
                     resolve(result);
                 };
+                activeConfirmCancel = () => cleanup(false);
                 const onOk = () => cleanup(true);
                 const onCancel = () => cleanup(false);
                 const onBackdrop = (e) => { if (e.target === modal) cleanup(false); };
@@ -828,17 +994,41 @@
         // Steuerung Changelog Modal
         function openWhatsNewModal() {
             document.getElementById('whatsNewModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
         }
         function closeWhatsNewModal() {
             document.getElementById('whatsNewModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
         }
 
         // Steuerung Regeln Modal
         function openRegelnModal() {
             document.getElementById('regelnModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
         }
         function closeRegelnModal() {
             document.getElementById('regelnModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
+        }
+
+        // Steuerung Saison-Einstellungen Modal
+        function openSeasonSettingsModal() {
+            // Beim Öffnen immer mit der aktuell angezeigten Saison starten (nachvollziehbarer
+            // Standard), unabhängig davon, welche Saison beim letzten Mal dort ausgewählt war.
+            settingsSeasonKey = state.currentSeasonKey || null;
+            document.getElementById('seasonSettingsModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
+            render();
+        }
+        function closeSeasonSettingsModal() {
+            document.getElementById('seasonSettingsModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
         }
 
         function showAllTimeDetail(metricType) {
@@ -872,7 +1062,8 @@
                 sortedList = Object.keys(records.globalTagessiege)
                     .map(player => {
                         const count = records.globalTagessiege[player] || 0;
-                        return { player, value: count, detail: '' }; // Text entfällt ersatzlos
+                        const participations = records.globalTagessiegeParticipations[player] || 0;
+                        return { player, value: count, detail: `bei ${participations} Teilnahmen` };
                     })
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
@@ -981,10 +1172,14 @@
             document.getElementById('allTimeModalTitle').textContent = title;
             document.getElementById('allTimeModalContent').innerHTML = listHtml;
             document.getElementById('allTimeStatsModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
         }
 
         function closeAllTimeModal() {
             document.getElementById('allTimeStatsModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
         }
 
         function changeMatchPointType(type) {
@@ -1515,14 +1710,14 @@
             season.liveDraft = draftObj;
             
             // Offline-Backup-Logik (Verbindung mit localStorage)
-            localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
+            safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
             
             saveLiveDraftToCloud();
         }
 
         function updateSeasonMinQuota() {
-            if (!state.currentSeasonKey) return;
-            const season = state.seasons[state.currentSeasonKey];
+            if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) return;
+            const season = state.seasons[settingsSeasonKey];
             if (season.status === "abgeschlossen") {
                 showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
                 render();
@@ -1535,8 +1730,18 @@
                 render();
                 return;
             }
+            const previousVal = season.minQuota;
             season.minQuota = val;
-            saveToCloud();
+            render();
+            saveToCloud().catch((err) => {
+                // Änderung kam nicht in der Cloud an: lokal zurückrollen, statt lautlos
+                // eine Änderung vorzugaukeln, die beim nächsten Sync wieder verschwindet.
+                season.minQuota = previousVal;
+                render();
+                showToast(err === 'locked'
+                    ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                    : "Fehler beim Speichern der Mindestquote in der Cloud.", 'error');
+            });
         }
 
         function restoreFormState() {
@@ -1617,10 +1822,58 @@
             render();
         }
 
+        // Ermittelt, ob eine Spielerlinie in der Saisonverlauf-Grafik standardmäßig (also ohne
+        // explizite Nutzerauswahl) ausgeblendet sein soll. Das gilt ausschließlich in der
+        // Gesamtverlauf-Ansicht ('total') für Spieler, die die gültige Teilnahmequote der Saison
+        // nicht erreichen – analog zur "inRating"-Logik der Bestenliste/des Exports.
+        function getSeasonPlayerChartDefaultHidden(seasonKey, name) {
+            if (chartViewMode !== 'total') return false;
+            const season = seasonKey ? state.seasons[seasonKey] : null;
+            if (!season) return false;
+            const minQuota = season.minQuota !== undefined ? season.minQuota : 40;
+            const minQuotaRatio = minQuota / 100;
+            const { matchCounts, totalMatchesCount } = calculateSeasonStats(seasonKey);
+            if (totalMatchesCount === 0) return false;
+            const played = matchCounts[name] || 0;
+            const ratio = played / totalMatchesCount;
+            return ratio < minQuotaRatio;
+        }
+
+        // Effektiver Sichtbarkeitsstatus: explizite Nutzerauswahl (hiddenChartPlayers) hat
+        // Vorrang, sonst greift der quotenbasierte Default aus getSeasonPlayerChartDefaultHidden().
+        function isChartPlayerHidden(seasonKey, name) {
+            if (hiddenChartPlayers[name] !== undefined) return hiddenChartPlayers[name] === true;
+            return getSeasonPlayerChartDefaultHidden(seasonKey, name);
+        }
+
         // Toggles Dataset Visibility im Verlaufschart
         function toggleChartPlayer(name) {
-            hiddenChartPlayers[name] = !hiddenChartPlayers[name];
+            // Vom aktuellen effektiven Status (inkl. Quoten-Default) aus umschalten, damit ein
+            // Klick auch bei standardmäßig ausgeblendeten Spielern sichtbar etwas bewirkt.
+            hiddenChartPlayers[name] = !isChartPlayerHidden(state.currentSeasonKey, name);
             render();
+        }
+
+        // Wechselt zwischen den beiden Ansichten des Saisonverlaufs (Abend-Platzierungen / Gesamtverlauf)
+        function setChartViewMode(mode) {
+            if (mode === chartViewMode) return;
+            chartViewMode = mode;
+            updateChartModeToggleUI();
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            updateSeasonCourseChart(season);
+        }
+
+        function updateChartModeToggleUI() {
+            const rankingBtn = document.getElementById('chartModeRankingBtn');
+            const totalBtn = document.getElementById('chartModeTotalBtn');
+            if (!rankingBtn || !totalBtn) return;
+
+            const activeCls = ['bg-emerald-600', 'text-white', 'shadow'];
+            const inactiveCls = ['bg-transparent', 'text-gray-500', 'dark:text-slate-400'];
+            rankingBtn.classList.remove(...activeCls, ...inactiveCls);
+            totalBtn.classList.remove(...activeCls, ...inactiveCls);
+            rankingBtn.classList.add(...(chartViewMode === 'ranking' ? activeCls : inactiveCls));
+            totalBtn.classList.add(...(chartViewMode === 'total' ? activeCls : inactiveCls));
         }
 
         function openPlayerDetails(playerName) {
@@ -1687,10 +1940,14 @@
                 `;
             }
             document.getElementById('playerDetailsModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
         }
 
         function closePlayerModal() {
             document.getElementById('playerDetailsModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
         }
 
         function sortSeasonsChronologically(keys) {
@@ -1719,6 +1976,8 @@
                 isAdminModalOpen = true;
                 acquireEditLock();
                 modal.classList.remove('hidden');
+                lockBodyScroll();
+                registerModalOpen();
                 setTimeout(() => {
                     modal.classList.remove('opacity-0');
                     drawer.classList.remove('translate-x-full');
@@ -1731,20 +1990,51 @@
                 releaseEditLock();
                 modal.classList.add('opacity-0');
                 drawer.classList.add('translate-x-full');
+                unlockBodyScroll();
+                registerModalClose();
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
-                    const hasActiveDraft = !!(season && season.liveDraft);
+                    const liveDraft = season ? season.liveDraft : null;
+
                     editingMatchId = null;
-                    tempScores = {};
-                    tempJokers = {};
-                    matchBelowSixty = {};
                     document.getElementById('saveMatchBtn').textContent = "Abend speichern";
-                    if (!hasActiveDraft) {
+
+                    // Nach dem Abbrechen einer Bearbeitung (editMatch() überschreibt entryMode,
+                    // detailedOrder, detailedGames, tempScores, tempJokers, Datum & Gastgeber
+                    // testweise mit den Werten des bearbeiteten ALTEN Spieltags) dürfen diese
+                    // globalen Formularvariablen NICHT im "vergifteten" Editier-Zustand verbleiben.
+                    // Sonst würde die nächste Nutzerinteraktion diesen falschen Zustand per
+                    // updateLiveDraft() als neuen Live-Entwurf in die Cloud schreiben und den
+                    // echten, unfertigen Abend-Entwurf unwiderruflich überschreiben (Draft Pollution).
+                    // Stattdessen wird hier immer strikt aus dem unberührten season.liveDraft
+                    // wiederhergestellt (bzw. alles zurückgesetzt, falls kein Entwurf existiert).
+                    if (liveDraft) {
+                        entryMode = liveDraft.entryMode || (season.isHistorical ? 'simple' : 'detailed');
+                        detailedOrder = liveDraft.detailedOrder ? [...liveDraft.detailedOrder] : [];
+                        detailedGames = (liveDraft.detailedGames || []).map(normalizeGame);
+                        matchBelowSixty = liveDraft.belowSixty || {};
+                        tempScores = liveDraft.scores || {};
+                        tempJokers = liveDraft.jokers || {};
+
+                        const dateInput = document.getElementById('matchDate');
+                        if (dateInput) dateInput.value = liveDraft.matchDate || '';
+                        const hostSelect = document.getElementById('matchHostSelect');
+                        if (hostSelect) hostSelect.value = liveDraft.host || '';
+                    } else {
+                        entryMode = (season && season.isHistorical) ? 'simple' : 'detailed';
+                        detailedOrder = [];
+                        detailedGames = [];
+                        matchBelowSixty = {};
+                        tempScores = {};
+                        tempJokers = {};
+
                         document.getElementById('matchDate').value = "";
                         const hostSelect = document.getElementById('matchHostSelect');
                         if (hostSelect) hostSelect.value = "";
                     }
+
+                    editingGameIndex = null;
                     render();
                 }, 300);
             }
@@ -1783,9 +2073,51 @@
 
         let dbListenerAttached = false;
 
+        // Speichert eine Vergleichs-Signatur des zuletzt gerenderten state.seasons-Standes.
+        // Wird von render() nach jedem Durchlauf aktualisiert (unabhängig davon, wer render()
+        // aufgerufen hat) und vom Firebase-Listener genutzt, um einen redundanten, teuren
+        // Voll-Render (inkl. Chart-/Sortable-Neuaufbau) zu vermeiden, wenn das Cloud-Echo eines
+        // bereits lokal synchron gerenderten eigenen Schreibvorgangs eintrifft (Double-Render).
+        let lastRenderedSeasonsSignature = null;
+
+        // Erzeugt die Vergleichs-Signatur für den Render-Dedupe-Check. Der liveDraft.timestamp
+        // wird pro Saison bewusst ausgeklammert: Er ändert sich bei jedem Cloud-Schreibvorgang
+        // eines Live-Entwurfs (Server-Zeitstempel bzw. lokales SDK-Echo), obwohl der eigentliche
+        // Inhalt (Punkte, Spielerauswahl, Einzelspiele, ...) unverändert sein kann – ohne diesen
+        // Ausschluss würde jeder Vergleich fälschlich "geändert" ergeben und die Optimierung
+        // liefe komplett ins Leere.
+        function computeSeasonsRenderSignature(seasonsObj) {
+            try {
+                const normalized = {};
+                Object.keys(seasonsObj || {}).forEach(key => {
+                    const season = seasonsObj[key];
+                    if (season && season.liveDraft) {
+                        const { timestamp, ...liveDraftRest } = season.liveDraft;
+                        normalized[key] = { ...season, liveDraft: liveDraftRest };
+                    } else {
+                        normalized[key] = season;
+                    }
+                });
+                return JSON.stringify(normalized);
+            } catch (e) {
+                return null; // Im Zweifel lieber rendern als eine Exception zu riskieren
+            }
+        }
+
+        // Differenz zwischen lokaler Geräte-Uhr und Firebase-Serverzeit (ms). Wird kontinuierlich
+        // von Firebase über ".info/serverTimeOffset" aktualisiert und dient dazu, lokale
+        // Date.now()-Zeitstempel vor einem Vergleich mit ServerValue.TIMESTAMP-Werten auf
+        // "geschätzte Serverzeit" umzurechnen (siehe startDatabaseListener()) – so wird der
+        // Vergleich unabhängig von falsch eingestellten/abweichenden Geräte-Uhren (Clock Drift).
+        let serverTimeOffset = 0;
+
         function startDatabaseListener() {
             if (dbListenerAttached) return;
             dbListenerAttached = true;
+
+            db.ref(".info/serverTimeOffset").on("value", (snap) => {
+                serverTimeOffset = snap.val() || 0;
+            });
 
             db.ref('doko_v2_data').on('value', (snapshot) => {
             const data = snapshot.val();
@@ -1832,7 +2164,7 @@
                 const cloudLive = season.liveDraft;
                 
                 // Offline-Backup-Logik (Verbindung mit localStorage)
-                const localDraftStr = localStorage.getItem(`doko_live_draft_${state.currentSeasonKey}`);
+                const localDraftStr = safeLocalStorageGet(`doko_live_draft_${state.currentSeasonKey}`);
                 let localLive = null;
                 if (localDraftStr) {
                     try {
@@ -1842,7 +2174,7 @@
                             const newestMatchTimestamp = Object.values(season.matches).reduce((max, m) => Math.max(max, m.createdTimestamp || m.timestamp || 0), 0);
                             if (localLive.timestamp && localLive.timestamp <= newestMatchTimestamp) {
                                 localLive = null;
-                                localStorage.removeItem(`doko_live_draft_${state.currentSeasonKey}`);
+                                safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
                             }
                         }
                     } catch (e) {
@@ -1853,23 +2185,34 @@
                 let finalLive = null;
                 if (cloudLive && localLive) {
                     const cloudTs = cloudLive.timestamp || 0;
-                    const localTs = localLive.timestamp || 0;
-                    if (localTs > cloudTs) {
+                    // Lokalen Zeitstempel um den bekannten Server-Offset korrigieren, damit
+                    // Client- und Server-Uhr physikalisch vergleichbar sind (Clock-Drift-Schutz).
+                    // Zusätzlich eine kleine Toleranz (2s) zulassen, um Restungenauigkeiten des
+                    // Offsets bzw. Netzwerklatenz nicht sofort als "lokal neuer" zu werten.
+                    const CLOCK_TOLERANCE_MS = 2000;
+                    const localTs = (localLive.timestamp || 0) + serverTimeOffset;
+                    if (localTs > cloudTs + CLOCK_TOLERANCE_MS) {
                         finalLive = localLive;
                         season.liveDraft = localLive;
-                        if (hasEditLock) saveToCloud();
+                        // Gezielt nur den liveDraft-Pfad zurückschreiben (wie beim normalen
+                        // Entwurfs-Speichern), statt über saveToCloud() den kompletten
+                        // state.seasons-Baum zu überschreiben – das ist hier weder nötig noch
+                        // günstig und würde theoretisch zwischenzeitliche Änderungen anderer
+                        // Geräte an anderer Stelle des Baums per .set() verdrängen können.
+                        if (hasEditLock) saveLiveDraftToCloud();
                     } else {
                         finalLive = cloudLive;
-                        localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
+                        safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
                     }
                 } else if (localLive) {
                     // Wenn der Nutzer die Sperre nicht hat, alten lokalen Entwurf nicht in die Cloud drücken
                     finalLive = localLive;
                     season.liveDraft = localLive;
-                    if (hasEditLock) saveToCloud();
+                    // Siehe Kommentar oben: gezielter liveDraft-Write statt Full-Tree-Overwrite.
+                    if (hasEditLock) saveLiveDraftToCloud();
                 } else if (cloudLive) {
                     finalLive = cloudLive;
-                    localStorage.setItem(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
+                    safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
                 }
 
                 if (finalLive) {
@@ -1896,7 +2239,16 @@
                 dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse inline-block";
                 dot.title = "Verbunden";
             }
-            render();
+
+            // Nur neu rendern, wenn sich der Inhalt gegenüber dem zuletzt gerenderten Stand
+            // tatsächlich geändert hat. Verhindert einen redundanten, teuren Voll-Render (inkl.
+            // Chart-/Sortable-Neuaufbau), wenn dieses 'value'-Event lediglich das Echo eines
+            // eigenen Schreibvorgangs ist, der bereits synchron im auslösenden Interaktions-
+            // Handler gerendert wurde.
+            const newSignature = computeSeasonsRenderSignature(state.seasons);
+            if (newSignature === null || newSignature !== lastRenderedSeasonsSignature) {
+                render();
+            }
         }, (error) => {
             console.error(error);
             const status = document.getElementById('connectionStatus');
@@ -1921,17 +2273,37 @@
         }
 
         function writeSeasonsToCloudRaw() {
-            db.ref('doko_v2_data').set({
-                seasons: state.seasons
-            });
+            // Promise zurückgeben, damit Aufrufer (z.B. saveMatch) auf eine bestätigte
+            // Speicherung warten können, bevor sie lokale Kopien (Draft/localStorage) löschen.
+            //
+            // WICHTIG: Das Firebase-SDK validiert Objekt-Schlüssel (u.a. verbotene Zeichen wie
+            // . $ # [ ] /) SYNCHRON und wirft bei einem Verstoß einen normalen JavaScript-Error,
+            // statt das zurückgegebene Promise abzulehnen. Ohne try/catch würde ein solcher Fehler
+            // an dieser Stelle als unbehandelte Exception nach oben durchschlagen und JEDEN
+            // .then()/.catch()-Aufrufer (z.B. in saveMatch(), toggleSeasonStatus() etc.) umgehen –
+            // die Änderung bliebe dann lautlos nur im lokalen Speicher hängen, bis der nächste
+            // Firebase-Snapshot sie wieder überschreibt. Das try/catch verwandelt so einen Fehler
+            // zuverlässig in ein abgelehntes Promise, damit die bestehende Fehlerbehandlung bei
+            // allen Aufrufern tatsächlich greift.
+            try {
+                return db.ref('doko_v2_data').set({
+                    seasons: state.seasons
+                });
+            } catch (err) {
+                console.error('Cloud-Speicherung sofort fehlgeschlagen (z.B. ungültiger Schlüssel):', err);
+                return Promise.reject(err);
+            }
         }
 
         let lockWarningToastShownAt = 0;
         function saveToCloud() {
-            // Höhere Datensicherheit: Nur wer aktuell den Eingabebereich geöffnet hat
-            // (und damit die Sperre hält), darf Daten in die Cloud hochladen.
-            if (!hasEditLock) {
-                console.warn('Schreibzugriff verweigert: Eingabebereich ist nicht durch diese Sitzung gesperrt.');
+            // Höhere Datensicherheit: Schreiben ist nur verboten, wenn der Eingabebereich
+            // aktuell nachweislich von einer ANDEREN Sitzung gesperrt ist. Ist die Sperre frei
+            // (editLockInfo === null), dürfen auch administrative Vorgänge außerhalb des
+            // Eingabedrawers (z.B. Saison-Einstellungen) ganz normal speichern – nur eine
+            // fremd gehaltene Sperre blockiert den Schreibzugriff.
+            if (editLockInfo && !hasEditLock) {
+                console.warn('Schreibzugriff verweigert: Eingabebereich ist durch eine andere Sitzung gesperrt.');
                 // Sichtbare Warnung statt eines stillen Fehlschlags: Sonst könnte jemand
                 // munter weiter Spiele eintragen, ohne zu merken, dass nichts davon bei den
                 // anderen ankommt (z.B. nach einer kurzen Verbindungsunterbrechung, falls die
@@ -1940,11 +2312,11 @@
                 const now = Date.now();
                 if (now - lockWarningToastShownAt > 5000) {
                     lockWarningToastShownAt = now;
-                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade nicht (mehr) für dich gesperrt. Bitte schließen und neu öffnen.', 'error');
+                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade durch jemand anderen gesperrt.', 'error');
                 }
-                return;
+                return Promise.reject('locked');
             }
-            writeSeasonsToCloudRaw();
+            return writeSeasonsToCloudRaw();
         }
 
         // Schreibt gezielt NUR den Live-Entwurf des aktuell laufenden Abends (statt bei jeder
@@ -1971,7 +2343,15 @@
             const payload = state.seasons[seasonKey].liveDraft;
             clearTimeout(liveDraftRetryTimeout);
 
-            db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).set(payload).catch(err => {
+            // Für den in der Cloud gespeicherten Zeitstempel bewusst den Firebase-Server-Zeitstempel
+            // verwenden statt der lokalen Geräte-Uhr (Date.now()). Der lokale State/localStorage
+            // behält weiterhin Date.now() (wird für sofortige Anzeige & Offline-Nutzung gebraucht),
+            // aber die Cloud-Version – anhand derer beim Reconnect verglichen wird, welcher Entwurf
+            // (lokal vs. Cloud) neuer ist – ist damit unabhängig von falsch eingestellten oder
+            // abweichenden Geräte-Uhren (Clock Drift zwischen zwei Mitspielern).
+            const cloudPayload = { ...payload, timestamp: firebase.database.ServerValue.TIMESTAMP };
+
+            db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).set(cloudPayload).catch(err => {
                 console.error('Fehler beim Speichern des Live-Entwurfs:', err);
                 if (retryCount < 3 && hasEditLock) {
                     liveDraftRetryTimeout = setTimeout(() => saveLiveDraftToCloud(retryCount + 1), 1200);
@@ -2041,7 +2421,7 @@
                 btn.disabled = false;
                 btn.classList.remove('opacity-60', 'cursor-not-allowed', 'grayscale');
                 btn.classList.add('cursor-pointer');
-                btn.innerHTML = '⚙️ Verwaltung & Eingabe';
+                btn.innerHTML = '➕ Spieltag hinzufügen';
             }
         }
 
@@ -2136,6 +2516,14 @@
             }
         });
 
+        // Zeichen, die die Firebase Realtime Database in Objekt-Schlüsseln verbietet. Spielernamen
+        // werden an mehreren Stellen als Schlüssel verwendet (match.scores[name], match.jokers[name],
+        // match.belowSixty[name]) – ein Name mit einem dieser Zeichen (z.B. "Daniel W.") würde beim
+        // nächsten Speichern eines Abends die komplette Cloud-Speicherung zum Absturz bringen, und
+        // zwar nicht nur für diesen Spieler, sondern für JEDEN Speichervorgang der ganzen App, solange
+        // der Name irgendwo in den Daten steckt. Deshalb hier schon beim Anlegen verhindern.
+        const FORBIDDEN_NAME_CHARS = /[.$#[\]/]/;
+
         function addPlayer() {
             if (!state.currentSeasonKey) return showToast("Bitte wähle oder erstelle zuerst eine Saison!", 'error');
             const season = state.seasons[state.currentSeasonKey];
@@ -2145,10 +2533,21 @@
             const name = input.value.trim();
             if (!season.players) season.players = [];
 
+            if (FORBIDDEN_NAME_CHARS.test(name)) {
+                return showToast('Der Name darf keines dieser Zeichen enthalten: . $ # [ ] /', 'error');
+            }
+
             if (name && !season.players.includes(name)) {
                 season.players.push(name);
                 input.value = '';
-                saveToCloud();
+                render();
+                saveToCloud().catch((err) => {
+                    season.players = season.players.filter(p => p !== name);
+                    render();
+                    showToast(err === 'locked'
+                        ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                        : `Fehler: ${name} konnte nicht in der Cloud gespeichert werden.`, 'error');
+                });
             }
         }
 
@@ -2158,8 +2557,16 @@
             if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
 
             if (await showConfirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
+                const previousPlayers = season.players;
                 season.players = (season.players || []).filter(p => p !== name);
-                saveToCloud();
+                render();
+                saveToCloud().catch((err) => {
+                    season.players = previousPlayers;
+                    render();
+                    showToast(err === 'locked'
+                        ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                        : `Fehler: ${name} konnte nicht entfernt werden.`, 'error');
+                });
             }
         }
 
@@ -2178,11 +2585,23 @@
 
             state.seasons[seasonKey] = { status: "aktiv", isHistorical: isHistorical, minQuota: minQuota, matches: {}, players: [] };
             state.currentSeasonKey = seasonKey;
+            settingsSeasonKey = seasonKey;
             document.getElementById('newSeasonIsHistorical').checked = false;
             document.getElementById('newSeasonMinQuota').value = 40;
-            saveToCloud();
+            render();
+            saveToCloud().catch((err) => {
+                // Neu angelegte Saison existierte nur lokal – bei fehlgeschlagener Cloud-Speicherung
+                // wieder entfernen, statt eine Geister-Saison zu hinterlassen, die beim nächsten
+                // Sync wieder verschwindet und für Verwirrung sorgt.
+                delete state.seasons[seasonKey];
+                render();
+                showToast(err === 'locked'
+                    ? "Anlegen fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                    : "Fehler: Saison konnte nicht in der Cloud angelegt werden.", 'error');
+            });
         }
 
+        // Wechselt die im HAUPT-Dashboard angezeigte/aktive Saison (Tabelle, Eingabedrawer, Live-Entwurf).
         function changeSeasonView(selectId) {
             state.currentSeasonKey = document.getElementById(selectId).value;
             const season = state.seasons[state.currentSeasonKey];
@@ -2202,28 +2621,71 @@
             render();
         }
 
+        // Wechselt NUR die im Saison-Einstellungen-Modal administrierte Saison. Bewusst komplett
+        // getrennt von changeSeasonView(): Das Auswählen einer alten Saison hier darf weder die
+        // Haupttabelle noch einen eventuell laufenden Live-Entwurf im Eingabedrawer beeinflussen.
+        function changeSettingsSeasonView() {
+            settingsSeasonKey = document.getElementById('seasonSelect').value;
+            render();
+        }
+
         async function toggleSeasonStatus() {
-            if (!state.currentSeasonKey) return;
-            const currentStatus = state.seasons[state.currentSeasonKey].status;
+            if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) return;
+            const currentStatus = state.seasons[settingsSeasonKey].status;
             const newStatus = currentStatus === "aktiv" ? "abgeschlossen" : "aktiv";
-            if (await showConfirm(`Saison auf "${newStatus}" setzen?`)) {
-                state.seasons[state.currentSeasonKey].status = newStatus;
-                saveToCloud();
+            if (await showConfirm(`Saison "${settingsSeasonKey}" auf "${newStatus}" setzen?`)) {
+                state.seasons[settingsSeasonKey].status = newStatus;
+                // Sofortiges Rendern, statt auf das Echo aus Firebase zu warten: Sonst zeigt der
+                // Button bei langsamer/wackliger Verbindung kurzzeitig noch den alten Status an.
+                render();
+                saveToCloud().then(() => {
+                    showToast(`Saison "${settingsSeasonKey}" ist jetzt "${newStatus}".`, 'success');
+                }).catch((err) => {
+                    // Cloud-Speicherung fehlgeschlagen: lokal zurückrollen, statt lautlos eine
+                    // Änderung vorzugaukeln, die beim nächsten Sync wieder verschwindet.
+                    state.seasons[settingsSeasonKey].status = currentStatus;
+                    render();
+                    showToast(err === 'locked'
+                        ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                        : "Fehler beim Speichern der Statusänderung in der Cloud.", 'error');
+                });
             }
         }
 
         async function deleteCurrentSeason() {
-            if (!state.currentSeasonKey) return;
-            if (await showConfirm(`Möchtest du die Saison "${state.currentSeasonKey}" wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
-                delete state.seasons[state.currentSeasonKey];
-                const keys = Object.keys(state.seasons);
-                if (keys.length > 0) {
-                    sortSeasonsChronologically(keys);
-                    state.currentSeasonKey = keys[0];
-                } else {
-                    state.currentSeasonKey = "";
+            if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) return;
+            const keyToDelete = settingsSeasonKey;
+            if (await showConfirm(`Möchtest du die Saison "${keyToDelete}" wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
+                const backup = state.seasons[keyToDelete];
+                const wasCurrentSeason = state.currentSeasonKey === keyToDelete;
+                const previousCurrentSeasonKey = state.currentSeasonKey;
+                delete state.seasons[keyToDelete];
+                // Die global aktive Saison nur anpassen, wenn ausgerechnet SIE gelöscht wurde – eine
+                // andere, gerade laufende Saison (Tabelle/Live-Entwurf) bleibt dadurch unberührt.
+                if (wasCurrentSeason) {
+                    const keys = Object.keys(state.seasons);
+                    if (keys.length > 0) {
+                        sortSeasonsChronologically(keys);
+                        state.currentSeasonKey = keys[0];
+                    } else {
+                        state.currentSeasonKey = "";
+                    }
                 }
-                saveToCloud();
+                render();
+                saveToCloud().then(() => {
+                    // Löschen erfolgreich: zugehörigen Offline-Entwurf im localStorage ebenfalls
+                    // entfernen, sonst bleibt er als nutzloser Datenmüll im Browser-Speicher zurück.
+                    safeLocalStorageRemove(`doko_live_draft_${keyToDelete}`);
+                }).catch((err) => {
+                    // Löschen kam nicht in der Cloud an: Saison lokal wiederherstellen.
+                    state.seasons[keyToDelete] = backup;
+                    if (wasCurrentSeason) state.currentSeasonKey = previousCurrentSeasonKey;
+                    settingsSeasonKey = keyToDelete;
+                    render();
+                    showToast(err === 'locked'
+                        ? "Löschen fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
+                        : "Fehler: Saison konnte nicht gelöscht werden.", 'error');
+                });
             }
         }
 
@@ -2236,16 +2698,29 @@
             }
             if (await showConfirm("Möchtest du diesen Abend unwiderruflich löschen?")) {
                 if (season.matches && season.matches[matchId]) {
+                    const backup = season.matches[matchId];
                     delete season.matches[matchId];
+                    render();
+                    const handleFailure = (err) => {
+                        // Löschen kam nicht in der Cloud an: Abend lokal wiederherstellen, statt
+                        // einen Erfolg vorzugaukeln, der beim nächsten Sync wieder auftaucht.
+                        season.matches[matchId] = backup;
+                        render();
+                        showToast("Fehler: Abend konnte nicht gelöscht werden.", 'error');
+                    };
                     if (hasEditLock) {
-                        saveToCloud();
+                        saveToCloud().then(() => {
+                            showToast("Abend gelöscht.", 'success');
+                        }).catch(handleFailure);
                     } else {
                         // Sperre kurz belegen, damit der Löschvorgang sicher hochgeladen werden darf.
                         acquireEditLock();
-                        writeSeasonsToCloudRaw();
-                        releaseEditLockRaw();
+                        writeSeasonsToCloudRaw().then(() => {
+                            showToast("Abend gelöscht.", 'success');
+                        }).catch(handleFailure).finally(() => {
+                            releaseEditLockRaw();
+                        });
                     }
-                    showToast("Abend gelöscht.", 'success');
                 }
             }
         }
@@ -2457,6 +2932,7 @@
             let globalHostStats = {};
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
             let globalTagessiege = {}; // { player: 0 }
+            let globalTagessiegeParticipations = {}; // { player: 0 } - gewertete Teilnahmen (nicht disqualifiziert)
             let globalTotalPoints = {}; // { player: 0 }
             let globalTotalPointsMatchCount = {}; // { player: 0 }
             let globalAnsagen = {}; // { player: 0 }
@@ -2470,6 +2946,7 @@
                 globalHostStats[p] = { totalScore: 0, count: 0 };
                 globalSoloStats[p] = { played: 0, won: 0 };
                 globalTagessiege[p] = 0;
+                globalTagessiegeParticipations[p] = 0;
                 globalTotalPoints[p] = 0;
                 globalTotalPointsMatchCount[p] = 0;
                 globalAnsagen[p] = 0;
@@ -2493,6 +2970,9 @@
                     if (sortedEvening.length > 0) {
                         let maxScore = sortedEvening[0].score;
                         sortedEvening.forEach(p => {
+                            if (globalTagessiegeParticipations[p.name] !== undefined) {
+                                globalTagessiegeParticipations[p.name]++;
+                            }
                             if (p.score === maxScore && globalTagessiege[p.name] !== undefined) {
                                 globalTagessiege[p.name]++;
                             }
@@ -2522,6 +3002,10 @@
                             if (g.isRoundMarker) return;
                             const gm = normalizeGame(g);
                             allUniquePlayers.forEach(p => {
+                                // An diesem Abend disqualifizierte Spieler (< 60% Teilnahme) dürfen
+                                // nicht in die ewige Solo-/Ansagen-Bestenliste einfließen – analog
+                                // zur Behandlung bei Tagessieg und Host-Statistik weiter oben.
+                                if (isPlayerDisqualifiedInMatch(match, p)) return;
                                 if (gm.solo && gm.solo[p] === true) {
                                     globalSoloStats[p].played++;
                                     if (gm.points && gm.points[p] !== undefined && gm.points[p] > 0) {
@@ -2691,6 +3175,7 @@
                 globalHostStats,
                 globalSoloStats,
                 globalTagessiege,
+                globalTagessiegeParticipations,
                 globalTotalPoints,
                 globalTotalPointsMatchCount,
                 bestAllTimeHostName,
@@ -2833,9 +3318,18 @@
             if (state.currentSeasonKey) {
                 const season = state.seasons[state.currentSeasonKey];
                 if (season) {
-                    const remaining = (season.players || []).filter(p => !newOrder.includes(p));
+                    const previousPlayers = [...(season.players || [])];
+                    const remaining = previousPlayers.filter(p => !newOrder.includes(p));
                     season.players = [...newOrder, ...remaining];
-                    saveToCloud();
+                    saveToCloud().catch(() => {
+                        // Schreiben fehlgeschlagen (z.B. Sperre durch anderen Spieler): Modell
+                        // zurücksetzen und UI neu zeichnen, damit die angezeigte Reihenfolge
+                        // wieder mit dem tatsächlichen Datenmodell übereinstimmt – sonst könnten
+                        // nachfolgende Spieleintragungen die Aussetzer falsch zuordnen.
+                        season.players = previousPlayers;
+                        render();
+                        showToast("Reihenfolge konnte nicht gespeichert werden.", "error");
+                    });
                 }
             }
         }
@@ -3103,9 +3597,6 @@
                     return `
                         <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900 rounded-lg p-2 text-xs text-indigo-900 dark:text-indigo-300 font-bold">
                             <span class="flex items-center gap-1">Runde ${g.roundNumber}</span>
-                            ${g.isVirtualPlaceholder ? '' : `
-                            <button onclick="deleteGame(${idx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Runde loeschen">🗑️</button>
-                            `}
                         </div>
                     `;
                 }
@@ -3181,7 +3672,7 @@
                                     <div class="flex items-start gap-2">
                                         ${detailedOrder.length > 4 ? `
                                         <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 w-16 cursor-pointer pt-1">
-                                            <input type="checkbox" id="sitout-${name}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${name}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
+                                            <input type="checkbox" id="sitout-${name}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeJsString(name)}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
                                         </label>
                                         ` : `<input type="checkbox" id="sitout-${name}" class="hidden">`}
                                         <span class="text-xs font-semibold text-gray-700 dark:text-slate-200 w-20 truncate flex items-center gap-1 pt-1">
@@ -3195,13 +3686,13 @@
                                         <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow space-y-1">
                                             <input type="number" id="gamepoint-${name}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
                                             <div class="flex gap-0.5">
-                                                <button type="button" onclick="adjustGamePoint('${name}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
-                                                <button type="button" onclick="setGamePointAbsolute('${name}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
-                                                <button type="button" onclick="adjustGamePoint('${name}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
+                                                <button type="button" onclick="setGamePointAbsolute('${escapeJsString(name)}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
                                             </div>
                                         </span>
                                     </div>
@@ -3413,9 +3904,17 @@
                 ...(useDetailedMode ? { order: detailedOrderForSave, games: detailedGamesForSave } : {})
             };
 
-            // Live-Entwurf und lokalen Speicher löschen
+            // Live-Entwurf aus dem In-Memory-Zustand entfernen, damit der anschließende
+            // Cloud-Schreibvorgang den bereinigten Zustand (Abend gespeichert, kein
+            // Entwurf mehr offen) in einem Rutsch überträgt.
             delete season.liveDraft;
-            localStorage.removeItem(`doko_live_draft_${state.currentSeasonKey}`);
+            // WICHTIG: Die lokale Offline-Sicherung in localStorage wird bewusst NICHT
+            // hier sofort gelöscht, sondern erst weiter unten, nachdem die Cloud-Speicherung
+            // tatsächlich bestätigt wurde. Andernfalls würde bei einer Firebase-Schreibung,
+            // die offline nur im Speicher der Firebase-SDK "gequeued" wird, ein Schließen
+            // des Tabs vor Verbindungswiederherstellung zu einem unwiederbringlichen Verlust
+            // des gesamten Spielabends führen (weder in der Cloud noch lokal vorhanden).
+            const liveDraftStorageKey = `doko_live_draft_${state.currentSeasonKey}`;
 
             document.getElementById('matchDate').value = "";
             const hSelect = document.getElementById('matchHostSelect');
@@ -3436,13 +3935,29 @@
             const liveStatsB = document.getElementById('toggleLiveStatsBtn');
             if (liveStatsB) liveStatsB.textContent = "📊 Live-Statistiken dieses Abends einblenden";
 
-            saveToCloud();
-            showToast("Abend gespeichert!", 'success');
+            if (!navigator.onLine) {
+                showToast("📴 Offline: Abend ist lokal gesichert und wird automatisch synchronisiert, sobald wieder eine Verbindung besteht.", 'info');
+            } else {
+                showToast("Abend gespeichert!", 'success');
+            }
+
+            saveToCloud().then(() => {
+                // Erst jetzt, nach bestätigtem Cloud-Schreibvorgang, ist die lokale
+                // Offline-Sicherung tatsächlich überflüssig.
+                safeLocalStorageRemove(liveDraftStorageKey);
+            }).catch((err) => {
+                if (err === 'locked') return; // Eigener Warn-Toast kommt bereits aus saveToCloud()
+                // Vermutlich Verbindungsproblem: Lokale Sicherung bewusst NICHT löschen,
+                // damit der Abend beim nächsten Start der App erneut synchronisiert werden kann.
+                console.warn('Cloud-Speicherung fehlgeschlagen, lokale Sicherung bleibt erhalten:', err);
+                showToast("⚠️ Cloud-Synchronisierung fehlgeschlagen. Der Abend bleibt lokal gesichert und wird automatisch nachgeholt.", 'error');
+            });
         }
 
         function updateSeasonCourseChart(season) {
             const ctx = document.getElementById('saisonVerlaufChart');
             if (!ctx) return;
+            updateChartModeToggleUI();
             if (courseChartInstance) {
                 courseChartInstance.destroy();
                 courseChartInstance = null;
@@ -3455,40 +3970,67 @@
 
             const sortedMatches = Object.values(season.matches).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
             const seasonPlayers = season.players || [];
-            let rankHistory = {};
-            seasonPlayers.forEach(p => { rankHistory[p] = []; });
+            let history = {};
+            seasonPlayers.forEach(p => { history[p] = []; });
             let labels = [];
-            let playerLimit = 1; // wird unten auf die höchste am Abend vergebene Platzierung angehoben
+            let playerLimit = 1; // wird unten auf die höchste am Abend vergebene Platzierung angehoben (nur Ranking-Modus)
 
-            sortedMatches.forEach((match, index) => {
-                labels.push(padDateString(match.date));
-                
-                // Disqualifizierte Leistungen aus der Ranking-Verlaufslinie herausfiltern [11]
-                let participants = Object.keys(match.scores || {})
-                    .filter(name => !isPlayerDisqualifiedInMatch(match, name))
-                    .map(name => ({ name, score: match.scores[name] }));
-                participants.sort((a, b) => b.score - a.score);
+            if (chartViewMode === 'total') {
+                // Gesamtverlauf: fortlaufender Punkteschnitt (Platzierungspunkte je gewertetem Abend) nach jedem Spieltag
+                let runningTotals = {};
+                let runningCounts = {};
+                let hasStarted = {};
+                seasonPlayers.forEach(p => { runningTotals[p] = 0; runningCounts[p] = 0; hasStarted[p] = false; });
 
-                let eveningRanks = {};
-                let lastScore = null;
-                let lastRank = 0;
+                sortedMatches.forEach(match => {
+                    labels.push(padDateString(match.date));
 
-                participants.forEach((p, idx) => {
-                    if (lastScore === null || Math.abs(p.score - lastScore) > 0.0001) {
-                        lastRank = idx + 1;
-                        lastScore = p.score;
-                    }
-                    eveningRanks[p.name] = lastRank;
+                    const isMatchdayType = !season.isHistorical || match.pointType === 'spieltag';
+                    const placements = isMatchdayType ? getPlacementScoresForMatch(match.scores || {}, match) : (match.scores || {});
+
+                    seasonPlayers.forEach(name => {
+                        if (placements[name] !== undefined) {
+                            runningTotals[name] += placements[name];
+                            if (!isPlayerDisqualifiedInMatch(match, name)) runningCounts[name]++;
+                            hasStarted[name] = true;
+                        }
+                        // Läuft immer den aktuellen Schnitt fort, auch an Abenden ohne Teilnahme
+                        const avg = runningCounts[name] > 0 ? Math.round((runningTotals[name] / runningCounts[name]) * 100) / 100 : null;
+                        history[name].push(hasStarted[name] ? avg : null);
+                    });
                 });
+            } else {
+                // Abend-Platzierungen: Platzierung des Spielers an jedem einzelnen Abend
+                sortedMatches.forEach(match => {
+                    labels.push(padDateString(match.date));
 
-                // Y-Achse muss nur so viele Plätze abdecken wie am teilnehmerstärksten Abend vergeben wurden
-                if (lastRank > playerLimit) playerLimit = lastRank;
+                    // Disqualifizierte Leistungen aus der Ranking-Verlaufslinie herausfiltern [11]
+                    let participants = Object.keys(match.scores || {})
+                        .filter(name => !isPlayerDisqualifiedInMatch(match, name))
+                        .map(name => ({ name, score: match.scores[name] }));
+                    participants.sort((a, b) => b.score - a.score);
 
-                seasonPlayers.forEach(name => {
-                    if (eveningRanks[name] !== undefined) rankHistory[name].push(eveningRanks[name]);
-                    else rankHistory[name].push(null);
+                    let eveningRanks = {};
+                    let lastScore = null;
+                    let lastRank = 0;
+
+                    participants.forEach((p, idx) => {
+                        if (lastScore === null || Math.abs(p.score - lastScore) > 0.0001) {
+                            lastRank = idx + 1;
+                            lastScore = p.score;
+                        }
+                        eveningRanks[p.name] = lastRank;
+                    });
+
+                    // Y-Achse muss nur so viele Plätze abdecken wie am teilnehmerstärksten Abend vergeben wurden
+                    if (lastRank > playerLimit) playerLimit = lastRank;
+
+                    seasonPlayers.forEach(name => {
+                        if (eveningRanks[name] !== undefined) history[name].push(eveningRanks[name]);
+                        else history[name].push(null);
+                    });
                 });
-            });
+            }
 
             const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
 
@@ -3496,14 +4038,14 @@
             if (legendContainer) {
                 legendContainer.innerHTML = seasonPlayers.map((name, i) => {
                     const color = colors[i % colors.length];
-                    const isHidden = hiddenChartPlayers[name] === true;
+                    const isHidden = isChartPlayerHidden(state.currentSeasonKey, name);
                     
                     // Nur Spieler anzeigen, die an mindestens einem Abend ein valides Ergebnis erzielt haben
-                    const hasData = rankHistory[name] && rankHistory[name].some(val => val !== null);
+                    const hasData = history[name] && history[name].some(val => val !== null);
                     if (!hasData) return '';
 
                     return `
-                        <button onclick="toggleChartPlayer('${name}')" 
+                        <button onclick="toggleChartPlayer('${escapeJsString(name)}')" 
                             class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border
                             ${isHidden 
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:text-slate-600 dark:border-slate-700 opacity-60' 
@@ -3518,24 +4060,54 @@
 
             let datasets = seasonPlayers.map((name, i) => ({
                 label: name,
-                data: rankHistory[name],
+                data: history[name],
                 borderColor: colors[i % colors.length],
                 backgroundColor: colors[i % colors.length],
                 tension: 0.3,
                 cubicInterpolationMode: 'monotone',
-                spanGaps: false,
+                spanGaps: chartViewMode === 'total',
                 borderWidth: 2,
                 pointRadius: 4.5,
                 pointHoverRadius: 7,
                 pointHitRadius: 10,
                 borderCapStyle: 'round',
                 borderJoinStyle: 'round',
-                hidden: hiddenChartPlayers[name] === true // Steuert Sichtbarkeit über Chart.js [11]
+                hidden: isChartPlayerHidden(state.currentSeasonKey, name) // Steuert Sichtbarkeit über Chart.js [11]
             })).filter(ds => ds.data.some(val => val !== null));
 
             const isDark = document.documentElement.classList.contains('dark');
             const gridColor = isDark ? '#334155' : '#f1f5f9';
             const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            const yOptions = chartViewMode === 'total'
+                ? {
+                    reverse: false,
+                    ticks: {
+                        font: { size: 9 },
+                        color: textColor
+                    },
+                    title: { display: true, text: 'Punkteschnitt', color: textColor },
+                    grid: { color: gridColor },
+                    border: { dash: [4, 4], color: gridColor }
+                }
+                : {
+                    reverse: true,
+                    min: 0.7,
+                    max: playerLimit + 0.3,
+                    ticks: { 
+                        stepSize: 1, 
+                        callback: value => value % 1 === 0 && value >= 1 && value <= playerLimit ? value + '.' : '',
+                        font: { size: 9 },
+                        color: textColor
+                    },
+                    title: { display: true, text: 'Platzierung am Abend', color: textColor },
+                    grid: { color: gridColor },
+                    border: { dash: [4, 4], color: gridColor }
+                };
+
+            const tooltipLabel = chartViewMode === 'total'
+                ? context => `${context.dataset.label}: Ø ${context.raw} Pkt.`
+                : context => `${context.dataset.label}: Platz ${context.raw} an diesem Abend`;
 
             courseChartInstance = new Chart(ctx, {
                 type: 'line',
@@ -3544,20 +4116,7 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            reverse: true,
-                            min: 0.7,
-                            max: playerLimit + 0.3,
-                            ticks: { 
-                                stepSize: 1, 
-                                callback: value => value % 1 === 0 && value >= 1 && value <= playerLimit ? value + '.' : '',
-                                font: { size: 9 },
-                                color: textColor
-                            },
-                            title: { display: true, text: 'Platzierung am Abend', color: textColor },
-                            grid: { color: gridColor },
-                            border: { dash: [4, 4], color: gridColor }
-                        },
+                        y: yOptions,
                         x: { 
                             title: { display: true, text: 'Spieltage', color: textColor },
                             grid: { display: false },
@@ -3566,7 +4125,7 @@
                     },
                     plugins: {
                         legend: { display: false }, // Verstecke eingebaute unhandliche Legende
-                        tooltip: { callbacks: { label: context => `${context.dataset.label}: Platz ${context.raw} an diesem Abend` } }
+                        tooltip: { callbacks: { label: tooltipLabel } }
                     }
                 }
             });
@@ -3996,10 +4555,20 @@
             const minQuota = (season && season.minQuota !== undefined) ? season.minQuota : 40;
             const minQuotaRatio = minQuota / 100;
 
+            // Selbstheilung: Falls settingsSeasonKey noch nie gesetzt wurde oder auf eine inzwischen
+            // gelöschte Saison zeigt, auf die aktuell aktive Saison zurückfallen. So bleibt das
+            // Saison-Einstellungen-Modal immer in einem gültigen Zustand, unabhängig davon, ob es
+            // gerade geöffnet ist.
+            if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) {
+                settingsSeasonKey = state.currentSeasonKey || null;
+            }
+            const settingsSeason = settingsSeasonKey ? state.seasons[settingsSeasonKey] : null;
+            const settingsMinQuota = (settingsSeason && settingsSeason.minQuota !== undefined) ? settingsSeason.minQuota : 40;
+
             const seasonMinQuotaInput = document.getElementById('seasonMinQuota');
-            if (seasonMinQuotaInput && season) {
-                seasonMinQuotaInput.value = minQuota;
-                seasonMinQuotaInput.disabled = season.status === "abgeschlossen";
+            if (seasonMinQuotaInput && settingsSeason) {
+                seasonMinQuotaInput.value = settingsMinQuota;
+                seasonMinQuotaInput.disabled = settingsSeason.status === "abgeschlossen";
             }
 
             let seasonJokers = {};
@@ -4057,7 +4626,7 @@
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
                     ${name}
-                    <button onclick="removePlayer('${name}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
+                    <button onclick="removePlayer('${escapeJsString(name)}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
                 </span>
             `).join('');
 
@@ -4089,26 +4658,30 @@
             seasonSelect.innerHTML = adminOptionsHtml;
             mainSeasonSelect.innerHTML = mainOptionsHtml;
 
+            if (settingsSeasonKey) {
+                seasonSelect.value = settingsSeasonKey;
+            }
             if (state.currentSeasonKey) {
-                seasonSelect.value = state.currentSeasonKey;
                 mainSeasonSelect.value = state.currentSeasonKey;
             }
 
             const statusContainer = document.getElementById('seasonStatusContainer');
-            if (season) {
+            if (settingsSeason) {
                 statusContainer.innerHTML = `
                     <div class="flex flex-col">
                         <span class="text-[10px] text-gray-400 font-bold">STATUS:</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded ${season.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${season.status.toUpperCase()}</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${settingsSeason.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${settingsSeason.status.toUpperCase()}</span>
                     </div>
                     <div class="flex gap-1.5">
-                        <button onclick="toggleSeasonStatus()" class="${season.status === 'aktiv' ? 'bg-gray-600' : 'bg-emerald-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${season.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
+                        <button onclick="toggleSeasonStatus()" class="${settingsSeason.status === 'aktiv' ? 'bg-gray-600' : 'bg-emerald-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${settingsSeason.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
                         <button onclick="deleteCurrentSeason()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">Löschen</button>
                     </div>
                 `;
-                document.getElementById('saveMatchBtn').disabled = season.status === "abgeschlossen";
             } else {
                 statusContainer.innerHTML = '';
+            }
+            if (season) {
+                document.getElementById('saveMatchBtn').disabled = season.status === "abgeschlossen";
             }
 
             let placeholderText = 'Punkte';
@@ -4175,7 +4748,7 @@
                 const belowSixtyActive = matchBelowSixty[name] === true;
 
                 const belowSixtyBtnHtml = showBelowSixtyBtn ? `
-                    <button type="button" onclick="toggleBelowSixty('${name}')" ${isChecked && belowSixtyEligibleByCount ? '' : 'disabled'} 
+                    <button type="button" onclick="toggleBelowSixty('${escapeJsString(name)}')" ${isChecked && belowSixtyEligibleByCount ? '' : 'disabled'} 
                         class="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border select-none transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed
                         ${belowSixtyActive 
                             ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
@@ -4206,7 +4779,7 @@
                             <div class="flex items-center gap-2 flex-grow truncate">
                                 <span class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-500 select-none px-1 text-sm" title="Ziehen zum Sortieren">⠿</span>
                                 <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 dark:text-slate-200 flex-grow truncate">
-                                    <input type="checkbox" id="check-${name}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${name}', this.checked)" class="rounded text-emerald-600">
+                                    <input type="checkbox" id="check-${name}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${escapeJsString(name)}', this.checked)" class="rounded text-emerald-600">
                                     ${name}
                                 </label>
                             </div>
@@ -4358,7 +4931,7 @@
             if (season) {
                 const hasSpieltagspunkte = !season.isHistorical || Object.values(season.matches || {}).some(m => m.pointType === 'spieltag');
 
-                document.getElementById('tableTitle').textContent = `🏆 Tabelle: ${state.currentSeasonKey}`;
+                document.getElementById('tableTitle').textContent = `🏆 Tabelle:`;
 
                 if (tableHint) {
                     tableHint.textContent = hasSpieltagspunkte
@@ -4386,7 +4959,7 @@
                     const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
 
                     const playerNameContent = hasSpieltagspunkte
-                        ? `<button onclick="openPlayerDetails('${p.name}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${p.name}</button>`
+                        ? `<button onclick="openPlayerDetails('${escapeJsString(p.name)}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${p.name}</button>`
                         : `<span class="text-emerald-700 dark:text-emerald-400 font-bold">${p.name}</span>`;
 
                     if (isQ) {
@@ -4404,7 +4977,7 @@
                         `;
                     } else {
                         const playerNameContentUnqual = hasSpieltagspunkte
-                            ? `<button onclick="openPlayerDetails('${p.name}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${p.name}</button>`
+                            ? `<button onclick="openPlayerDetails('${escapeJsString(p.name)}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${p.name}</button>`
                             : `<span class="text-gray-500 dark:text-slate-400">${p.name}</span>`;
 
                         return `
@@ -4546,9 +5119,9 @@
                                     <svg id="matchchevron-${id}" class="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0 transition-transform" style="transform: ${expandedMatches[id] ? 'rotate(90deg)' : 'rotate(0deg)'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
                                     <span class="font-bold text-gray-700 dark:text-slate-200 text-sm">${padDateString(match.date)}</span>
                                     ${match.host ? `<span class="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${match.host}</span>` : ''}
+                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${sortedEveningPlayers[0].name}</span>` : ''}
                                     ${jokerInfo}
                                     ${modeBadge}
-                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${sortedEveningPlayers[0].name}</span>` : ''}
                                 </div>
                                 <div class="flex gap-1 shrink-0">
                                     <button onclick="event.stopPropagation(); editMatch('${id}')" ${season.status === 'abgeschlossen' ? 'disabled' : ''} class="text-blue-500 hover:text-blue-700 font-bold p-1 disabled:opacity-30 disabled:cursor-not-allowed text-sm cursor-pointer transition" title="Abend bearbeiten">✏️</button>
@@ -4666,6 +5239,10 @@
             }
 
             updateSeasonCourseChart(season);
+
+            // Signatur des soeben gerenderten Standes merken (siehe computeSeasonsRenderSignature),
+            // damit der Firebase-Listener redundante Voll-Renders vermeiden kann.
+            lastRenderedSeasonsSignature = computeSeasonsRenderSignature(state.seasons);
         }
     </script>
 </body>
