@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doko-Saisonverwaltung</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <style type="text/tailwindcss">
-        @custom-variant dark (&:where(.dark, .dark *));
-    </style>
+    <link rel="stylesheet" href="tailwind.css">
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -76,13 +72,30 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.8 -->
+                <!-- Version 1.85 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.8</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">04.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.85</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">10.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Aussetzer-Rotation bei 6 und 7 Spielern korrigiert:</strong> Geber und die rechts von ihm sitzenden Spieler setzen jetzt zuverlässig gemeinsam aus und wandern synchron mit dem Geber eine Position pro Spiel weiter.</li>
+                        <li><strong>Manuelle Aussetzer-Auswahl bleibt erhalten:</strong> Ein von Hand ausgewählter Aussetzer wird nicht mehr durch ein Hintergrund-Update mitten in der Eingabe zurückgesetzt.</li>
+                        <li><strong>Bugfix Datum:</strong> Ein gespeicherter Spieltag konnte je nach Zeitzone des Geräts einen Tag zu früh gespeichert werden – behoben.</li>
+                        <li><strong>Saisonverlauf-Chart:</strong> Ab dem 11. Spieler einer Saison erhielten zwei Linien dieselbe Farbe – behoben, Farben bleiben jetzt bei jeder Spieleranzahl eindeutig.</li>
+                        <li><strong>Höhere Datensicherheit:</strong> Warnung beim Schließen der Seite, solange eine Speicherung noch läuft; zusätzlicher Schutz gegen seltene Datenverluste beim gleichzeitigen Speichern durch mehrere Admins.</li>
+                        <li><strong>Dark-Mode:</strong> Jahresfeld bei „Neue Saison anlegen" war im Nachtmodus weiterhin hell – korrigiert.</li>
+                        <li><strong>Diverse Fehlerbehebungen:</strong> u. a. Absturzschutz bei fehlerhaften Spieldaten aus der Datenbank, verwaister Hintergrund-Listener nach dem Abmelden beseitigt sowie schnelleres Laden durch vorkompiliertes Design statt Live-Berechnung im Browser.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.8 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.8</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">04.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Saisonwechsel neu platziert:</strong> Das Saison-Dropdown befindet sich jetzt direkt in der Überschrift der Tabelle statt in einer separaten Leiste darüber.</li>
                         <li><strong>„Spieltag hinzufügen" statt „Verwaltung & Eingabe":</strong> Der Eingabebereich wurde umbenannt und ist jetzt direkt über der Tabelle erreichbar; die alte Leiste zwischen Menü und Tabelle entfällt komplett.</li>
                         <li><strong>Saison-Einstellungen ins Menü verschoben:</strong> Saison anlegen/bearbeiten, Mindestquote und Saisonstatus sind jetzt über „🛠️ Saison-Einstellungen" im Menü statt in der Admin-Verwaltung erreichbar.</li>
@@ -456,7 +469,7 @@
                         </div>
                         <div>
                             <label class="block text-[10px] text-gray-500 dark:text-slate-400">Jahr:</label>
-                            <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
+                            <input id="newSeasonYear" type="number" value="2026" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
                         </div>
                     </div>
                     <div>
@@ -776,6 +789,13 @@
         let detailedOrder = [];      // aktive Teilnehmer dieses Abends, in Sitz-/Aussetz-Reihenfolge
         let detailedGames = [];
         let editingGameIndex = null; // Index des aktuell im Formular bearbeiteten Spiels (null = neues Spiel)
+        // Manuelle Abweichungen von der vorgeschlagenen Aussetz-Rotation für das NÄCHSTE (noch nicht
+        // gespeicherte) Spiel. Wird separat vom DOM gehalten, damit ein durch einen Hintergrund-Update
+        // ausgelöster Re-Render (renderDetailedSection) die manuelle Auswahl des Admins nicht wieder
+        // auf den Standard-Rotationsvorschlag zurücksetzt. Wird bei jedem neuen Spiel/Teilnehmerwechsel
+        // geleert (siehe resetCustomSitouts()).
+        let tempCustomSitouts = {};
+        function resetCustomSitouts() { tempCustomSitouts = {}; }
 
         // Lokaler Formularzwischenspeicher zum Erhalt von Eingaben bei Rendering-Schleifen
         let tempScores = {};
@@ -891,6 +911,16 @@
          * Maskierung würde ein Name wie "O'Connor" das umschließende Attribut
          * vorzeitig beenden und zu einem JavaScript-Syntaxfehler führen, wodurch
          * der Button/das Handler-Event nicht mehr funktioniert.
+         *
+         * WICHTIG: escapeJsString() allein schützt nur die JS-String-Syntax (\ und ').
+         * Ein " im Namen würde weiterhin das umschließende onclick="..."-HTML-Attribut
+         * selbst vorzeitig beenden und beliebige neue HTML-Attribute einschleusen
+         * (Stored-XSS-Vektor). Deshalb wird escapeJsString() an jeder Stelle in diesem
+         * Code IMMER zusätzlich in escapeHtml(...) eingebettet:
+         *   onclick="foo('${escapeHtml(escapeJsString(name))}')"
+         * escapeJsString() sichert zuerst die JS-Syntax, escapeHtml() danach die
+         * HTML-Attribut-Grenze. Diese Reihenfolge ist notwendig – umgekehrt angewendet
+         * würde die von escapeJsString() erzeugten Backslash-Escapes wieder verfälschen.
          */
         function escapeJsString(str) {
             if (str === null || str === undefined) return '';
@@ -985,7 +1015,10 @@
 
         function soloDisplayLabel(kind, type) {
             const label = soloKindLabel(kind);
-            const t = type || '';
+            // escapeHtml als Vorsichtsmaßnahme: soloType wird von der aktuellen Eingabemaske zwar
+            // nicht mehr befüllt, könnte aber aus älteren Firebase-Datensätzen (früheres Feature)
+            // noch Freitext enthalten, der über extras.join(...) direkt ins HTML fließt.
+            const t = escapeHtml(type || '');
             if (label === 'Lust') return `Lustsolo ${t}`;
             if (label === 'Pflicht') return `Pflichtsolo ${t}`;
             return `Solo ${t}`;
@@ -1155,7 +1188,7 @@
                                     <div class="flex items-center gap-3 truncate mr-2">
                                         <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${rank}</span>
                                         <div class="truncate">
-                                            <p class="font-bold text-slate-800 dark:text-slate-200 truncate">${item.player}</p>
+                                            <p class="font-bold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(item.player)}</p>
                                             ${item.detail ? `<p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${item.detail}</p>` : ''}
                                         </div>
                                     </div>
@@ -1191,7 +1224,9 @@
         // Ein Pflichtsolo zählt NICHT als Fortschritt, da Geber (und damit auch die Aussetzer-Rotation)
         // beim darauffolgenden Spiel unverändert bleiben.
         function getEffectiveRoundStep(games) {
-            const gamesOnly = (games || []).filter(g => !g.isRoundMarker);
+            // g && ... schützt vor Firebase-Sparse-Array-Lücken (null-Einträge), siehe
+            // processGamesList() für die ausführliche Begründung.
+            const gamesOnly = (games || []).filter(g => g && !g.isRoundMarker);
             let nonPflichtCount = 0;
             gamesOnly.forEach(g => {
                 const gm = normalizeGame(g);
@@ -1224,7 +1259,12 @@
                 return games || [];
             }
 
-            const gamesOnly = (games || []).filter(g => !g.isRoundMarker);
+            // Filtert zuerst alle null-Einträge heraus, bevor auf Eigenschaften zugegriffen wird:
+            // Firebase liefert lückenhafte ("sparse") Arrays als normale JS-Arrays mit null an den
+            // fehlenden Indizes zurück (z.B. nach manueller Bearbeitung in der Firebase-Konsole).
+            // Ohne diesen Schutz würde !g.isRoundMarker bei g === null mit einem TypeError abstürzen
+            // und die komplette Spieltags-/Live-Ansicht unrenderbar machen.
+            const gamesOnly = (games || []).filter(g => g && !g.isRoundMarker);
             
             let currentDealerIdx = 0;
             let nonPflichtCount = 0;
@@ -1288,7 +1328,7 @@
         // mitgespielt hat (nicht ausgesetzt hat).
         function getEveningParticipation(match, player) {
             if (!match || !match.games) return 1.0;
-            const gamesOnly = match.games.filter(g => !g.isRoundMarker);
+            const gamesOnly = match.games.filter(g => g && !g.isRoundMarker);
             if (gamesOnly.length === 0) return 1.0;
 
             const N = match.order ? match.order.length : 0;
@@ -1343,6 +1383,36 @@
         }
 
         // Ermittelt, ob ein Spieler für ein bestimmtes Match komplett disqualifiziert (Teilnahme < 60 %) ist [11]
+        // Feste Basis-Palette für die ersten 10 Spieler-Linien in den Charts (gut unterscheidbare,
+        // bewusst ausgewählte Farben). Ab dem 11. Spieler (z.B. durch wechselnde Gäste über eine
+        // Saison hinweg) würde ein simples colors[i % colors.length] wieder bei Farbe 1 anfangen und
+        // zu nicht mehr unterscheidbaren Linien führen. Ab da werden Farbtöne stattdessen gleichmäßig
+        // über das HSL-Farbspektrum verteilt, sodass auch bei vielen Teilnehmern jede Linie/Legenden-
+        // Farbe eindeutig bleibt. EINE zentrale Funktion für alle Chart-Stellen, damit Legende und
+        // Datensatz-Linie für denselben Spieler garantiert dieselbe Farbe zeigen.
+        const CHART_BASE_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
+        function getChartColor(i, total) {
+            if (i < CHART_BASE_COLORS.length) return CHART_BASE_COLORS[i];
+            const hue = (i * (360 / Math.max(total, 12))) % 360;
+            return `hsl(${hue}, 70%, 50%)`;
+        }
+
+        // Escaped Text sicher für die Einbettung in innerHTML-Templates. Notwendig, weil Spielernamen
+        // (das einzige echte Freitext-Feld der App, siehe #newPlayerName) ungefiltert an Dutzenden
+        // Stellen per Template-String direkt ins DOM geschrieben werden – ohne dieses Escaping könnte
+        // ein Name wie "<img src=x onerror=...>" als echtes HTML/JS im Browser aller Nutzer laufen
+        // (Stored XSS). FORBIDDEN_NAME_CHARS (siehe addPlayer) verhindert nur Firebase-Pfad-Zeichen
+        // (. $ # [ ] /), nicht HTML-relevante Zeichen wie < > " ' & – diese Funktion schließt die Lücke.
+        function escapeHtml(str) {
+            if (str === undefined || str === null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function isPlayerDisqualifiedInMatch(match, name) {
             if (!match) return false;
             if (match.belowSixty && match.belowSixty[name] === true) {
@@ -1399,7 +1469,7 @@
             });
 
             games.forEach(g => {
-                if (g.isRoundMarker) return; // Überspringen
+                if (!g || g.isRoundMarker) return; // Überspringen (inkl. Firebase-Sparse-Array-Lücken)
                 const gm = normalizeGame(g);
                 order.forEach(p1 => {
                     if (gm.points[p1] === undefined) return;
@@ -1435,13 +1505,13 @@
                             <thead>
                                 <tr class="bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-b border-slate-200/60 dark:border-slate-700">
                                     <th class="p-2 font-bold border-r border-slate-200/60 dark:border-slate-700">Spieler</th>
-                                    ${order.map(p => `<th class="p-2 font-bold text-center border-r border-slate-200/60 dark:border-slate-700">${p}</th>`).join('')}
+                                    ${order.map(p => `<th class="p-2 font-bold text-center border-r border-slate-200/60 dark:border-slate-700">${escapeHtml(p)}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
                                 ${order.map(p1 => `
                                     <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                        <td class="p-2 font-bold bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${p1}</td>
+                                        <td class="p-2 font-bold bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${escapeHtml(p1)}</td>
                                         ${order.map(p2 => {
                                             if (p1 === p2) {
                                                 return `<td class="p-2 text-center text-gray-300 dark:text-slate-600 bg-gray-50/50 dark:bg-slate-800/20 border-r border-slate-200/60 dark:border-slate-700">-</td>`;
@@ -1469,7 +1539,7 @@
             });
 
             games.forEach(g => {
-                if (g.isRoundMarker) return; // Überspringen
+                if (!g || g.isRoundMarker) return; // Überspringen (inkl. Firebase-Sparse-Array-Lücken)
                 const gm = normalizeGame(g);
                 order.forEach(p => {
                     if (gm.solo && gm.solo[p] === true) {
@@ -1502,7 +1572,7 @@
                                     const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-500 font-semibold') : 'text-gray-400 dark:text-slate-600';
                                     return `
                                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                            <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${p}</td>
+                                            <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${escapeHtml(p)}</td>
                                             <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200/60 dark:border-slate-700">${stat.played}</td>
                                             <td class="p-2 text-center text-slate-600 dark:text-slate-400 border-r border-slate-200/60 dark:border-slate-700">${stat.won}</td>
                                             <td class="p-2 text-center ${quoteCls}">${quoteStr}</td>
@@ -1550,7 +1620,7 @@
 
             let realGameCount = 1;
             games.forEach((g) => {
-                if (g.isRoundMarker) return; // Runden-Marker im Chart überspringen
+                if (!g || g.isRoundMarker) return; // Runden-Marker & Firebase-Sparse-Array-Lücken überspringen
                 labels.push("Spiel " + realGameCount);
                 realGameCount++;
                 const gm = normalizeGame(g);
@@ -1564,13 +1634,11 @@
             const ctx = document.getElementById(canvasId);
             if (!ctx) return;
 
-            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
-
             const datasets = order.map((name, i) => ({
                 label: name,
                 data: cumulativePoints[name],
-                borderColor: colors[i % colors.length],
-                backgroundColor: colors[i % colors.length],
+                borderColor: getChartColor(i, order.length),
+                backgroundColor: getChartColor(i, order.length),
                 tension: 0.3,
                 cubicInterpolationMode: 'monotone', // Verhindert Überschwingen der Linien
                 spanGaps: true,
@@ -1764,15 +1832,22 @@
                 // Verhindert, dass das Nachbilden des Entwurfs (z.B. durch einen Hintergrund-Update
                 // in einer anderen, nicht bearbeitenden Instanz) über die dispatchten Change-Events
                 // ungewollt einen neuen updateLiveDraft()-Aufruf auslöst.
+                // try/finally wie in editMatch(): stellt sicher, dass isPopulatingEditForm auch bei
+                // einer Exception mitten in der Schleife wieder freigegeben wird.
                 isPopulatingEditForm = true;
-                live.detailedOrder.forEach(name => {
-                    const cb = document.getElementById(`check-${name}`);
-                    if (cb && !cb.checked) {
-                        cb.checked = true;
-                        cb.dispatchEvent(new Event('change'));
-                    }
-                });
-                isPopulatingEditForm = false;
+                try {
+                    live.detailedOrder.forEach(name => {
+                        const cb = document.getElementById(`check-${name}`);
+                        if (cb && !cb.checked) {
+                            cb.checked = true;
+                            cb.dispatchEvent(new Event('change'));
+                        }
+                    });
+                } catch (e) {
+                    console.error("Fehler beim Wiederherstellen des Formularzustands:", e);
+                } finally {
+                    isPopulatingEditForm = false;
+                }
             }
 
             // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben
@@ -1998,6 +2073,7 @@
                     const liveDraft = season ? season.liveDraft : null;
 
                     editingMatchId = null;
+                    resetCustomSitouts();
                     document.getElementById('saveMatchBtn').textContent = "Abend speichern";
 
                     // Nach dem Abbrechen einer Bearbeitung (editMatch() überschreibt entryMode,
@@ -2072,6 +2148,27 @@
         }
 
         let dbListenerAttached = false;
+        // Zählt Firebase-Schreibvorgänge, die noch nicht bestätigt sind. Die Realtime-Database-
+        // Web-SDK bietet – anders als die nativen Android/iOS/Flutter-SDKs (dort: setPersistenceEnabled) –
+        // KEINE Festplatten-Persistenz für die Offline-Schreibwarteschlange; ausstehende Writes
+        // liegen bis zur Serverbestätigung nur im Arbeitsspeicher des Tabs (siehe
+        // https://github.com/firebase/firebase-js-sdk/issues/7442). Schließt der Nutzer den Tab,
+        // während er offline ist oder die Verbindung gerade wiederkommt, geht ein noch nicht
+        // bestätigter Schreibvorgang verloren. Da die Web-SDK das nicht selbst verhindern kann,
+        // warnen wir stattdessen aktiv vor dem Schließen, solange ein Write aussteht.
+        let pendingCloudWrites = 0;
+        function trackPendingWrite(promise) {
+            pendingCloudWrites++;
+            const done = () => { pendingCloudWrites = Math.max(0, pendingCloudWrites - 1); };
+            promise.then(done, done);
+            return promise;
+        }
+        window.addEventListener('beforeunload', (e) => {
+            if (pendingCloudWrites > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
 
         // Speichert eine Vergleichs-Signatur des zuletzt gerenderten state.seasons-Standes.
         // Wird von render() nach jedem Durchlauf aktualisiert (unabhängig davon, wer render()
@@ -2286,9 +2383,28 @@
             // zuverlässig in ein abgelehntes Promise, damit die bestehende Fehlerbehandlung bei
             // allen Aufrufern tatsächlich greift.
             try {
-                return db.ref('doko_v2_data').set({
-                    seasons: state.seasons
-                });
+                // Vor dem Voll-Überschreiben von 'seasons' den aktuell in der Cloud stehenden
+                // liveDraft jeder Saison frisch nachladen und in die lokale Kopie einspielen, falls
+                // er neuer ist als der eigene. Grund: state.seasons wird zwar durchgehend über den
+                // Realtime-Listener aktuell gehalten, aber liveDraft-Änderungen einer ANDEREN Sitzung
+                // laufen über einen separaten, gezielten Pfad (saveLiveDraftToCloud) und können daher
+                // theoretisch in der kurzen Lücke zwischen letztem empfangenen Snapshot und diesem
+                // Schreibvorgang eintreffen. Ohne diesen Zwischenschritt würde das nachfolgende
+                // .set() des kompletten 'seasons'-Baums einen solchen frischeren Live-Entwurf mit der
+                // eigenen, älteren lokalen Kopie überschreiben (Last-Write-Wins-Datenverlust).
+                return trackPendingWrite(db.ref('doko_v2_data/seasons').once('value').then(snapshot => {
+                    const cloudSeasons = snapshot.val() || {};
+                    Object.keys(state.seasons).forEach(key => {
+                        const cloudLiveDraft = cloudSeasons[key] && cloudSeasons[key].liveDraft;
+                        if (!cloudLiveDraft) return;
+                        const localTs = (state.seasons[key].liveDraft && state.seasons[key].liveDraft.timestamp) || 0;
+                        const cloudTs = cloudLiveDraft.timestamp || 0;
+                        if (cloudTs > localTs) {
+                            state.seasons[key].liveDraft = cloudLiveDraft;
+                        }
+                    });
+                    return db.ref('doko_v2_data').set({ seasons: state.seasons });
+                }));
             } catch (err) {
                 console.error('Cloud-Speicherung sofort fehlgeschlagen (z.B. ungültiger Schlüssel):', err);
                 return Promise.reject(err);
@@ -2351,7 +2467,7 @@
             // abweichenden Geräte-Uhren (Clock Drift zwischen zwei Mitspielern).
             const cloudPayload = { ...payload, timestamp: firebase.database.ServerValue.TIMESTAMP };
 
-            db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).set(cloudPayload).catch(err => {
+            trackPendingWrite(db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).set(cloudPayload)).catch(err => {
                 console.error('Fehler beim Speichern des Live-Entwurfs:', err);
                 if (retryCount < 3 && hasEditLock) {
                     liveDraftRetryTimeout = setTimeout(() => saveLiveDraftToCloud(retryCount + 1), 1200);
@@ -2421,7 +2537,18 @@
                 btn.disabled = false;
                 btn.classList.remove('opacity-60', 'cursor-not-allowed', 'grayscale');
                 btn.classList.add('cursor-pointer');
-                btn.innerHTML = '➕ Spieltag hinzufügen';
+                // "Spieltag hinzufügen" ist irreführend, sobald für den laufenden Abend bereits
+                // etwas eingetragen wurde (z.B. weil man aus der Spiel-für-Spiel-Eingabe kurz
+                // rausgegangen ist, um sich die Live-Tabelle anzuschauen – das Formular merkt sich
+                // den Stand ja weiterhin und stellt ihn beim nächsten Öffnen wieder her, siehe
+                // toggleAdminModal(false)). editingMatchId bleibt hier bewusst außen vor, da eine
+                // begonnene Bearbeitung eines ALTEN Spieltags beim Schließen des Formulars verworfen
+                // wird (siehe Kommentar dort) und daher nicht "fortsetzbar" ist.
+                const hasUnsavedDraft = !editingMatchId && (
+                    (entryMode === 'detailed' && detailedGames.length > 0) ||
+                    (entryMode === 'simple' && Object.keys(tempScores || {}).length > 0)
+                );
+                btn.innerHTML = hasUnsavedDraft ? '▶️ Eingabe fortsetzen' : '➕ Spieltag hinzufügen';
             }
         }
 
@@ -2509,8 +2636,12 @@
                 if (loginScreen) loginScreen.classList.remove('hidden');
 
                 // Alten Listener sauber trennen, damit bei der nächsten Anmeldung
-                // wieder eine frische Verbindung aufgebaut wird.
+                // wieder eine frische Verbindung aufgebaut wird. Der serverTimeOffset-Listener
+                // wird separat in startDatabaseListener() registriert und muss daher auch
+                // separat getrennt werden – sonst sammelt sich bei mehrfachem An-/Abmelden in
+                // derselben Browser-Sitzung ein wachsender Stapel verwaister Listener an.
                 db.ref('doko_v2_data').off();
+                db.ref('.info/serverTimeOffset').off();
                 dbListenerAttached = false;
                 stopEditLockListener();
             }
@@ -2546,7 +2677,7 @@
                     render();
                     showToast(err === 'locked'
                         ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
-                        : `Fehler: ${name} konnte nicht in der Cloud gespeichert werden.`, 'error');
+                        : `Fehler: ${escapeHtml(name)} konnte nicht in der Cloud gespeichert werden.`, 'error');
                 });
             }
         }
@@ -2565,7 +2696,7 @@
                     render();
                     showToast(err === 'locked'
                         ? "Änderung fehlgeschlagen: Der Eingabebereich ist gerade gesperrt."
-                        : `Fehler: ${name} konnte nicht entfernt werden.`, 'error');
+                        : `Fehler: ${escapeHtml(name)} konnte nicht entfernt werden.`, 'error');
                 });
             }
         }
@@ -2736,6 +2867,7 @@
             editingGameIndex = null;
             tempScores = {};
             tempJokers = {};
+            resetCustomSitouts();
             matchBelowSixty = match.belowSixty || {};
 
             const dateInput = document.getElementById('matchDate');
@@ -2759,37 +2891,45 @@
 
             setTimeout(() => {
                 isPopulatingEditForm = true;
+                // Absicherung per try/finally: Wirft einer der folgenden Schritte eine Exception
+                // (z. B. fehlendes DOM-Element, unerwartete Datenstruktur in match.jokers), bliebe
+                // isPopulatingEditForm sonst dauerhaft auf true stehen und würde jeden künftigen
+                // Auto-Save des Live-Entwurfs (updateLiveDraft) für den Rest der Sitzung stillschweigend
+                // blockieren. finally garantiert die Freigabe in jedem Fall.
+                try {
+                    const seasonPlayers = season.players || [];
+                    seasonPlayers.forEach(name => {
+                        const cb = document.getElementById(`check-${name}`);
+                        if (cb) cb.checked = false;
+                    });
 
-                const seasonPlayers = season.players || [];
-                seasonPlayers.forEach(name => {
-                    const cb = document.getElementById(`check-${name}`);
-                    if (cb) cb.checked = false;
-                });
-
-                Object.keys(match.scores || {}).forEach(name => {
-                    const cb = document.getElementById(`check-${name}`);
-                    if (cb) {
-                        cb.checked = true;
-                        cb.dispatchEvent(new Event('change'));
-                        const scoreInput = document.getElementById(`score-${name}`);
-                        if (scoreInput) scoreInput.value = match.scores[name];
-                    }
-                });
-
-                if (match.jokers) {
-                    Object.keys(match.jokers).forEach(name => {
-                        if (match.jokers[name]) {
-                            const jCb = document.getElementById(`joker-${name}`);
-                            if (jCb) {
-                                jCb.disabled = false;
-                                jCb.checked = true;
-                                jCb.dispatchEvent(new Event('change'));
-                            }
+                    Object.keys(match.scores || {}).forEach(name => {
+                        const cb = document.getElementById(`check-${name}`);
+                        if (cb) {
+                            cb.checked = true;
+                            cb.dispatchEvent(new Event('change'));
+                            const scoreInput = document.getElementById(`score-${name}`);
+                            if (scoreInput) scoreInput.value = match.scores[name];
                         }
                     });
-                }
 
-                isPopulatingEditForm = false;
+                    if (match.jokers) {
+                        Object.keys(match.jokers).forEach(name => {
+                            if (match.jokers[name]) {
+                                const jCb = document.getElementById(`joker-${name}`);
+                                if (jCb) {
+                                    jCb.disabled = false;
+                                    jCb.checked = true;
+                                    jCb.dispatchEvent(new Event('change'));
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Fehler beim Befüllen des Edit-Formulars:", e);
+                } finally {
+                    isPopulatingEditForm = false;
+                }
 
                 if (match.mode === 'detailed' && match.games && match.games.length > 0) {
                     detailedGames = match.games.map(normalizeGame);
@@ -2999,7 +3139,7 @@
                     // Solos (detailed games) & Ansagen
                     if (match.mode === 'detailed' && match.games) {
                         match.games.forEach(g => {
-                            if (g.isRoundMarker) return;
+                            if (!g || g.isRoundMarker) return;
                             const gm = normalizeGame(g);
                             allUniquePlayers.forEach(p => {
                                 // An diesem Abend disqualifizierte Spieler (< 60% Teilnahme) dürfen
@@ -3109,7 +3249,7 @@
                 let maxStreak = 0;
                 allDetailedMatches.forEach(match => {
                     match.games.forEach(g => {
-                        if (g.isRoundMarker) return;
+                        if (!g || g.isRoundMarker) return;
                         if (g.points && g.points[player] !== undefined) {
                             if (g.points[player] >= 0) {
                                 currentStreak++;
@@ -3139,7 +3279,7 @@
             allDetailedMatches.forEach(match => {
                 const matchOrder = match.order || [];
                 match.games.forEach(g => {
-                    if (g.isRoundMarker) return;
+                    if (!g || g.isRoundMarker) return;
                     const gm = normalizeGame(g);
                     for (let i = 0; i < matchOrder.length; i++) {
                         for (let j = i + 1; j < matchOrder.length; j++) {
@@ -3254,6 +3394,7 @@
                 }
                 detailedGames = [];
                 editingGameIndex = null;
+                resetCustomSitouts();
             }
 
             if (!checked) {
@@ -3337,12 +3478,34 @@
         // gameIndex muss der EFFEKTIVE Rundenschritt sein (siehe getEffectiveRoundStep), nicht die
         // rohe Anzahl bereits erfasster Spiele – sonst würde die Aussetzer-Rotation bei einem
         // Pflichtsolo trotzdem weiterspringen, obwohl der Geber (und damit die Runde) unverändert bleibt.
+        //
+        // Die Aussetz-Gruppe beginnt IMMER beim aktuellen Geber (order[gameIndex % n], siehe
+        // getNextDealerIndex – dieselbe Formel) und umfasst ihn plus die (k-1) RECHTS von ihm
+        // sitzenden Spieler (= die vorherigen k-1 Einträge in der Sitzreihenfolge, rückwärts von
+        // seinem Index aus):
+        //   5 Spieler (k=1): nur der Geber setzt aus.
+        //   6 Spieler (k=2): Geber + 1 Nachbar rechts setzen aus, 4 spielen.
+        //   7 Spieler (k=3): Geber + 2 Nachbarn rechts setzen aus, 4 spielen.
+        // Bewusst RECHTS statt links vom Geber (auch wenn order[+1] laut getNextDealerIndex den
+        // Geber der NÄCHSTEN Runde markiert und damit den Nachbarn links repräsentiert – die
+        // Aussetz-Gruppe läuft hier also mit -i statt +i in die Gegenrichtung): Karten werden im
+        // Uhrzeigersinn (nach links) ausgeteilt. Setzen Geber + rechte Nachbarn aus, bilden die
+        // aktiven Spieler einen lückenlosen Block direkt links vom Geber – er teilt einfach ganz
+        // normal reihum an die ersten vier Personen zu seiner Linken aus, ohne am Tisch jemanden
+        // überspringen oder abzählen zu müssen. Bei "links aussetzen" wären die aktiven Spieler am
+        // Tisch verstreut und der Geber müsste beim Austeilen umständlich mitzählen, wen er
+        // überspringt.
+        // Da der Geber pro Spiel um genau eine Position weiterrückt, wandert diese Gruppe
+        // automatisch mit ihm im Gleichschritt (-1 Position je Spiel, also ebenfalls in
+        // Zweierschritten synchron) – nicht um k Positionen, sonst würde die Gruppe unabhängig vom
+        // Geber "wegdriften".
         function computeSittingOut(gameIndex) {
             const n = detailedOrder.length;
             const k = n - 4;
             if (k <= 0) return [];
+            const dealerIdx = gameIndex % n;
             const out = [];
-            for (let i = 0; i < k; i++) out.push(detailedOrder[(gameIndex * k + i) % n]);
+            for (let i = 0; i < k; i++) out.push(detailedOrder[(dealerIdx - i + n) % n]);
             return out;
         }
 
@@ -3364,6 +3527,10 @@
             const soloWrap = document.getElementById('gamesolowrap-' + name);
             if (!cb || !wrap) return;
             const hidden = cb.checked;
+            // Manuelle Abweichung vom Rotationsvorschlag merken (nicht nur im DOM), damit ein
+            // zwischenzeitlicher Re-Render durch ein Hintergrund-Update (z.B. ein anderer
+            // Zuschauer öffnet die Seite) diese Auswahl nicht wieder überschreibt.
+            tempCustomSitouts[name] = cb.checked;
             wrap.classList.toggle('hidden', hidden);
             if (soloWrap) soloWrap.classList.toggle('hidden', hidden);
             autoFillZeroSumInDraft();
@@ -3475,7 +3642,7 @@
                 if (soloKind[name] === 'pflicht') {
                     const alreadyType = getPlayedPflichtsoloType(name, excludeIdx);
                     if (alreadyType) {
-                        return showToast(`${name} hat sein Pflichtsolo an diesem Abend bereits gespielt (${alreadyType}). Pro Abend ist nur ein Pflichtsolo pro Spieler erlaubt.`, 'error');
+                        return showToast(`${escapeHtml(name)} hat sein Pflichtsolo an diesem Abend bereits gespielt (${escapeHtml(alreadyType)}). Pro Abend ist nur ein Pflichtsolo pro Spieler erlaubt.`, 'error');
                     }
                 }
             }
@@ -3527,6 +3694,9 @@
                 showToast(`Spiel gespeichert${info}.`, 'success');
                 detailedGames.push(gameData);
             }
+            // Manuelle Aussetz-Abweichung galt nur für dieses eine (jetzt gespeicherte) Spiel;
+            // für das nächste Spiel wieder mit dem regulären Rotationsvorschlag starten.
+            resetCustomSitouts();
 
             saveFormToTemp();
             updateLiveDraft();
@@ -3542,6 +3712,7 @@
                 editingGameIndex--;
             }
             detailedGames.splice(index, 1);
+            resetCustomSitouts();
             saveFormToTemp();
             updateLiveDraft();
             if (isBlitztabelleActive) render();
@@ -3606,7 +3777,7 @@
                 const html = `
                     <div class="bg-white dark:bg-slate-900 border ${isBeingEdited ? 'border-blue-400 dark:border-blue-600 ring-2 ring-blue-100 dark:ring-blue-950' : 'border-gray-200 dark:border-slate-700'} rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${g._dealerName})</span>` : ''} ${isBeingEdited ? '<span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold ml-1">✏️ wird bearbeitet</span>' : ''}</span>
+                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${escapeHtml(g._dealerName)})</span>` : ''} ${isBeingEdited ? '<span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold ml-1">✏️ wird bearbeitet</span>' : ''}</span>
                             <span class="flex items-center gap-2 shrink-0">
                                 <button onclick="editGame(${originalIdx})" class="text-blue-500 hover:text-blue-700 cursor-pointer" title="Spiel bearbeiten">✏️</button>
                                 <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
@@ -3615,7 +3786,7 @@
                         <div class="flex flex-wrap gap-1">
                             ${detailedOrder.map(name => {
                                 if (g.points[name] === undefined) {
-                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-700">${name} (aus)</span>`;
+                                    return `<span class="px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-700">${escapeHtml(name)} (aus)</span>`;
                                 }
                                 const val = g.points[name];
                                 const cls = val >= 0 ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' : 'bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900';
@@ -3630,7 +3801,7 @@
                                 }
                                 const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
                                 
-                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${name} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
+                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${escapeHtml(name)} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
                             }).join('')}
                         </div>
                     </div>
@@ -3644,7 +3815,7 @@
                 const cls = val > 0 ? 'text-emerald-700 dark:text-emerald-400' : (val < 0 ? 'text-red-700 dark:text-red-400' : 'text-gray-600 dark:text-slate-400');
                 return `
                     <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 rounded px-2 py-1 border border-gray-200 dark:border-slate-700">
-                        <span class="text-xs font-semibold text-gray-700 dark:text-slate-300">${name}</span>
+                        <span class="text-xs font-semibold text-gray-700 dark:text-slate-300">${escapeHtml(name)}</span>
                         <span class="text-xs font-mono font-bold ${cls}">${val > 0 ? '+' : ''}${val}</span>
                     </div>
                 `;
@@ -3660,7 +3831,14 @@
                     ${detailedOrder.length > 4 ? `<p class="text-[10px] ${formAccent.hint}">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>` : ''}
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
-                            const isOut = suggestedOut.includes(name);
+                            // Für das aktuell neu einzutragende Spiel hat eine manuelle Aussetz-Abweichung
+                            // des Admins (tempCustomSitouts) Vorrang vor dem berechneten Rotationsvorschlag –
+                            // sonst würde jeder Re-Render (z.B. durch ein Hintergrund-Update) die manuelle
+                            // Auswahl mitten in der Eingabe wieder verwerfen. Beim Bearbeiten eines bereits
+                            // gespeicherten Spiels (isEditing) gilt weiterhin dessen fixierte sittingOut-Liste.
+                            const isOut = (!isEditing && tempCustomSitouts.hasOwnProperty(name))
+                                ? tempCustomSitouts[name]
+                                : suggestedOut.includes(name);
                             const isNextDealer = (!isEditing && detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
                             const prefillPoint = (isEditing && editingGame.points && editingGame.points[name] !== undefined) ? editingGame.points[name] : null;
                             const prefillSoloKind = (isEditing && editingGame.soloKind) ? editingGame.soloKind[name] : null;
@@ -3672,39 +3850,39 @@
                                     <div class="flex items-start gap-2">
                                         ${detailedOrder.length > 4 ? `
                                         <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 w-16 cursor-pointer pt-1">
-                                            <input type="checkbox" id="sitout-${name}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeJsString(name)}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
+                                            <input type="checkbox" id="sitout-${escapeHtml(name)}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeHtml(escapeJsString(name))}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
                                         </label>
-                                        ` : `<input type="checkbox" id="sitout-${name}" class="hidden">`}
+                                        ` : `<input type="checkbox" id="sitout-${escapeHtml(name)}" class="hidden">`}
                                         <span class="text-xs font-semibold text-gray-700 dark:text-slate-200 w-20 truncate flex items-center gap-1 pt-1">
-                                            ${name}
+                                            ${escapeHtml(name)}
                                         </span>
                                         ${isNextDealer ? `
                                         <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[8px] font-bold px-1 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide mt-1">
                                             🃏 Geber
                                         </span>
                                         ` : ''}
-                                        <span id="gamepointwrap-${name}" class="${isOut ? 'hidden' : ''} flex-grow space-y-1">
-                                            <input type="number" id="gamepoint-${name}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
+                                        <span id="gamepointwrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} flex-grow space-y-1">
+                                            <input type="number" id="gamepoint-${escapeHtml(name)}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
                                             <div class="flex gap-0.5">
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
-                                                <button type="button" onclick="setGamePointAbsolute('${escapeJsString(name)}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeJsString(name)}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
+                                                <button type="button" onclick="setGamePointAbsolute('${escapeHtml(escapeJsString(name))}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
+                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
                                             </div>
                                         </span>
                                     </div>
-                                    <div id="gamesolowrap-${name}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
+                                    <div id="gamesolowrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
-                                            <input type="checkbox" id="gamepflicht-${name}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="if(this.checked){document.getElementById('gamelust-${name}').checked=false;}" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
+                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="if(this.checked){document.getElementById('gamelust-${escapeHtml(escapeJsString(name))}').checked=false;}" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gamelust-${name}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="if(this.checked){document.getElementById('gamepflicht-${name}').checked=false;}" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
+                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="if(this.checked){document.getElementById('gamepflicht-${escapeHtml(escapeJsString(name))}').checked=false;}" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gameansage-${name}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
+                                            <input type="checkbox" id="gameansage-${escapeHtml(name)}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
                                         </label>
                                     </div>
                                 </div>
@@ -3789,18 +3967,24 @@
 
             if (!season.isHistorical) {
                 if (!rawDate || !host) return showToast("Datum und Gastgeber fehlen!", 'error');
+                // new Date("YYYY-MM-DD") parst als UTC-Mitternacht. Mit den lokalen Gettern
+                // (getDate/getMonth/getFullYear) würde der Browser diese UTC-Mitternacht erst in
+                // die lokale Zeitzone umrechnen – für Nutzer westlich von Greenwich (UTC-Offset
+                // negativ) würde das Datum dadurch fälschlich einen Tag zurückspringen. Die
+                // UTC-Getter geben stattdessen exakt das ein, was im <input type="date"> stand.
                 const dateObj = new Date(rawDate);
-                const d = String(dateObj.getDate()).padStart(2, '0');
-                const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-                const y = dateObj.getFullYear();
+                const d = String(dateObj.getUTCDate()).padStart(2, '0');
+                const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+                const y = dateObj.getUTCFullYear();
                 formattedDate = `${d}.${m}.${y}`;
                 timestamp = dateObj.getTime();
             } else {
                 if (rawDate && host) {
+                    // Siehe Kommentar oben: UTC-Getter statt lokaler Getter, aus demselben Grund.
                     const dateObj = new Date(rawDate);
-                    const d = String(dateObj.getDate()).padStart(2, '0');
-                    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-                    const y = dateObj.getFullYear();
+                    const d = String(dateObj.getUTCDate()).padStart(2, '0');
+                    const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+                    const y = dateObj.getUTCFullYear();
                     formattedDate = `${d}.${m}.${y}`;
                     timestamp = dateObj.getTime();
                 } else if (rawDate || host) {
@@ -3877,7 +4061,7 @@
                     });
                 }
                 if (alreadyUsed) {
-                    showToast(`Fehler: ${name} hat das „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`, 'error');
+                    showToast(`Fehler: ${escapeHtml(name)} hat das „Schmeißen ohne Grund“ (SoG) in dieser Saison bereits aufgebraucht!`, 'error');
                     doubleJokerError = true;
                 }
             });
@@ -4032,12 +4216,10 @@
                 });
             }
 
-            const colors = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1', '#14b8a6', '#f43f5e', '#64748b'];
-
             // Erstelle interaktive HTML-Legende
             if (legendContainer) {
                 legendContainer.innerHTML = seasonPlayers.map((name, i) => {
-                    const color = colors[i % colors.length];
+                    const color = getChartColor(i, seasonPlayers.length);
                     const isHidden = isChartPlayerHidden(state.currentSeasonKey, name);
                     
                     // Nur Spieler anzeigen, die an mindestens einem Abend ein valides Ergebnis erzielt haben
@@ -4045,14 +4227,14 @@
                     if (!hasData) return '';
 
                     return `
-                        <button onclick="toggleChartPlayer('${escapeJsString(name)}')" 
+                        <button onclick="toggleChartPlayer('${escapeHtml(escapeJsString(name))}')" 
                             class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border
                             ${isHidden 
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:text-slate-600 dark:border-slate-700 opacity-60' 
                                 : 'bg-white text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700'
                             }">
                             <span class="w-2.5 h-2.5 rounded-full mr-2 shrink-0 transition" style="background-color: ${isHidden ? '#94a3b8' : color}"></span>
-                            <span>${name}</span>
+                            <span>${escapeHtml(name)}</span>
                         </button>
                     `;
                 }).join('');
@@ -4061,8 +4243,8 @@
             let datasets = seasonPlayers.map((name, i) => ({
                 label: name,
                 data: history[name],
-                borderColor: colors[i % colors.length],
-                backgroundColor: colors[i % colors.length],
+                borderColor: getChartColor(i, seasonPlayers.length),
+                backgroundColor: getChartColor(i, seasonPlayers.length),
                 tension: 0.3,
                 cubicInterpolationMode: 'monotone',
                 spanGaps: chartViewMode === 'total',
@@ -4625,15 +4807,15 @@
 
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
-                    ${name}
-                    <button onclick="removePlayer('${escapeJsString(name)}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
+                    ${escapeHtml(name)}
+                    <button onclick="removePlayer('${escapeHtml(escapeJsString(name))}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
                 </span>
             `).join('');
 
             const hostSelect = document.getElementById('matchHostSelect');
             if (hostSelect) {
                 const currentVal = hostSelect.value;
-                hostSelect.innerHTML = '<option value="">-- Gastgeber wählen --</option>' + seasonPlayers.map(p => `<option value="${p}">${p}</option>`).join('') + '<option value="Extern/App">Extern/App</option>';
+                hostSelect.innerHTML = '<option value="">-- Gastgeber wählen --</option>' + seasonPlayers.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('') + '<option value="Extern/App">Extern/App</option>';
                 if (currentVal && (seasonPlayers.includes(currentVal) || currentVal === 'Extern/App')) {
                     hostSelect.value = currentVal;
                 } else if (season && season.liveDraft && season.liveDraft.host) {
@@ -4748,7 +4930,7 @@
                 const belowSixtyActive = matchBelowSixty[name] === true;
 
                 const belowSixtyBtnHtml = showBelowSixtyBtn ? `
-                    <button type="button" onclick="toggleBelowSixty('${escapeJsString(name)}')" ${isChecked && belowSixtyEligibleByCount ? '' : 'disabled'} 
+                    <button type="button" onclick="toggleBelowSixty('${escapeHtml(escapeJsString(name))}')" ${isChecked && belowSixtyEligibleByCount ? '' : 'disabled'} 
                         class="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded border select-none transition cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed
                         ${belowSixtyActive 
                             ? 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-900 font-extrabold' 
@@ -4760,8 +4942,8 @@
                 ` : '';
 
                 const sogHtml = isHist ? '' : `
-                    <label id="joker-label-${name}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
-                        <input type="checkbox" id="joker-${name}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked); saveFormToTemp(); updateLiveDraft();" class="rounded text-red-600 w-3 h-3"> 💥 SoG
+                    <label id="joker-label-${escapeHtml(name)}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                        <input type="checkbox" id="joker-${escapeHtml(name)}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked); saveFormToTemp(); updateLiveDraft();" class="rounded text-red-600 w-3 h-3"> 💥 SoG
                     </label>
                 `;
 
@@ -4774,18 +4956,18 @@
                 ` : '';
 
                 return `
-                    <div class="flex flex-col gap-2 p-2.5 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700" data-name="${name}">
+                    <div class="flex flex-col gap-2 p-2.5 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700" data-name="${escapeHtml(name)}">
                         <div class="flex items-center justify-between gap-2">
                             <div class="flex items-center gap-2 flex-grow truncate">
                                 <span class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-500 select-none px-1 text-sm" title="Ziehen zum Sortieren">⠿</span>
                                 <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 dark:text-slate-200 flex-grow truncate">
-                                    <input type="checkbox" id="check-${name}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${escapeJsString(name)}', this.checked)" class="rounded text-emerald-600">
-                                    ${name}
+                                    <input type="checkbox" id="check-${escapeHtml(name)}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${escapeHtml(escapeJsString(name))}', this.checked)" class="rounded text-emerald-600">
+                                    ${escapeHtml(name)}
                                 </label>
                             </div>
 
-                            <span id="scoreInputWrap-${name}" class="${entryMode === 'detailed' ? 'hidden' : ''}">
-                                <input type="number" id="score-${name}" ${isChecked ? '' : 'disabled'} value="${scoreVal}" placeholder="${placeholderText}" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
+                            <span id="scoreInputWrap-${escapeHtml(name)}" class="${entryMode === 'detailed' ? 'hidden' : ''}">
+                                <input type="number" id="score-${escapeHtml(name)}" ${isChecked ? '' : 'disabled'} value="${scoreVal}" placeholder="${placeholderText}" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
                             </span>
                         </div>
 
@@ -4798,6 +4980,12 @@
             updateModeToggleUI();
             restoreFormState();
             initMainPlayersSortable();
+
+            // entryMode/detailedGames/tempScores sind an dieser Stelle für die aktuell angezeigte
+            // Saison aktuell (siehe restoreFormState() oben) – jetzt den Button-Text außerhalb des
+            // Formulars entsprechend aktualisieren ("Eingabe fortsetzen" statt "hinzufügen", falls
+            // schon ein nicht gespeicherter Entwurf vorliegt).
+            updateEntryButtonLockUI();
 
             const liveViewer = document.getElementById('liveMatchViewer');
             const blitzContainer = document.getElementById('blitztabelleToggleContainer');
@@ -4824,7 +5012,7 @@
                     headerHtml += `
                         <th class="p-3 border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
                             <span class="inline-flex items-center justify-center gap-1">
-                                <span>${name}</span>
+                                <span>${escapeHtml(name)}</span>
                                 <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
                                     P
                                 </span>
@@ -4866,7 +5054,7 @@
                     }
 
                     const pointTypeBadge = g.pointType === 'platzierung' ? ' <span class="text-[8px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold px-1 rounded border border-amber-200 dark:border-amber-900">🏆 Platzierung</span>' : '';
-                    const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 font-semibold block leading-tight mt-0.5">Geber: ${g._dealerName}</span>` : '';
+                    const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 font-semibold block leading-tight mt-0.5">Geber: ${escapeHtml(g._dealerName)}</span>` : '';
                     tableRowsHtml += `
                         <tr class="hover:bg-amber-50/20 dark:hover:bg-amber-950/20 transition text-xs">
                             <td class="p-2.5 font-bold text-amber-950 dark:text-amber-200 border-r border-amber-100 dark:border-amber-900/40 text-left align-top">
@@ -4959,8 +5147,8 @@
                     const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
 
                     const playerNameContent = hasSpieltagspunkte
-                        ? `<button onclick="openPlayerDetails('${escapeJsString(p.name)}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${p.name}</button>`
-                        : `<span class="text-emerald-700 dark:text-emerald-400 font-bold">${p.name}</span>`;
+                        ? `<button onclick="openPlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${escapeHtml(p.name)}</button>`
+                        : `<span class="text-emerald-700 dark:text-emerald-400 font-bold">${escapeHtml(p.name)}</span>`;
 
                     if (isQ) {
                         return `
@@ -4977,8 +5165,8 @@
                         `;
                     } else {
                         const playerNameContentUnqual = hasSpieltagspunkte
-                            ? `<button onclick="openPlayerDetails('${escapeJsString(p.name)}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${p.name}</button>`
-                            : `<span class="text-gray-500 dark:text-slate-400">${p.name}</span>`;
+                            ? `<button onclick="openPlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="hover:underline cursor-pointer text-left font-semibold text-gray-500 dark:text-slate-400">${escapeHtml(p.name)}</button>`
+                            : `<span class="text-gray-500 dark:text-slate-400">${escapeHtml(p.name)}</span>`;
 
                         return `
                         <tr class="bg-gray-50/50 dark:bg-slate-800/40 text-gray-400 dark:text-slate-500 italic">
@@ -5024,7 +5212,7 @@
                 bestDreamteamPairs
             } = calculateAllTimeRecords();
 
-            const joinNames = (arr) => arr && arr.length > 0 ? arr.join(', ') : '-';
+            const joinNames = (arr) => arr && arr.length > 0 ? arr.map(escapeHtml).join(', ') : '-';
 
             document.getElementById('allTimeRecordsContainer').innerHTML = `
                 <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
@@ -5069,7 +5257,7 @@
                 const matchesEntries = Object.entries(season.matches);
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
-                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.join(', ')}</span>` : '';
+                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.map(escapeHtml).join(', ')}</span>` : '';
                     let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-950/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
 
                     let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
@@ -5118,8 +5306,8 @@
                                 <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
                                     <svg id="matchchevron-${id}" class="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0 transition-transform" style="transform: ${expandedMatches[id] ? 'rotate(90deg)' : 'rotate(0deg)'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
                                     <span class="font-bold text-gray-700 dark:text-slate-200 text-sm">${padDateString(match.date)}</span>
-                                    ${match.host ? `<span class="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${match.host}</span>` : ''}
-                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${sortedEveningPlayers[0].name}</span>` : ''}
+                                    ${match.host ? `<span class="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${escapeHtml(match.host)}</span>` : ''}
+                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${escapeHtml(sortedEveningPlayers[0].name)}</span>` : ''}
                                     ${jokerInfo}
                                     ${modeBadge}
                                 </div>
@@ -5147,7 +5335,7 @@
                                             <div class="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800/60 px-2 py-1.5 rounded-lg flex items-center justify-between gap-2">
                                                 <div class="flex items-center gap-2 min-w-0">
                                                     <span class="text-[10px] px-1.5 py-0.5 rounded-sm font-mono tracking-tighter shrink-0 ${rankBadgeClass}">#${rankNum}</span>
-                                                    <span class="font-semibold text-gray-800 dark:text-slate-200 text-sm truncate">${p}</span>
+                                                    <span class="font-semibold text-gray-800 dark:text-slate-200 text-sm truncate">${escapeHtml(p)}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5 shrink-0">
                                                     ${(() => {
@@ -5167,7 +5355,7 @@
                                 </div>
                                 ${(match.mode === 'detailed' && match.games && match.games.length > 0) ? `
                                 <div class="flex flex-wrap gap-2.5 mt-3 items-center">
-                                    <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.filter(g => !g.isRoundMarker).length} Spiele)</button>
+                                    <button onclick="toggleGameLog('${id}')" class="text-[10px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer flex items-center gap-0.5">📋 Spielverlauf (${match.games.filter(g => g && !g.isRoundMarker).length} Spiele)</button>
                                     <span class="text-gray-300 dark:text-slate-600">|</span>
                                     <button onclick="toggleMatchStats('${id}')" id="toggleStatsBtn-${id}" class="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer flex items-center gap-0.5 font-bold">📊 Statistiken</button>
                                 </div>
@@ -5191,7 +5379,7 @@
                                                     <div class="flex flex-wrap items-center gap-1.5 text-left">
                                                         <span class="font-bold text-gray-500 dark:text-slate-400 shrink-0">Spiel ${gameNum}:</span>
                                                         ${order.map(pName => {
-                                                            if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400 dark:text-slate-600">${pName} (aus)</span>`;
+                                                            if (!gm.points || gm.points[pName] === undefined) return `<span class="text-gray-400 dark:text-slate-600">${escapeHtml(pName)} (aus)</span>`;
                                                             const v = gm.points[pName];
                                                             const extras = [];
                                                             if (gm.solo && gm.solo[pName]) {
@@ -5202,10 +5390,10 @@
                                                                 extras.push('Ansage');
                                                             }
                                                             const extraText = extras.length ? ` <span class="text-slate-400 dark:text-slate-400">(${extras.join(', ')})</span>` : '';
-                                                            return `<span class="${v >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} font-mono">${pName} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
+                                                            return `<span class="${v >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} font-mono">${escapeHtml(pName)} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
                                                         }).join(' · ')}
                                                     </div>
-                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 rounded px-1 shrink-0">Geber: ${g._dealerName}</span>` : ''}
+                                                    ${g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 rounded px-1 shrink-0">Geber: ${escapeHtml(g._dealerName)}</span>` : ''}
                                                 </div>
                                             `;
                                             gameNum++;
