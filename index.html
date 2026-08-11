@@ -79,7 +79,7 @@
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">10.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Aussetzer-Rotation bei 6 und 7 Spielern korrigiert:</strong> Geber und die rechts von ihm sitzenden Spieler setzen jetzt zuverlässig gemeinsam aus und wandern synchron mit dem Geber eine Position pro Spiel weiter.</li>
+                        <li><strong>Aussetzer-Rotation bei 6 und 7 Spielern korrigiert:</strong> Geber und die links von ihm sitzenden Spieler setzen jetzt zuverlässig gemeinsam aus und wandern synchron mit dem Geber eine Position pro Spiel weiter.</li>
                         <li><strong>Manuelle Aussetzer-Auswahl bleibt erhalten:</strong> Ein von Hand ausgewählter Aussetzer wird nicht mehr durch ein Hintergrund-Update mitten in der Eingabe zurückgesetzt.</li>
                         <li><strong>Bugfix Datum:</strong> Ein gespeicherter Spieltag konnte je nach Zeitzone des Geräts einen Tag zu früh gespeichert werden – behoben.</li>
                         <li><strong>Saisonverlauf-Chart:</strong> Ab dem 11. Spieler einer Saison erhielten zwei Linien dieselbe Farbe – behoben, Farben bleiben jetzt bei jeder Spieleranzahl eindeutig.</li>
@@ -3847,33 +3847,33 @@
                             const pflichtBlocked = !!alreadyPflichtType && prefillSoloKind !== 'pflicht';
                             return `
                                 <div class="bg-white dark:bg-slate-900 border ${isNextDealer ? 'border-amber-300 dark:border-amber-700 ring-2 ring-amber-100 dark:ring-amber-950' : formAccent.row} rounded-lg p-2 space-y-2">
-                                    <div class="flex items-start gap-2">
+                                    <div class="flex items-center gap-2">
                                         ${detailedOrder.length > 4 ? `
-                                        <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 w-16 cursor-pointer pt-1">
+                                        <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 cursor-pointer">
                                             <input type="checkbox" id="sitout-${escapeHtml(name)}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeHtml(escapeJsString(name))}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
                                         </label>
                                         ` : `<input type="checkbox" id="sitout-${escapeHtml(name)}" class="hidden">`}
-                                        <span class="text-xs font-semibold text-gray-700 dark:text-slate-200 w-20 truncate flex items-center gap-1 pt-1">
+                                        <span class="text-xs font-semibold text-gray-700 dark:text-slate-200 flex-grow truncate flex items-center gap-1">
                                             ${escapeHtml(name)}
                                         </span>
                                         ${isNextDealer ? `
-                                        <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[8px] font-bold px-1 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide mt-1">
+                                        <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[8px] font-bold px-1 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide shrink-0">
                                             🃏 Geber
                                         </span>
                                         ` : ''}
-                                        <span id="gamepointwrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} flex-grow space-y-1">
-                                            <input type="number" id="gamepoint-${escapeHtml(name)}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
-                                            <div class="flex gap-0.5">
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−3</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−2</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">−1</button>
-                                                <button type="button" onclick="setGamePointAbsolute('${escapeHtml(escapeJsString(name))}', 0)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">0</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 1)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+1</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 2)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+2</button>
-                                                <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 3)" class="flex-1 text-[10px] font-bold py-1 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition cursor-pointer">+3</button>
-                                            </div>
-                                        </span>
                                     </div>
+                                    <span id="gamepointwrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} block space-y-1.5">
+                                        <input type="number" id="gamepoint-${escapeHtml(name)}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
+                                        <div class="grid grid-cols-7 gap-1">
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -3)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">−3</button>
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -2)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">−2</button>
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', -1)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">−1</button>
+                                            <button type="button" onclick="setGamePointAbsolute('${escapeHtml(escapeJsString(name))}', 0)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">0</button>
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 1)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">+1</button>
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 2)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">+2</button>
+                                            <button type="button" onclick="adjustGamePoint('${escapeHtml(escapeJsString(name))}', 3)" class="text-sm font-bold py-2.5 rounded border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 active:bg-gray-200 dark:active:bg-slate-600 transition cursor-pointer">+3</button>
+                                        </div>
+                                    </span>
                                     <div id="gamesolowrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
                                             <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="if(this.checked){document.getElementById('gamelust-${escapeHtml(escapeJsString(name))}').checked=false;}" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
@@ -4967,7 +4967,7 @@
                             </div>
 
                             <span id="scoreInputWrap-${escapeHtml(name)}" class="${entryMode === 'detailed' ? 'hidden' : ''}">
-                                <input type="number" id="score-${escapeHtml(name)}" ${isChecked ? '' : 'disabled'} value="${scoreVal}" placeholder="${placeholderText}" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
+                                <input type="number" id="score-${escapeHtml(name)}" ${isChecked ? '' : 'disabled'} value="${scoreVal}" placeholder="${placeholderText}" oninput="saveFormToTemp()" onchange="saveFormToTemp(); updateLiveDraft();" class="w-20 border border-gray-300 dark:border-slate-700 rounded p-1 text-sm text-right bg-white dark:bg-slate-900 dark:text-white disabled:bg-gray-200 dark:disabled:bg-slate-800 transition">
                             </span>
                         </div>
 
@@ -5302,12 +5302,12 @@
 
                     return `
                         <div class="bg-gray-50 dark:bg-slate-900/50 rounded-xl border border-gray-200 dark:border-slate-800 text-xs shadow-sm overflow-hidden">
-                            <div onclick="toggleMatchCard('${id}')" class="p-3 bg-slate-100 dark:bg-slate-800 flex justify-between items-center border-b border-gray-200 dark:border-slate-700 cursor-pointer">
-                                <div class="flex items-center gap-2 overflow-hidden truncate mr-2">
+                            <div onclick="toggleMatchCard('${id}')" class="p-3 bg-slate-100 dark:bg-slate-800 flex justify-between items-start border-b border-gray-200 dark:border-slate-700 cursor-pointer">
+                                <div class="flex flex-wrap items-center gap-1.5 mr-2">
                                     <svg id="matchchevron-${id}" class="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 shrink-0 transition-transform" style="transform: ${expandedMatches[id] ? 'rotate(90deg)' : 'rotate(0deg)'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"></polyline></svg>
                                     <span class="font-bold text-gray-700 dark:text-slate-200 text-sm">${padDateString(match.date)}</span>
                                     ${match.host ? `<span class="bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-[10px] px-1.5 py-0.5 rounded font-medium border border-amber-200 dark:border-amber-900">🏠 ${escapeHtml(match.host)}</span>` : ''}
-                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400 truncate">🏆 ${escapeHtml(sortedEveningPlayers[0].name)}</span>` : ''}
+                                    ${sortedEveningPlayers.length > 0 ? `<span class="text-[10px] text-gray-500 dark:text-slate-400">🏆 ${escapeHtml(sortedEveningPlayers[0].name)}</span>` : ''}
                                     ${jokerInfo}
                                     ${modeBadge}
                                 </div>
