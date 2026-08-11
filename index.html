@@ -72,14 +72,27 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.85 -->
+                <!-- Version 1.87 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.85</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">10.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.87</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">11.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Aussetzer-Rotation bei 6 und 7 Spielern korrigiert:</strong> Geber und die links von ihm sitzenden Spieler setzen jetzt zuverlässig gemeinsam aus und wandern synchron mit dem Geber eine Position pro Spiel weiter.</li>
+                        <li><strong>Login übersprungen, wenn bereits angemeldet:</strong> Der Login-Bildschirm wird beim Start nicht mehr angezeigt, wenn bereits eine gültige Anmeldung vorliegt. Die App startet direkt in der Saisonübersicht.</li>
+                        <li><strong>Abbrechen-Button bei der Abend-Eingabe hinzugefügt:</strong> Die Eingabe eines Abends (neu oder in Bearbeitung) kann jetzt gezielt abgebrochen werden.</li>
+                        <li><strong>Eingabe Spiel für Spiel angepasst:</strong> Punkte-Buttons −3 bis +3 vergrößert.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.85 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.85</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">10.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
+                        <li><strong>Aussetzer-Rotation bei 6 und 7 Spielern korrigiert:</strong> Geber und die rechts von ihm sitzenden Spieler setzen jetzt zuverlässig gemeinsam aus und wandern synchron mit dem Geber eine Position pro Spiel weiter.</li>
                         <li><strong>Manuelle Aussetzer-Auswahl bleibt erhalten:</strong> Ein von Hand ausgewählter Aussetzer wird nicht mehr durch ein Hintergrund-Update mitten in der Eingabe zurückgesetzt.</li>
                         <li><strong>Bugfix Datum:</strong> Ein gespeicherter Spieltag konnte je nach Zeitzone des Geräts einen Tag zu früh gespeichert werden – behoben.</li>
                         <li><strong>Saisonverlauf-Chart:</strong> Ab dem 11. Spieler einer Saison erhielten zwei Linien dieselbe Farbe – behoben, Farben bleiben jetzt bei jeder Spieleranzahl eindeutig.</li>
@@ -425,7 +438,10 @@
 
                     <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200/50 dark:border-slate-700"></div>
 
-                    <button id="saveMatchBtn" onclick="saveMatch()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition mt-4 cursor-pointer">Abend speichern</button>
+                    <div class="flex gap-2 mt-4">
+                        <button id="cancelMatchBtn" type="button" onclick="cancelMatchEntry()" class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2 rounded-lg font-bold shadow transition cursor-pointer">✖ Abbrechen</button>
+                        <button id="saveMatchBtn" onclick="saveMatch()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition cursor-pointer">Abend speichern</button>
+                    </div>
                 </div>
             </div>
 
@@ -488,8 +504,26 @@
         </div>
     </div>
 
+    <!-- Lade-Bildschirm: sichtbar, bis der Firebase-Auth-Status bekannt ist. Verhindert, dass
+         bereits angemeldete Nutzer kurz das Login-Formular aufblitzen sehen, bevor automatisch
+         zur App weitergeleitet wird. -->
+    <div id="authLoadingScreen" class="fixed inset-0 bg-slate-900 z-[210] flex items-center justify-center p-4">
+        <div class="flex flex-col items-center gap-4">
+            <svg class="w-10 h-14 drop-shadow-[0_5px_8px_rgba(0,0,0,0.4)] select-none bg-white rounded-lg -rotate-6" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+                <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
+            </svg>
+            <svg class="animate-spin h-6 w-6 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+        </div>
+    </div>
+
     <!-- Login-Fenster -->
-    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4">
+    <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 md:p-8">
             <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-emerald-800 dark:text-emerald-400">Doko-Saisonverwaltung</h1>
             <p class="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">Bitte melde dich an, um fortzufahren.</p>
@@ -824,6 +858,17 @@
         // Wird sofort gesetzt/gelöscht, damit die Selbstheilung in startEditLockListener() nicht auf
         // die 300ms-Ausblend-Animation hereinfällt (siehe toggleAdminModal).
         let isAdminModalOpen = false;
+        // Zeitstempel des zuletzt bewusst per cancelMatchEntry() verworfenen Live-Entwurfs.
+        // Schützt vor einer Race Condition mit dem Realtime-Listener (startDatabaseListener()):
+        // Ein durch Fokusverlust kurz VOR dem Abbrechen noch ausgelöstes updateLiveDraft() schreibt
+        // per saveLiveDraftToCloud() einen (bereits veralteten) Entwurf nach Firebase. Dieser
+        // Schreibvorgang läuft asynchron weiter, und sein lokales Echo kann beim Listener erst
+        // eintreffen, NACHDEM cancelMatchEntry() bereits isAdminModalOpen=false gesetzt und alles
+        // zurückgesetzt hat – zu diesem Zeitpunkt ist skipLiveDraftSync bereits false, und der
+        // Listener würde den veralteten Entwurf sonst ungewollt wiederherstellen (Abbrechen-Button
+        // "funktioniert nicht"). Jeder eintreffende liveDraft mit timestamp <= lastCancelledDraftTs
+        // gilt als Echo unserer eigenen, bereits verworfenen Eingabe und wird ignoriert.
+        let lastCancelledDraftTs = 0;
 
         // ==============================
         // Toast- & Bestätigungs-System (Ersatz für native alert()/confirm())
@@ -2070,7 +2115,13 @@
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
-                    const liveDraft = season ? season.liveDraft : null;
+                    // Auch hier: einen bereits per cancelMatchEntry() verworfenen (und damit
+                    // veralteten) Entwurf nicht wiederherstellen, falls er zwischenzeitlich doch
+                    // noch einmal per Echo im lokalen State gelandet ist. Siehe lastCancelledDraftTs.
+                    const rawLiveDraft = season ? season.liveDraft : null;
+                    const liveDraft = (rawLiveDraft && rawLiveDraft.timestamp && rawLiveDraft.timestamp <= lastCancelledDraftTs)
+                        ? null
+                        : rawLiveDraft;
 
                     editingMatchId = null;
                     resetCustomSitouts();
@@ -2258,8 +2309,19 @@
                 state.seasons[state.currentSeasonKey].liveDraft = activeLocalDraft;
             } else if (!editingMatchId && state.currentSeasonKey && state.seasons[state.currentSeasonKey]) {
                 const season = state.seasons[state.currentSeasonKey];
-                const cloudLive = season.liveDraft;
-                
+                let cloudLive = season.liveDraft;
+
+                // Race-Schutz: Ein liveDraft-Schnappschuss, dessen timestamp auf/vor unserem letzten
+                // bewussten cancelMatchEntry() liegt, ist das verzögerte Echo eines bereits verworfenen
+                // Entwurfs (siehe Deklaration von lastCancelledDraftTs) – wird hier so behandelt, als
+                // wäre kein Cloud-Entwurf vorhanden, statt ihn ungewollt in den Formularstatus zurück-
+                // zuschreiben.
+                if (cloudLive && cloudLive.timestamp && cloudLive.timestamp <= lastCancelledDraftTs) {
+                    cloudLive = null;
+                    season.liveDraft = null;
+                    delete season.liveDraft;
+                }
+
                 // Offline-Backup-Logik (Verbindung mit localStorage)
                 const localDraftStr = safeLocalStorageGet(`doko_live_draft_${state.currentSeasonKey}`);
                 let localLive = null;
@@ -2273,6 +2335,12 @@
                                 localLive = null;
                                 safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
                             }
+                        }
+                        // Ebenso: ein lokaler Offline-Entwurf, der auf/vor unserem letzten bewussten
+                        // Abbruch geschrieben wurde, ist ebenfalls veraltet und wird verworfen.
+                        if (localLive && localLive.timestamp && localLive.timestamp <= lastCancelledDraftTs) {
+                            localLive = null;
+                            safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
                         }
                     } catch (e) {
                         console.error("Fehler beim Verarbeiten des Offline-Entwurfs", e);
@@ -2615,6 +2683,10 @@
         auth.onAuthStateChanged((user) => {
             const loginScreen = document.getElementById('loginScreen');
             const appContent = document.getElementById('appContent');
+            const authLoadingScreen = document.getElementById('authLoadingScreen');
+            // Auth-Status ist jetzt bekannt: Lade-Bildschirm in jedem Fall ausblenden,
+            // unabhängig davon, ob der Nutzer angemeldet ist oder nicht.
+            if (authLoadingScreen) authLoadingScreen.classList.add('hidden');
 
             if (user) {
                 // Erfolgreich angemeldet: App freischalten und Datenbank-Listener starten
@@ -2743,12 +2815,23 @@
                 detailedOrder = live.detailedOrder || [];
                 detailedGames = (live.detailedGames || []).map(normalizeGame);
                 matchBelowSixty = live.belowSixty || {};
+                tempScores = live.scores || {};
+                tempJokers = live.jokers || {};
             } else {
                 entryMode = (season && season.isHistorical) ? 'simple' : 'detailed';
                 detailedOrder = [];
                 detailedGames = [];
                 matchBelowSixty = {};
+                tempScores = {};
+                tempJokers = {};
             }
+            // Datum/Gastgeber-Felder müssen beim Saisonwechsel ebenfalls auf den Stand der neu
+            // angezeigten Saison gebracht werden – sonst blieben hier Werte der vorherigen
+            // Saison stehen (analog zum "kein Entwurf"-Zweig in toggleAdminModal(false)).
+            const dateInput = document.getElementById('matchDate');
+            if (dateInput) dateInput.value = live ? (live.matchDate || '') : '';
+            const hostSelect = document.getElementById('matchHostSelect');
+            if (hostSelect) hostSelect.value = live ? (live.host || '') : '';
             render();
         }
 
@@ -3946,6 +4029,81 @@
                     }
                 }
             }
+        }
+
+        // Bricht die aktuelle Eingabe eines Abends (neu ODER in Bearbeitung) nach Bestätigung ab:
+        // löscht den Live-Entwurf (Cloud + lokale Sicherung) und schließt den Eingabebereich.
+        // Im Unterschied zum einfachen Schließen (× / Klick auf Backdrop) wird der Entwurf hier
+        // bewusst NICHT beim nächsten Öffnen wiederhergestellt, sondern endgültig verworfen.
+        async function cancelMatchEntry() {
+            const confirmMsg = editingMatchId
+                ? "Möchtest du die Bearbeitung dieses Abends wirklich abbrechen? Deine Änderungen gehen verloren."
+                : "Möchtest du die Eingabe wirklich abbrechen? Die bisher erfassten Daten für diesen Abend gehen verloren.";
+
+            if (!await showConfirm(confirmMsg)) return;
+
+            // Tombstone setzen: JEDER liveDraft-Schreibvorgang, der zu diesem Zeitpunkt oder früher
+            // entstanden ist (z.B. ein durch Fokusverlust beim Klick auf "Bestätigen" im Modal noch
+            // ausgelöstes updateLiveDraft()), gilt ab jetzt als überholt. Siehe Deklaration von
+            // lastCancelledDraftTs und startDatabaseListener().
+            lastCancelledDraftTs = Date.now();
+
+            // WICHTIG: isAdminModalOpen SOFORT synchron auf false setzen, BEVOR die Cloud-Löschung
+            // angestoßen wird. Der Realtime-Listener (siehe skipLiveDraftSync in
+            // startDatabaseListener()) rekonstruiert bei offenem Eingabebereich aus dem aktuellen
+            // Formularzustand einen "Live-Entwurf" und schreibt ihn zurück in den lokalen State –
+            // das dient normalerweise als Schutz gegen fremdes Überschreiben während der Eingabe.
+            // Bliebe das Flag hier noch auf true, würde genau dieser Schutz das Echo unserer
+            // eigenen Löschung "reparieren" und den gerade verworfenen Entwurf aus dem (in diesem
+            // Moment noch nicht zurückgesetzten) Formular ungewollt wiederherstellen.
+            isAdminModalOpen = false;
+
+            const seasonKey = state.currentSeasonKey;
+            const season = seasonKey ? state.seasons[seasonKey] : null;
+
+            // Formularzustand SOFORT lokal zurücksetzen und neu rendern (statt auf den
+            // 300ms-verzögerten Reset in toggleAdminModal(false) bzw. auf einen Cloud-Roundtrip zu
+            // warten) – analog zu saveMatch(). So verschwindet u.a. die Live-Ansicht im Dashboard
+            // augenblicklich, unabhängig von Netzwerk-Timing.
+            editingMatchId = null;
+            entryMode = (season && season.isHistorical) ? 'simple' : 'detailed';
+            detailedOrder = [];
+            detailedGames = [];
+            tempScores = {};
+            tempJokers = {};
+            matchBelowSixty = {};
+            editingGameIndex = null;
+            resetCustomSitouts();
+            const dateInput = document.getElementById('matchDate');
+            if (dateInput) dateInput.value = '';
+            const hostSelect = document.getElementById('matchHostSelect');
+            if (hostSelect) hostSelect.value = '';
+            const saveBtn = document.getElementById('saveMatchBtn');
+            if (saveBtn) saveBtn.textContent = "Abend speichern";
+
+            if (season) {
+                if (season.liveDraft) {
+                    delete season.liveDraft;
+                    // Gezielt NUR den liveDraft-Pfad in der Cloud löschen (statt über saveToCloud()
+                    // den kompletten seasons-Baum zu überschreiben): writeSeasonsToCloudRaw()
+                    // enthält eine Schutzlogik, die einen noch in der Cloud vorhandenen liveDraft
+                    // vor versehentlichem Überschreiben durch einen älteren lokalen Stand bewahrt
+                    // (Schutz vor Last-Write-Wins-Datenverlust). Eine Löschung hat lokal aber keinen
+                    // Zeitstempel (0) und würde von dieser Schutzlogik fälschlich als "veraltet"
+                    // eingestuft – der alte Entwurf würde dadurch sofort wiederhergestellt. Ein
+                    // gezieltes remove() auf dem konkreten Pfad umgeht dieses Problem sauber.
+                    if (!editLockInfo || hasEditLock) {
+                        trackPendingWrite(db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).remove()).catch((err) => {
+                            console.warn('Löschen des Live-Entwurfs in der Cloud fehlgeschlagen:', err);
+                            showToast('⚠️ Der Entwurf konnte nicht in der Cloud gelöscht werden. Bitte Internetverbindung prüfen.', 'error');
+                        });
+                    }
+                }
+                safeLocalStorageRemove(`doko_live_draft_${seasonKey}`);
+            }
+
+            render();
+            toggleAdminModal(false);
         }
 
         async function saveMatch() {
