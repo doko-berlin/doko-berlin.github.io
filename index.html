@@ -72,13 +72,25 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.87 -->
+                <!-- Version 1.88 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.87</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">11.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.88</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Speichern zuverlässiger gemacht:</strong> Ein Abend, ein gelöschter Abend oder ein entfernter Spieler konnte unter bestimmten Umständen beim ersten Versuch spurlos verloren gehen, obwohl „gespeichert“ angezeigt wurde. Behoben.</li>
+                        <li><strong>Neue Rekordkachel „Mischmeister“:</strong> Zeigt, wer am häufigsten hintereinander geben musste. Der Rekord wird manuell über einen Bearbeiten-Button gepflegt.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.87 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.87</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">11.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Login übersprungen, wenn bereits angemeldet:</strong> Der Login-Bildschirm wird beim Start nicht mehr angezeigt, wenn bereits eine gültige Anmeldung vorliegt. Die App startet direkt in der Saisonübersicht.</li>
                         <li><strong>Abbrechen-Button bei der Abend-Eingabe hinzugefügt:</strong> Die Eingabe eines Abends (neu oder in Bearbeitung) kann jetzt gezielt abgebrochen werden.</li>
                         <li><strong>Eingabe Spiel für Spiel angepasst:</strong> Punkte-Buttons −3 bis +3 vergrößert.</li>
@@ -97,7 +109,7 @@
                         <li><strong>Bugfix Datum:</strong> Ein gespeicherter Spieltag konnte je nach Zeitzone des Geräts einen Tag zu früh gespeichert werden – behoben.</li>
                         <li><strong>Saisonverlauf-Chart:</strong> Ab dem 11. Spieler einer Saison erhielten zwei Linien dieselbe Farbe – behoben, Farben bleiben jetzt bei jeder Spieleranzahl eindeutig.</li>
                         <li><strong>Höhere Datensicherheit:</strong> Warnung beim Schließen der Seite, solange eine Speicherung noch läuft; zusätzlicher Schutz gegen seltene Datenverluste beim gleichzeitigen Speichern durch mehrere Admins.</li>
-                        <li><strong>Dark-Mode:</strong> Jahresfeld bei „Neue Saison anlegen" war im Nachtmodus weiterhin hell – korrigiert.</li>
+                        <li><strong>Dark-Mode:</strong> Jahresfeld bei „Neue Saison anlegen“ war im Nachtmodus weiterhin hell – korrigiert.</li>
                         <li><strong>Diverse Fehlerbehebungen:</strong> u. a. Absturzschutz bei fehlerhaften Spieldaten aus der Datenbank, verwaister Hintergrund-Listener nach dem Abmelden beseitigt sowie schnelleres Laden durch vorkompiliertes Design statt Live-Berechnung im Browser.</li>
                     </ul>
                 </div>
@@ -110,12 +122,12 @@
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Saisonwechsel neu platziert:</strong> Das Saison-Dropdown befindet sich jetzt direkt in der Überschrift der Tabelle statt in einer separaten Leiste darüber.</li>
-                        <li><strong>„Spieltag hinzufügen" statt „Verwaltung & Eingabe":</strong> Der Eingabebereich wurde umbenannt und ist jetzt direkt über der Tabelle erreichbar; die alte Leiste zwischen Menü und Tabelle entfällt komplett.</li>
-                        <li><strong>Saison-Einstellungen ins Menü verschoben:</strong> Saison anlegen/bearbeiten, Mindestquote und Saisonstatus sind jetzt über „🛠️ Saison-Einstellungen" im Menü statt in der Admin-Verwaltung erreichbar.</li>
+                        <li><strong>„Spieltag hinzufügen“ statt „Verwaltung & Eingabe“:</strong> Der Eingabebereich wurde umbenannt und ist jetzt direkt über der Tabelle erreichbar; die alte Leiste zwischen Menü und Tabelle entfällt komplett.</li>
+                        <li><strong>Saison-Einstellungen ins Menü verschoben:</strong> Saison anlegen/bearbeiten, Mindestquote und Saisonstatus sind jetzt über „🛠️ Saison-Einstellungen“ im Menü statt in der Admin-Verwaltung erreichbar.</li>
                         <li><strong>Spielerdetails im Querformat repariert:</strong> Das Fenster wird am Smartphone im Querformat nicht mehr oben/unten abgeschnitten, sondern scrollt bei Bedarf innerhalb einer festen Höhe.</li>
                         <li><strong>Hintergrund-Scrollsperre:</strong> Die Seite hinter einem geöffneten Modal lässt sich nicht mehr versehentlich mitscrollen.</li>
                         <li><strong>Zurück-Button am Smartphone:</strong> Schließt jetzt nur das offene Modal, statt die App zu verlassen.</li>
-                        <li><strong>Saisonverlauf um „Gesamtverlauf" erweitert:</strong> Neue Ansicht zeigt den laufenden Punkteschnitt je Spieler nach jedem Abend, umschaltbar neben „Abend-Platzierungen".</li>
+                        <li><strong>Saisonverlauf um „Gesamtverlauf“ erweitert:</strong> Neue Ansicht zeigt den laufenden Punkteschnitt je Spieler nach jedem Abend, umschaltbar neben „Abend-Platzierungen“.</li>
                         <li><strong>Konsistentes Schließen per Klick auf den Hintergrund</strong> jetzt bei allen Modals möglich (u. a. Spielerdetails, Changelog).</li>
                         <li><strong>Diverse Fehlerbehebungen:</strong> u. a. korrekte Speicherung in den Saison-Einstellungen unabhängig vom Eingabe-Lock, Absturz bei Spielernamen mit Apostroph behoben, Datenverlust-Risiko beim Offline-Speichern eines Abends beseitigt sowie ein Fehler behoben, bei dem ein abgebrochener Bearbeitungsvorgang den laufenden Live-Entwurf beschädigen konnte.</li>
                     </ul>
@@ -129,11 +141,11 @@
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Spieltage:</strong> Spielverlauf und Statistiken sind jetzt gegenseitig exklusiv (immer nur eins von beidem sichtbar).</li>
-                        <li><strong>Saison-Rekorde entfernt:</strong> Stattdessen „Längste Siegesserie" in die Ewige Bestenliste integriert, saisonübergreifend über die komplette Historie berechnet.</li>
-                        <li><strong>Neue Rekord-Kachel „Dreamteam":</strong> Bestes Zweierteam nach Punkteschnitt, ermittelt über alle Abende und Saisons hinweg.</li>
+                        <li><strong>Saison-Rekorde entfernt:</strong> Stattdessen „Längste Siegesserie“ in die Ewige Bestenliste integriert, saisonübergreifend über die komplette Historie berechnet.</li>
+                        <li><strong>Neue Rekord-Kachel „Dreamteam“:</strong> Bestes Zweierteam nach Punkteschnitt, ermittelt über alle Abende und Saisons hinweg.</li>
                         <li><strong>Abend-Verlauf-Chart:</strong> Punkte verkleinert und nicht mehr anklickbar/hoverbar.</li>
-                        <li><strong>Spiel für Spiel ist jetzt Standard-Eingabemodus</strong> bei aktiven Saisons (statt „Nur Endergebnis").</li>
-                        <li><strong>„Teilnahme < 60 %"-Button</strong> nur noch im „Nur Endergebnis"-Modus sichtbar (automatische Berechnung im Spiel-für-Spiel-Modus).</li>
+                        <li><strong>Spiel für Spiel ist jetzt Standard-Eingabemodus</strong> bei aktiven Saisons (statt „Nur Endergebnis“).</li>
+                        <li><strong>„Teilnahme < 60 %“-Button</strong> nur noch im „Nur Endergebnis“-Modus sichtbar (automatische Berechnung im Spiel-für-Spiel-Modus).</li>
                         <li><strong>GUI- & Textkorrekturen:</strong> u. a. gekürzte Kachel-Titel.</li>
                     </ul>
                 </div>
@@ -155,10 +167,10 @@
                     </ul>
                 </div>
 
-                <!-- Version 1.5.5 -->
+                <!-- Version 1.55 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.5.5</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.55</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -504,6 +516,32 @@
         </div>
     </div>
 
+    <!-- Mischmeister-Rekord bearbeiten: manuell gepflegter Wert (häufigste Geben-Serie in Folge),
+         nicht aus Spieldaten berechenbar, daher eigenes kleines Editier-Modal. -->
+    <div id="mischmeisterModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeMischmeisterModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative space-y-4" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
+                <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">🔀 Mischmeister bearbeiten</h2>
+                <button onclick="closeMischmeisterModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-slate-400">Wer musste am häufigsten hintereinander geben? Dieser Rekord wird manuell gepflegt.</p>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Spieler:</label>
+                <select id="mischmeisterPlayerSelect" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Neuer Bestwert (Anzahl Geben in Folge):</label>
+                <input id="mischmeisterValueInput" type="number" min="1" step="1" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm text-center font-semibold">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Datum, an dem der Rekord erreicht wurde:</label>
+                <input id="mischmeisterDateInput" type="date" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm text-center font-semibold">
+            </div>
+            <button onclick="saveMischmeisterRecord()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-sm rounded-xl font-bold shadow transition cursor-pointer">Speichern</button>
+        </div>
+    </div>
+
+
     <!-- Lade-Bildschirm: sichtbar, bis der Firebase-Auth-Status bekannt ist. Verhindert, dass
          bereits angemeldete Nutzer kurz das Login-Formular aufblitzen sehen, bevor automatisch
          zur App weitergeleitet wird. -->
@@ -813,7 +851,7 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
-        let state = { seasons: {}, currentSeasonKey: "" };
+        let state = { seasons: {}, currentSeasonKey: "", manualRecords: {} };
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
         let editingMatchId = null;
@@ -926,6 +964,7 @@
                 ['whatsNewModal', closeWhatsNewModal],
                 ['regelnModal', closeRegelnModal],
                 ['seasonSettingsModal', closeSeasonSettingsModal],
+                ['mischmeisterModal', closeMischmeisterModal],
                 ['allTimeStatsModal', closeAllTimeModal],
                 ['playerDetailsModal', closePlayerModal],
                 ['adminModal', () => toggleAdminModal(false)],
@@ -1109,6 +1148,63 @@
             registerModalClose();
         }
 
+        // Mischmeister: manuell gepflegter Rekord (häufigste Geben-Serie in Folge), da dies aus
+        // den erfassten Spieldaten nicht automatisch ermittelbar ist.
+        function openMischmeisterModal() {
+            const select = document.getElementById('mischmeisterPlayerSelect');
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            const seasonPlayers = season ? (season.players || []) : [];
+            const current = (state.manualRecords && state.manualRecords.mischmeister) || { player: 'Morten', value: 6, date: '15.07.2024' };
+            select.innerHTML = seasonPlayers.map(name =>
+                `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+            ).join('');
+            // Bereits hinterlegten Spieler vorauswählen, falls er in der aktiven Saison mitspielt.
+            if (current.player && seasonPlayers.includes(current.player)) {
+                select.value = current.player;
+            }
+            document.getElementById('mischmeisterValueInput').value = current.value || '';
+            document.getElementById('mischmeisterDateInput').value = parseGermanDateToYMD(current.date) || '2024-07-15';
+            document.getElementById('mischmeisterModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
+        }
+        function closeMischmeisterModal() {
+            document.getElementById('mischmeisterModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
+        }
+        function saveMischmeisterRecord() {
+            const select = document.getElementById('mischmeisterPlayerSelect');
+            const player = select.value;
+            const valueInput = document.getElementById('mischmeisterValueInput');
+            const value = parseInt(valueInput.value);
+            const rawDate = document.getElementById('mischmeisterDateInput').value;
+
+            if (!player) return showToast("Bitte einen Spieler auswählen.", 'error');
+            if (!value || value < 1) return showToast("Bitte einen gültigen Bestwert (mindestens 1) eingeben.", 'error');
+            if (!rawDate) return showToast("Bitte ein Datum auswählen.", 'error');
+
+            // new Date("YYYY-MM-DD") parst als UTC-Mitternacht, siehe Kommentar in saveMatch() –
+            // UTC-Getter verwenden, damit das Datum nicht durch Zeitzonen-Umrechnung verrutscht.
+            const dateObj = new Date(rawDate);
+            const d = String(dateObj.getUTCDate()).padStart(2, '0');
+            const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+            const y = dateObj.getUTCFullYear();
+            const date = `${d}.${m}.${y}`;
+
+            if (!state.manualRecords) state.manualRecords = {};
+            state.manualRecords.mischmeister = { player, value, date };
+
+            closeMischmeisterModal();
+            render();
+            saveToCloud().then(() => {
+                showToast("Mischmeister-Rekord gespeichert!", 'success');
+            }).catch((err) => {
+                if (err === 'locked') return; // Eigener Warn-Toast kommt bereits aus saveToCloud()
+                showToast("⚠️ Speichern fehlgeschlagen – bitte Internetverbindung prüfen.", 'error');
+            });
+        }
+
         function showAllTimeDetail(metricType) {
             const records = calculateAllTimeRecords();
             let title = '';
@@ -1116,7 +1212,7 @@
             let sortedList = [];
 
             if (metricType === 'solo') {
-                title = '🃏 Solo-Meister';
+                title = '🃏 Solo-Champion';
                 sortedList = Object.keys(records.globalSoloStats)
                     .map(player => {
                         const stats = records.globalSoloStats[player];
@@ -1866,10 +1962,10 @@
             if (!live) return;
 
             const dateInput = document.getElementById('matchDate');
-            if (dateInput && live.matchDate) dateInput.value = live.matchDate;
+            if (dateInput && live.matchDate && document.activeElement !== dateInput) dateInput.value = live.matchDate;
 
             const hostSelect = document.getElementById('matchHostSelect');
-            if (hostSelect && live.host) {
+            if (hostSelect && live.host && document.activeElement !== hostSelect) {
                 hostSelect.value = live.host;
             }
 
@@ -1895,20 +1991,36 @@
                 }
             }
 
-            // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben
+            // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben.
+            // WICHTIG: Nur Werte übernehmen, die lokal noch NICHT gesetzt sind (echte
+            // Wiederherstellung, z.B. nach Neuladen oder Fortsetzen eines Entwurfs) – und niemals
+            // ein gerade fokussiertes Feld anfassen. season.liveDraft.scores wird nur bei 'change'
+            // (Fokusverlust) aktualisiert, tempScores dagegen bei jedem Tastenanschlag (siehe
+            // saveFormToTemp()). Ein bedingungsloses Zurückschreiben hier würde bei jedem
+            // Re-Render (z.B. durch den Checkbox-Klick eines weiteren Mitspielers oder ein
+            // Cloud-Echo eines anderen Admins) einen gerade getippten, noch nicht "committeten"
+            // Wert mit dem älteren Entwurfsstand überschreiben – genau das Symptom "Punkte falsch,
+            // erst nach 2-3x Speichern korrekt" bei Abenden mit mehreren Spielern.
             if (live.scores) {
                 Object.keys(live.scores).forEach(name => {
-                    tempScores[name] = live.scores[name];
                     const input = document.getElementById(`score-${name}`);
-                    if (input) input.value = live.scores[name];
+                    const isFocused = input && document.activeElement === input;
+                    if (isFocused) return;
+                    if (tempScores[name] === undefined) {
+                        tempScores[name] = live.scores[name];
+                    }
+                    if (input) input.value = tempScores[name];
                 });
             }
             if (live.jokers) {
                 Object.keys(live.jokers).forEach(name => {
-                    tempJokers[name] = live.jokers[name];
                     const cb = document.getElementById(`joker-${name}`);
+                    if (cb && document.activeElement === cb) return;
+                    if (tempJokers[name] === undefined) {
+                        tempJokers[name] = live.jokers[name];
+                    }
                     if (cb && !cb.disabled) {
-                        cb.checked = live.jokers[name];
+                        cb.checked = tempJokers[name];
                         cb.parentElement.classList.toggle('opacity-100', cb.checked);
                         cb.parentElement.classList.toggle('opacity-40', !cb.checked);
                     }
@@ -2285,6 +2397,7 @@
 
             if (data && data.seasons) {
                 state.seasons = data.seasons;
+                state.manualRecords = data.manualRecords || {};
                 Object.keys(state.seasons).forEach(key => {
                     if (!state.seasons[key].players) {
                         if (data.players && data.players.length > 0) state.seasons[key].players = [...data.players];
@@ -2471,7 +2584,7 @@
                             state.seasons[key].liveDraft = cloudLiveDraft;
                         }
                     });
-                    return db.ref('doko_v2_data').set({ seasons: state.seasons });
+                    return db.ref('doko_v2_data').set({ seasons: state.seasons, manualRecords: state.manualRecords || {} });
                 }));
             } catch (err) {
                 console.error('Cloud-Speicherung sofort fehlgeschlagen (z.B. ungültiger Schlüssel):', err);
@@ -2756,10 +2869,14 @@
 
         async function removePlayer(name) {
             if (!state.currentSeasonKey) return;
-            const season = state.seasons[state.currentSeasonKey];
+            let season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
 
             if (await showConfirm(`Möchtest du ${name} wirklich aus DIESER Saison entfernen?`)) {
+                // season nach dem await neu einlesen – siehe ausführlicher Kommentar in saveMatch(),
+                // gleiches Race durch einen zwischenzeitlich ausgetauschten state.seasons-Baum.
+                season = state.seasons[state.currentSeasonKey];
+                if (!season) return showToast("Saison nicht mehr verfügbar – bitte erneut versuchen.", 'error');
                 const previousPlayers = season.players;
                 season.players = (season.players || []).filter(p => p !== name);
                 render();
@@ -2847,13 +2964,13 @@
             if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) return;
             const currentStatus = state.seasons[settingsSeasonKey].status;
             const newStatus = currentStatus === "aktiv" ? "abgeschlossen" : "aktiv";
-            if (await showConfirm(`Saison "${settingsSeasonKey}" auf "${newStatus}" setzen?`)) {
+            if (await showConfirm(`Saison „${settingsSeasonKey}“ auf „${newStatus}“ setzen?`)) {
                 state.seasons[settingsSeasonKey].status = newStatus;
                 // Sofortiges Rendern, statt auf das Echo aus Firebase zu warten: Sonst zeigt der
                 // Button bei langsamer/wackliger Verbindung kurzzeitig noch den alten Status an.
                 render();
                 saveToCloud().then(() => {
-                    showToast(`Saison "${settingsSeasonKey}" ist jetzt "${newStatus}".`, 'success');
+                    showToast(`Saison „${settingsSeasonKey}“ ist jetzt „${newStatus}“.`, 'success');
                 }).catch((err) => {
                     // Cloud-Speicherung fehlgeschlagen: lokal zurückrollen, statt lautlos eine
                     // Änderung vorzugaukeln, die beim nächsten Sync wieder verschwindet.
@@ -2869,7 +2986,7 @@
         async function deleteCurrentSeason() {
             if (!settingsSeasonKey || !state.seasons[settingsSeasonKey]) return;
             const keyToDelete = settingsSeasonKey;
-            if (await showConfirm(`Möchtest du die Saison "${keyToDelete}" wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
+            if (await showConfirm(`Möchtest du die Saison „${keyToDelete}“ wirklich unwiderruflich löschen? Alle Daten und Spieler dieser Saison gehen verloren!`)) {
                 const backup = state.seasons[keyToDelete];
                 const wasCurrentSeason = state.currentSeasonKey === keyToDelete;
                 const previousCurrentSeasonKey = state.currentSeasonKey;
@@ -2905,12 +3022,16 @@
 
         async function deleteMatch(matchId) {
             if (!state.currentSeasonKey) return;
-            const season = state.seasons[state.currentSeasonKey];
+            let season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return showToast("Abgeschlossene Saisons können nicht bearbeitet werden!", 'error');
             if (editLockInfo && !hasEditLock) {
                 return showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Löschen ist gerade nicht möglich.', 'error');
             }
             if (await showConfirm("Möchtest du diesen Abend unwiderruflich löschen?")) {
+                // season nach dem await neu einlesen – siehe ausführlicher Kommentar in saveMatch(),
+                // gleiches Race durch einen zwischenzeitlich ausgetauschten state.seasons-Baum.
+                season = state.seasons[state.currentSeasonKey];
+                if (!season) return showToast("Saison nicht mehr verfügbar – bitte erneut versuchen.", 'error');
                 if (season.matches && season.matches[matchId]) {
                     const backup = season.matches[matchId];
                     delete season.matches[matchId];
@@ -3264,7 +3385,7 @@
                 ? Object.keys(hostAverages).filter(p => Math.abs(hostAverages[p] - bestAllTimeHostAvg) < 0.0001)
                 : [];
 
-            // Find Ewiger Solo-Meister
+            // Find Ewiger Solo-Champion
             let bestSoloPlayer = "-";
             let bestSoloCount = 0;
             let bestSoloQuote = 0;
@@ -3638,6 +3759,32 @@
             autoFillZeroSumInDraft();
         }
 
+        // Pro Spiel kann höchstens eine Person solo spielen. Wird bei einem Spieler Pflicht- oder
+        // Lustsolo aktiviert, wird deshalb automatisch sowohl die jeweils andere Solo-Checkbox
+        // DESSELBEN Spielers deaktiviert (bereits bestehendes Verhalten) als auch BEIDE
+        // Solo-Checkboxen ALLER ANDEREN Spieler dieses Spiels (Radio-Button-Verhalten über die
+        // gesamte Spielerrunde hinweg). Greift bewusst nur beim AKTIVIEREN einer Checkbox – beim
+        // Deaktivieren gibt es nichts zu koppeln, und ein Eingriff dort könnte sonst fälschlich
+        // eine bereits korrekt gesetzte Auswahl bei einem anderen Spieler verändern. Ändert nur
+        // den aktuellen Formular-Zustand im DOM (genau wie die bisherige Inline-Logik) – die
+        // Auswertung passiert unverändert erst beim Speichern des Spiels.
+        function handleSoloCheckboxChange(name, kind) {
+            const changedCb = document.getElementById(`game${kind}-${name}`);
+            if (!changedCb || !changedCb.checked) return;
+
+            const otherKind = kind === 'pflicht' ? 'lust' : 'pflicht';
+            const siblingCb = document.getElementById(`game${otherKind}-${name}`);
+            if (siblingCb) siblingCb.checked = false;
+
+            detailedOrder.forEach(otherName => {
+                if (otherName === name) return;
+                const pflichtCb = document.getElementById('gamepflicht-' + otherName);
+                if (pflichtCb) pflichtCb.checked = false;
+                const lustCb = document.getElementById('gamelust-' + otherName);
+                if (lustCb) lustCb.checked = false;
+            });
+        }
+
         // Berechnet live den fehlenden vierten Punktwert, sobald drei der vier
         // aktiven Spieler eine Punktzahl eingetragen haben, und zeigt ihn als
         // grau hinterlegten Platzhalter-Vorschlag an (wird bei "Spiel speichern"
@@ -3716,7 +3863,7 @@
             });
 
             if (activeNames.length !== 4) {
-                return showToast(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeNames.length}). Bitte die „aussetzen"-Auswahl prüfen.`, 'error');
+                return showToast(`Bei einem Doppelkopf-Spiel spielen genau 4 Spieler mit (aktuell ausgewählt: ${activeNames.length}). Bitte die „aussetzen“-Auswahl prüfen.`, 'error');
             }
 
             // Pro Abend darf jeder Spieler nur genau ein Pflichtsolo spielen.
@@ -3911,7 +4058,7 @@
             const newRoundHtml = `
                 <div id="gameEntryForm" class="${formAccent.wrap} border rounded-xl p-3 space-y-2">
                     <p class="text-xs font-bold ${formAccent.title}">${isEditing ? `✏️ Spiel ${editingDisplayNumber || ''} bearbeiten` : `➕ Spiel ${nextGameIndex + 1} erfassen`}</p>
-                    ${detailedOrder.length > 4 ? `<p class="text-[10px] ${formAccent.hint}">„Aussetzen" ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>` : ''}
+                    ${detailedOrder.length > 4 ? `<p class="text-[10px] ${formAccent.hint}">„Aussetzen“ ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>` : ''}
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
                             // Für das aktuell neu einzutragende Spiel hat eine manuelle Aussetz-Abweichung
@@ -3959,10 +4106,10 @@
                                     </span>
                                     <div id="gamesolowrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
-                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="if(this.checked){document.getElementById('gamelust-${escapeHtml(escapeJsString(name))}').checked=false;}" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
+                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'pflicht')" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="if(this.checked){document.getElementById('gamepflicht-${escapeHtml(escapeJsString(name))}').checked=false;}" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
+                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'lust')" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
                                             <input type="checkbox" id="gameansage-${escapeHtml(name)}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
@@ -4108,10 +4255,23 @@
 
         async function saveMatch() {
             if (!state.currentSeasonKey) return showToast("Keine Saison gewählt!", 'error');
-            const season = state.seasons[state.currentSeasonKey];
+            let season = state.seasons[state.currentSeasonKey];
             if (season.status === "abgeschlossen") return showToast("Saison ist abgeschlossen!", 'error');
 
             if (!await showConfirm("Möchtest du diesen Abend speichern?")) return;
+
+            // WICHTIG: season nach dem await NEU aus state.seasons lesen. Der Realtime-Listener
+            // kann während der Wartezeit auf die Bestätigung (z.B. durch das Echo eines per
+            // Fokusverlust ausgelösten updateLiveDraft()-Schreibvorgangs, oder durch jede andere
+            // zeitgleiche Cloud-Änderung) state.seasons komplett austauschen
+            // (state.seasons = data.seasons in startDatabaseListener()). Die alte season-Referenz
+            // von oben würde dann auf ein verwaistes, nicht mehr an state.seasons hängendes Objekt
+            // zeigen – ein Schreiben von season.matches[...] darauf ginge beim folgenden
+            // saveToCloud() (das state.seasons frisch liest) spurlos verloren: Der Abend wäre nach
+            // dem Speichern nicht sichtbar, obwohl "Abend gespeichert!" angezeigt wurde.
+            season = state.seasons[state.currentSeasonKey];
+            if (!season) return showToast("Saison nicht mehr verfügbar – bitte erneut versuchen.", 'error');
+            if (season.status === "abgeschlossen") return showToast("Saison ist abgeschlossen!", 'error');
 
             let matchScores = {};
             let matchJokers = {};
@@ -5372,9 +5532,14 @@
 
             const joinNames = (arr) => arr && arr.length > 0 ? arr.map(escapeHtml).join(', ') : '-';
 
+            // Mischmeister: manuell gepflegter Rekord (siehe openMischmeisterModal/saveMischmeisterRecord),
+            // da die häufigste Geben-Serie in Folge nicht aus den erfassten Spieldaten ableitbar ist.
+            // Ausgangswert, bis jemand den Rekord über den Bearbeiten-Button erstmals selbst setzt.
+            const mischmeisterRecord = (state.manualRecords && state.manualRecords.mischmeister) || { player: 'Morten', value: 6, date: '15.07.2024' };
+
             document.getElementById('allTimeRecordsContainer').innerHTML = `
                 <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Meister</p>
+                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Champion</p>
                     <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} ${bestSoloCount === 1 ? 'Solo' : 'Solos'}` : '0 Solos'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloPlayers.length === 1 ? ` (${bestSoloQuote} % gewonnen)` : ''}</p>
                 </div>
@@ -5407,6 +5572,12 @@
                     <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
                     <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${bestDreamteamAvg.toFixed(2)}` : '0.00'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
+                </div>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-between relative">
+                    <button onclick="openMischmeisterModal()" class="absolute top-2.5 right-2.5 text-slate-500 hover:text-white transition cursor-pointer p-1 leading-none" title="Mischmeister-Rekord bearbeiten">✏️</button>
+                    <p class="text-xs text-fuchsia-400 font-semibold uppercase tracking-wider pr-6">🔀 Mischmeister</p>
+                    <p class="text-xl font-black text-white mt-1">${mischmeisterRecord.value}x in Folge</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Rekord: <b>${escapeHtml(mischmeisterRecord.player)}</b> (${padDateString(mischmeisterRecord.date)})</p>
                 </div>
             `;
 
