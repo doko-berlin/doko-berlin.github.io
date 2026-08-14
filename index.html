@@ -72,13 +72,25 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.88 -->
+                <!-- Version 1.89 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.88</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.89</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Bugfix diverse Rekordkacheln:</strong> Berechnungslogiken korrigiert.</li>
+                        <li><strong>Neue Rekordkachel eingefügt:</strong> „Längste Niederlagenserie“.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 1.88 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.88</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Speichern zuverlässiger gemacht:</strong> Ein Abend, ein gelöschter Abend oder ein entfernter Spieler konnte unter bestimmten Umständen beim ersten Versuch spurlos verloren gehen, obwohl „gespeichert“ angezeigt wurde. Behoben.</li>
                         <li><strong>Neue Rekordkachel „Mischmeister“:</strong> Zeigt, wer am häufigsten hintereinander geben musste. Der Rekord wird manuell über einen Bearbeiten-Button gepflegt.</li>
                     </ul>
@@ -1217,10 +1229,10 @@
                     .map(player => {
                         const stats = records.globalSoloStats[player];
                         const quote = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
-                        return { player, value: stats.played, detail: `${quote} % gewonnen, ${stats.won} Siege` };
+                        return { player, value: stats.played, quote, detail: `${quote} % gewonnen, ${stats.won} Siege` };
                     })
                     .filter(item => item.value > 0)
-                    .sort((a, b) => b.value - a.value || b.detail.localeCompare(a.detail));
+                    .sort((a, b) => b.value - a.value || b.quote - a.quote);
             } else if (metricType === 'host') {
                 title = '🏰 Festung (Heim-Schnitt)';
                 sortedList = Object.keys(records.globalHostStats)
@@ -1275,6 +1287,15 @@
                     })
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
+            } else if (metricType === 'lossstreak') {
+                title = '🥶 Längste Niederlagenserie';
+                sortedList = Object.keys(records.globalLongestLossStreak)
+                    .map(player => {
+                        const count = records.globalLongestLossStreak[player] || 0;
+                        return { player, value: count, detail: 'Niederlagen in Folge' };
+                    })
+                    .filter(item => item.value > 0)
+                    .sort((a, b) => b.value - a.value);
             } else if (metricType === 'dreamteam') {
                 title = '🤝 Dreamteam';
                 sortedList = Object.values(records.globalPairStats)
@@ -1290,14 +1311,20 @@
                 listHtml = `<p class="text-xs text-gray-500 italic text-center p-4">Noch keine Daten vorhanden.</p>`;
             } else {
                 // Bei gleichem Wert (z.B. zwei Spieler mit je 6 Siegen in Serie) sollen beide
-                // denselben Platz belegen, statt fortlaufend durchnummeriert zu werden.
-                let lastValue = null;
+                // denselben Platz belegen, statt fortlaufend durchnummeriert zu werden. Beim
+                // Solo-Champion zählt zusätzlich die Gewinnquote als Tiebreaker (siehe Sortierung
+                // oben) – zwei Spieler mit gleicher Solo-Anzahl aber unterschiedlicher Quote
+                // dürfen deshalb NICHT denselben Platz bekommen.
+                let lastItem = null;
                 let lastRank = 0;
                 const ranks = sortedList.map((item, index) => {
-                    if (lastValue === null || Math.abs(item.value - lastValue) > 0.0001) {
+                    const sameAsLast = lastItem !== null &&
+                        Math.abs(item.value - lastItem.value) < 0.0001 &&
+                        (item.quote === undefined || item.quote === lastItem.quote);
+                    if (!sameAsLast) {
                         lastRank = index + 1;
-                        lastValue = item.value;
                     }
+                    lastItem = item;
                     return lastRank;
                 });
 
@@ -1317,6 +1344,8 @@
                                 valStr = `${item.value} Ansagen`;
                             } else if (metricType === 'streak') {
                                 valStr = `${item.value} Siege`;
+                            } else if (metricType === 'lossstreak') {
+                                valStr = `${item.value} Niederlagen`;
                             } else if (metricType === 'dreamteam') {
                                 valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(2)} Pkt.`;
                             }
@@ -3385,20 +3414,33 @@
                 ? Object.keys(hostAverages).filter(p => Math.abs(hostAverages[p] - bestAllTimeHostAvg) < 0.0001)
                 : [];
 
-            // Find Ewiger Solo-Champion
+            // Find Ewiger Solo-Champion: primär nach Anzahl gespielter Solos, bei Gleichstand
+            // nach Gewinnquote (exakte Bruchzahl won/played statt des gerundeten Anzeige-
+            // Prozentwerts, um Rundungs-Kanteneffekte im Vergleich zu vermeiden). Wer z.B. 2 von
+            // 2 Solos gewonnen hat, liegt damit vor jemandem mit 1 von 2 – auch wenn beide
+            // dieselbe Anzahl gespielter Solos haben.
             let bestSoloPlayer = "-";
             let bestSoloCount = 0;
             let bestSoloQuote = 0;
+            let bestSoloWinRatio = -1;
             Object.keys(globalSoloStats).forEach(p => {
-                if (globalSoloStats[p].played > bestSoloCount) {
-                    bestSoloCount = globalSoloStats[p].played;
+                const stats = globalSoloStats[p];
+                if (stats.played === 0) return;
+                const winRatio = stats.won / stats.played;
+                if (stats.played > bestSoloCount || (stats.played === bestSoloCount && winRatio > bestSoloWinRatio)) {
+                    bestSoloCount = stats.played;
+                    bestSoloWinRatio = winRatio;
                     bestSoloPlayer = p;
-                    bestSoloQuote = globalSoloStats[p].played > 0 ? Math.round((globalSoloStats[p].won / globalSoloStats[p].played) * 100) : 0;
+                    bestSoloQuote = Math.round(winRatio * 100);
                 }
             });
-            const soloPlayedCounts = {};
-            Object.keys(globalSoloStats).forEach(p => { soloPlayedCounts[p] = globalSoloStats[p].played; });
-            const bestSoloPlayers = namesAtMax(soloPlayedCounts, bestSoloCount);
+            // Gleichauf an der Spitze sind nur Spieler mit identischer Solo-Anzahl UND
+            // identischer (gerundeter) Gewinnquote wie der ermittelte Bestwert.
+            const bestSoloPlayers = Object.keys(globalSoloStats).filter(p => {
+                const stats = globalSoloStats[p];
+                if (stats.played !== bestSoloCount || stats.played === 0) return false;
+                return Math.round((stats.won / stats.played) * 100) === bestSoloQuote;
+            });
 
             // Find Tagessieg-König
             let bestTagessiegPlayer = "-";
@@ -3455,12 +3497,14 @@
                     match.games.forEach(g => {
                         if (!g || g.isRoundMarker) return;
                         if (g.points && g.points[player] !== undefined) {
-                            if (g.points[player] >= 0) {
+                            const pts = g.points[player];
+                            if (pts > 0) {
                                 currentStreak++;
                                 if (currentStreak > maxStreak) maxStreak = currentStreak;
-                            } else {
+                            } else if (pts < 0) {
                                 currentStreak = 0;
                             }
+                            // pts === 0: Serie pausiert – weder hochzählen noch zurücksetzen.
                         }
                     });
                 });
@@ -3476,6 +3520,42 @@
                 }
             });
             const bestStreakPlayers = namesAtMax(globalLongestStreak, maxStreakValue);
+
+            // Längste Niederlagenserie (gleiches Prinzip wie Siegesserie, nur umgekehrt):
+            // Nullspiele zählen nicht mit (pausieren die Serie, brechen sie aber nicht ab).
+            let globalLongestLossStreak = {};
+            allUniquePlayers.forEach(p => { globalLongestLossStreak[p] = 0; });
+
+            allUniquePlayers.forEach(player => {
+                let currentStreak = 0;
+                let maxStreak = 0;
+                allDetailedMatches.forEach(match => {
+                    match.games.forEach(g => {
+                        if (!g || g.isRoundMarker) return;
+                        if (g.points && g.points[player] !== undefined) {
+                            const pts = g.points[player];
+                            if (pts < 0) {
+                                currentStreak++;
+                                if (currentStreak > maxStreak) maxStreak = currentStreak;
+                            } else if (pts > 0) {
+                                currentStreak = 0;
+                            }
+                            // pts === 0: Serie pausiert – weder hochzählen noch zurücksetzen.
+                        }
+                    });
+                });
+                globalLongestLossStreak[player] = maxStreak;
+            });
+
+            let bestLossStreakPlayer = "-";
+            let maxLossStreakValue = 0;
+            Object.keys(globalLongestLossStreak).forEach(p => {
+                if (globalLongestLossStreak[p] > maxLossStreakValue) {
+                    maxLossStreakValue = globalLongestLossStreak[p];
+                    bestLossStreakPlayer = p;
+                }
+            });
+            const bestLossStreakPlayers = namesAtMax(globalLongestLossStreak, maxLossStreakValue);
 
             // Dreamteam: alle Zweierteams, die je in einem Spiel zusammen gespielt haben (gleiche
             // Punktzahl im selben Spiel = gleiches Team), gerankt nach erreichtem Punkteschnitt.
@@ -3543,6 +3623,10 @@
                 bestStreakPlayer,
                 maxStreakValue,
                 bestStreakPlayers,
+                globalLongestLossStreak,
+                bestLossStreakPlayer,
+                maxLossStreakValue,
+                bestLossStreakPlayers,
                 globalPairStats,
                 bestDreamteamAvg,
                 bestDreamteamPairs
@@ -5526,6 +5610,8 @@
                 bestAllTimeAnsagenPlayers,
                 maxStreakValue,
                 bestStreakPlayers,
+                maxLossStreakValue,
+                bestLossStreakPlayers,
                 bestDreamteamAvg,
                 bestDreamteamPairs
             } = calculateAllTimeRecords();
@@ -5541,7 +5627,7 @@
                 <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Champion</p>
                     <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} ${bestSoloCount === 1 ? 'Solo' : 'Solos'}` : '0 Solos'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloPlayers.length === 1 ? ` (${bestSoloQuote} % gewonnen)` : ''}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloCount > 0 ? ` (${bestSoloQuote} % gewonnen)` : ''}</p>
                 </div>
                 <div onclick="showAllTimeDetail('host')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
@@ -5568,14 +5654,18 @@
                     <p class="text-xl font-black text-white mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Siege'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestStreakPlayers)}</b></p>
                 </div>
+                <div onclick="showAllTimeDetail('lossstreak')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
+                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">🥶 Längste Niederlagenserie</p>
+                    <p class="text-xl font-black text-white mt-1">${maxLossStreakValue > 0 ? `${maxLossStreakValue} Niederlagen in Folge` : '0 Niederlagen'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestLossStreakPlayers)}</b></p>
+                </div>
                 <div onclick="showAllTimeDetail('dreamteam')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
                     <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${bestDreamteamAvg.toFixed(2)}` : '0.00'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
                 </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-between relative">
-                    <button onclick="openMischmeisterModal()" class="absolute top-2.5 right-2.5 text-slate-500 hover:text-white transition cursor-pointer p-1 leading-none" title="Mischmeister-Rekord bearbeiten">✏️</button>
-                    <p class="text-xs text-fuchsia-400 font-semibold uppercase tracking-wider pr-6">🔀 Mischmeister</p>
+                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-between">
+                    <p class="text-xs text-fuchsia-400 font-semibold uppercase tracking-wider flex items-center gap-1">🔀 Mischmeister<button onclick="openMischmeisterModal()" class="text-slate-500 hover:text-white transition cursor-pointer p-0.5 leading-none normal-case" title="Mischmeister-Rekord bearbeiten">✏️</button></p>
                     <p class="text-xl font-black text-white mt-1">${mischmeisterRecord.value}x in Folge</p>
                     <p class="text-xs text-slate-400 mt-0.5">Rekord: <b>${escapeHtml(mischmeisterRecord.player)}</b> (${padDateString(mischmeisterRecord.date)})</p>
                 </div>
