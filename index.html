@@ -1327,7 +1327,7 @@
                     .filter(item => item.rawVal !== -Infinity)
                     .sort((a, b) => b.rawVal - a.rawVal);
             } else if (metricType === 'tagessiege') {
-                title = '👑 Tagessieg-König (mind. 5 Teilnahmen)';
+                title = '👑 Tagessieg-König (mind. 10 Teilnahmen)';
                 sortedList = Object.keys(records.globalTagessiege)
                     .map(player => {
                         const count = records.globalTagessiege[player] || 0;
@@ -1335,10 +1335,10 @@
                         const quote = participations > 0 ? Math.round((count / participations) * 1000) / 10 : 0;
                         return { player, value: quote, quote: count, count, participations, detail: `${count} Siege bei ${participations} Teilnahmen` };
                     })
-                    .filter(item => item.participations >= 5)
+                    .filter(item => item.participations >= 10)
                     .sort((a, b) => b.value - a.value || b.count - a.count);
             } else if (metricType === 'totalPoints') {
-                title = '⚡ Punktegott (mind. 5 Teilnahmen)';
+                title = '⚡ Punktegott (mind. 10 Teilnahmen)';
                 sortedList = Object.keys(records.globalTotalPoints)
                     .map(player => {
                         const pts = records.globalTotalPoints[player] || 0;
@@ -1352,7 +1352,7 @@
                             detail: `${pts > 0 ? '+' : ''}${pts} Pkt. gesamt (aus ${matchCount} Abenden)` 
                         };
                     })
-                    .filter(item => item.matchCount >= 5)
+                    .filter(item => item.matchCount >= 10)
                     .sort((a, b) => b.value - a.value || b.pts - a.pts);
             } else if (metricType === 'ansagen') {
                 title = '📢 Ansage-Guru';
@@ -3853,7 +3853,7 @@
             // dass ein Spieler mit z.B. nur 1 Teilnahme und 1 Tagessieg (100 %) die Wertung anführt,
             // werden nur Spieler mit mindestens MIN_TAGESSIEG_PARTICIPATIONS gewerteten Teilnahmen
             // berücksichtigt.
-            const MIN_TAGESSIEG_PARTICIPATIONS = 5;
+            const MIN_TAGESSIEG_PARTICIPATIONS = 10;
             let bestTagessiegPlayer = "-";
             let bestTagessiegCount = 0;
             let bestTagessiegQuote = 0;
@@ -3885,7 +3885,7 @@
             // Teilnahmen), bei Gleichstand nach absoluter Gesamtpunktzahl. Nur Spieler mit
             // mindestens MIN_POINTS_PARTICIPATIONS gewerteten Teilnahmen werden berücksichtigt,
             // damit nicht ein Spieler mit z.B. nur 1 sehr guten Abend die Wertung anführt.
-            const MIN_POINTS_PARTICIPATIONS = 5;
+            const MIN_POINTS_PARTICIPATIONS = 10;
             let bestPointsPlayer = "-";
             let bestPointsTotal = 0;
             let bestPointsAvg = -Infinity;
@@ -6267,13 +6267,13 @@
                     <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
                     <p class="text-xl font-black text-white mt-1">${bestTagessiegCount > 0 ? `${bestTagessiegQuote.toFixed(1)} % Siegquote` : '0 %'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestTagessiegPlayers)}</b>${bestTagessiegCount > 0 ? ` (${bestTagessiegCount} Tagessiege)` : ''}</p>
-                    <p class="text-[9px] text-slate-500 mt-1">Mind. 5 Teilnahmen erforderlich</p>
+                    <p class="text-[9px] text-slate-500 mt-1">Mind. 10 Teilnahmen erforderlich</p>
                 </div>
                 <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
                     <p class="text-xl font-black text-white mt-1">${bestPointsAvg > -Infinity ? `${bestPointsAvg > 0 ? '+' : ''}${bestPointsAvg.toFixed(1)}` : '0.0'} Pkt. / Abend</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestPointsPlayers)}</b>${bestPointsAvg > -Infinity ? ` (${bestPointsTotal > 0 ? '+' : ''}${bestPointsTotal} Pkt. gesamt)` : ''}</p>
-                    <p class="text-[9px] text-slate-500 mt-1">Mind. 5 Teilnahmen erforderlich</p>
+                    <p class="text-[9px] text-slate-500 mt-1">Mind. 10 Teilnahmen erforderlich</p>
                 </div>
                 <div onclick="showAllTimeDetail('ansagen')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ansage-Guru</p>
