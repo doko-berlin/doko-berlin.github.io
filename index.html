@@ -72,13 +72,39 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
                 
-                <!-- Version 1.89 -->
+                <!-- Version 2.0 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 1.89</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.0</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">17.08.2026</span>
+                    </div>
+                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <p class="font-bold text-slate-700 dark:text-slate-300">Statistikbereich umfassend überarbeitet:</p>
+                        <ul class="list-disc list-inside space-y-1.5">
+                            <li><strong>Solo-Champion, Tagessieg-König, Punktegott, Ansage-Guru:</strong> Platzierung erfolgt jetzt nach Quote/Schnitt statt nach absoluter Anzahl.</li>
+                            <li><strong>Dreamteam & Kooperations-Matrix korrigiert:</strong> Solospiele und Nullsummen-Spiele fließen nicht mehr fälschlich in die Team-Wertung ein.</li>
+                            <li><strong>Längste Siegesserie/Niederlagenserie korrigiert:</strong> Bezieht sich jetzt nur noch auf einen Abend, nicht mehr abendübergreifend. Datum des Rekords wird jetzt angezeigt.</li>
+                            <li><strong>Neu: Ewige Gesamttabelle</strong> unterhalb der Rekordkacheln (einklappbar, nach Platzierungspunkte-Schnitt sortiert).</li>
+                            <li><strong>Neu: Motivierender Text im Spielerdetail-Modal</strong> bei aktuellen Trends wie Siegesserien, Comebacks oder Rangverbesserungen.</li>
+                        </ul>
+                        <p class="font-bold text-slate-700 dark:text-slate-300 pt-1">Weitere Bugfixes:</p>
+                        <ul class="list-disc list-inside space-y-1.5">
+                            <li><strong>Speichern eines Abends robuster gemacht:</strong> Liveansicht bleibt nicht mehr fälschlich sichtbar.</li>
+                            <li><strong>Edit-Sperre überarbeitet:</strong> Läuft nach 30 Min. Inaktivität ab, erneuert sich bei laufender Eingabe, kann per Bestätigung sofort übernommen werden.</li>
+                            <li><strong>Spiel-für-Spiel-Eingabe:</strong> Neuestes Spiel steht jetzt oben.</li>
+                            <li><strong>„Spieltag hinzufügen“</strong> bei abgeschlossenen Saisons jetzt ausgegraut.</li>
+                        </ul>
+                        <p class="pt-1"><strong class="text-slate-700 dark:text-slate-300">Neu gestalteter Seitenkopf:</strong> Header und Utility-Leiste zu einem schlanken Header zusammengeführt.</p>
+                    </div>
+                </div>
+
+                <!-- Version 1.89 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.89</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.08.2026</span>
                     </div>
-                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Bugfix diverse Rekordkacheln:</strong> Berechnungslogiken korrigiert.</li>
                         <li><strong>Neue Rekordkachel eingefügt:</strong> „Längste Niederlagenserie“.</li>
                     </ul>
@@ -599,44 +625,14 @@
 
     <div id="appContent" class="max-w-5xl mx-auto space-y-6 hidden">
 
-        <header class="text-center bg-gradient-to-br from-emerald-900 via-emerald-800 to-teal-900 text-white p-5 md:p-7 rounded-2xl shadow-lg relative overflow-hidden border border-emerald-700/40">
-            <!-- Ambiente: weiche Farbflächen für Tiefe -->
-            <div class="absolute -top-10 -left-8 w-32 h-32 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-10 -right-8 w-36 h-36 bg-teal-400/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <!-- Feine Kartensymbol-Textur im Hintergrund -->
-            <div class="absolute inset-0 flex flex-wrap content-center justify-center gap-6 text-3xl opacity-[0.04] pointer-events-none select-none leading-none rotate-6">
-                <span>♥</span><span>♠</span><span>♣</span><span>♦</span><span>♥</span><span>♠</span><span>♣</span><span>♦</span>
-            </div>
-
-            <p class="relative text-[10px] md:text-xs font-bold tracking-[0.35em] text-emerald-300/70 uppercase mb-1">Doppelkopf</p>
-
-            <h1 class="relative text-xl md:text-3xl font-extrabold tracking-tight flex items-center justify-center gap-3 md:gap-4 text-white">
-                <svg class="w-7 h-10 md:w-8 md:h-12 drop-shadow-[0_5px_8px_rgba(0,0,0,0.4)] shrink-0 select-none bg-white rounded-lg -rotate-6" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
-                    <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
-                    <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
-                    <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
-                    <g transform="rotate(180 30 45)">
-                        <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
-                        <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
-                    </g>
-                </svg>
-
-                <span class="bg-clip-text text-transparent bg-gradient-to-b from-white via-emerald-50 to-emerald-200">Saisonverwaltung</span>
-            </h1>
-        </header>
-
-        <!-- Dezent platzierte Utility-Leiste unterhalb des Headers -->
-        <div class="flex items-center justify-between text-xs text-slate-500 px-1 py-1">
-            <div class="relative">
-                <button onclick="toggleHeaderMenu()" id="headerMenuBtn" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold transition cursor-pointer shadow-xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <header class="flex items-center justify-between gap-2 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 rounded-2xl shadow-sm px-2 py-2" style="position:relative;">
+            <div class="relative shrink-0">
+                <button onclick="toggleHeaderMenu()" id="headerMenuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Menü öffnen" title="Menü" class="flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer" style="width:2.5rem;height:2.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="4" y1="6" x2="20" y2="6"></line>
                         <line x1="4" y1="12" x2="20" y2="12"></line>
                         <line x1="4" y1="18" x2="20" y2="18"></line>
                     </svg>
-                    Menü
                 </button>
                 <div id="headerMenuDropdown" class="hidden absolute left-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
                     <button onclick="toggleDarkMode(); closeHeaderMenu();" id="darkModeToggleBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
@@ -656,13 +652,35 @@
                     </button>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+
+            <!-- Titel wird bewusst per Inline-Style (nicht über Tailwind-Klassen) absolut mittig
+                 positioniert: unabhängig von der kompilierten tailwind.css und unabhängig davon,
+                 dass linker (Menü) und rechter Cluster (Status/Abmelden) unterschiedlich breit
+                 sind - eine reine Flex-Lösung würde hier nicht exakt mittig zentrieren. -->
+            <div class="flex items-center gap-2.5 pointer-events-none" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:calc(100% - 130px);">
+                <svg class="w-7 h-10 shrink-0 select-none bg-white rounded-md -rotate-6" viewBox="0 0 60 90" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="60" height="90" rx="6" fill="white" stroke="#f43f5e" stroke-width="1.5"/>
+                    <text x="5" y="18" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#e11d48">Q</text>
+                    <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
+                    <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
+                </svg>
+                <div class="min-w-0 leading-tight">
+                    <p class="text-lg font-extrabold tracking-wide text-emerald-700 dark:text-emerald-400 truncate">DOPPELKOPF</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Saisonverwaltung &amp; Statistik</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0" style="margin-left:auto;">
                 <span class="w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block" id="statusDot" title="Verbinde..."></span>
-                <button onclick="handleLogout()" class="hover:text-red-700 dark:hover:text-red-400 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-3 py-1.5 rounded-full font-semibold transition cursor-pointer flex items-center gap-1 shadow-xs">
-                    Abmelden
+                <button onclick="handleLogout()" aria-label="Abmelden" title="Abmelden" class="flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-red-700 dark:hover:text-red-400 text-slate-600 dark:text-slate-300 transition cursor-pointer" style="width:2.5rem;height:2.5rem;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
                 </button>
             </div>
-        </div>
+        </header>
 
         <div class="space-y-6">
 
@@ -753,6 +771,28 @@
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
                 <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
+
+                <button onclick="toggleAllTimeTable()" id="allTimeTableToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                    <span>📋 Ewige Gesamttabelle</span>
+                    <span id="allTimeTableToggleIcon" class="transition-transform">▼</span>
+                </button>
+                <div id="allTimeTableContainer" class="hidden mt-3">
+                    <p class="text-[11px] text-slate-400 mb-2">Gewertet nach Schnitt der Platzierungspunkte pro Abend, saisonübergreifend über die komplette Historie. Unter 10 Teilnahmen ohne Wertung.</p>
+                    <div class="overflow-x-auto -mx-1 px-1">
+                        <table class="w-full text-left border-collapse min-w-[500px]">
+                            <thead>
+                                <tr class="text-slate-400 uppercase text-xs tracking-wider border-b border-slate-700/60">
+                                    <th class="p-2 w-14">Platz</th>
+                                    <th class="p-2">Spieler</th>
+                                    <th class="p-2 text-right">Schnitt</th>
+                                    <th class="p-2 text-right">Teilnahmen</th>
+                                    <th class="p-2 text-right">Gesamt-Pkt.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="allTimeTableBody" class="divide-y divide-slate-800 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -817,6 +857,28 @@
             }
         }
 
+        // Gleiches defensives Muster wie oben, aber für sessionStorage: bewusst getrennt von
+        // localStorage verwendet für alles, was PRO TAB eindeutig sein muss (siehe mySessionId
+        // unten) – localStorage teilt sich ALLE Tabs derselben Origin, sessionStorage ist pro Tab
+        // isoliert, übersteht aber (anders als eine In-Memory-Variable) einen Reload (F5).
+        function safeSessionStorageGet(key) {
+            try {
+                return sessionStorage.getItem(key);
+            } catch (e) {
+                console.warn('SessionStorage nicht verfügbar (getItem):', e);
+                return null;
+            }
+        }
+        function safeSessionStorageSet(key, value) {
+            try {
+                sessionStorage.setItem(key, value);
+                return true;
+            } catch (e) {
+                console.warn('SessionStorage nicht verfügbar (setItem):', e);
+                return false;
+            }
+        }
+
         function initDarkMode() {
             const savedMode = safeLocalStorageGet('doko_dark_mode');
             const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -866,6 +928,7 @@
         let state = { seasons: {}, currentSeasonKey: "", manualRecords: {} };
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
+        let isAllTimeTableExpanded = false; // Ewige Gesamttabelle unter der Ewigen Bestenliste, standardmäßig eingeklappt
         let editingMatchId = null;
         let isPopulatingEditForm = false;
 
@@ -900,10 +963,28 @@
         // ==============================
         // Eingabebereich-Sperre (verhindert gleichzeitiges Bearbeiten durch mehrere Spieler)
         // ==============================
-        const mySessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        // Session-ID über sessionStorage persistieren (nicht bei jedem Laden neu würfeln!): Sonst
+        // bekäme ein Admin nach einem Seiten-Reload (F5, Handy-Browser-Refresh) eine neue ID,
+        // während die alte Sperre in Firebase unter der alten ID bis zum Timeout weiterlebt – der
+        // Admin würde sich damit auf dem eigenen Gerät selbst aussperren ("🔒 Gesperrt").
+        // BEWUSST sessionStorage statt localStorage: localStorage gilt für ALLE Tabs derselben
+        // Origin gemeinsam – zwei gleichzeitig offene Tabs im selben Browser hätten dieselbe
+        // mySessionId bekommen und wären für die Edit-Sperre ununterscheidbar gewesen (beide
+        // hätten sich gegenseitig als "eigene Sperre" erkannt, echte gleichzeitige Bearbeitung aus
+        // zwei Tabs wäre möglich gewesen). sessionStorage ist pro Tab isoliert, übersteht aber
+        // (anders als eine reine In-Memory-Variable) weiterhin einen Reload desselben Tabs.
+        const mySessionId = safeSessionStorageGet('doko_session_id') ||
+            ('sess_' + Date.now() + '_' + Math.random().toString(36).slice(2));
+        safeSessionStorageSet('doko_session_id', mySessionId);
         let editLockInfo = null;       // { session, name, ts } aus der Cloud (null = frei)
         let hasEditLock = false;       // true, wenn DIESE Sitzung die Sperre hält
         let editLockListenerAttached = false;
+        let editLockUiRefreshInterval = null;
+        // Eine Sperre gilt nach dieser Zeit als verwaist und wird ignoriert bzw. kann von jedem
+        // Gerät ohne Rückfrage übernommen werden. Ersetzt den früheren onDisconnect().remove()-
+        // Automatismus, der bei kurzer Bildschirmsperre/Verbindungsabbruch die Sperre fälschlich
+        // sofort freigab (siehe acquireEditLock()).
+        const EDIT_LOCK_TIMEOUT_MS = 30 * 60 * 1000;
         // Logische Öffnungs-Absicht des Admin-Modals (unabhängig von der CSS-Transition/.hidden-Klasse).
         // Wird sofort gesetzt/gelöscht, damit die Selbstheilung in startEditLockListener() nicht auf
         // die 300ms-Ausblend-Animation hereinfällt (siehe toggleAdminModal).
@@ -1228,11 +1309,13 @@
                 sortedList = Object.keys(records.globalSoloStats)
                     .map(player => {
                         const stats = records.globalSoloStats[player];
-                        const quote = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
-                        return { player, value: stats.played, quote, detail: `${quote} % gewonnen, ${stats.won} Siege` };
+                        const gamesPlayed = records.globalGamesPlayed[player] || 0;
+                        const gamesPerSolo = stats.played > 0 ? gamesPlayed / stats.played : Infinity;
+                        const winQuote = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
+                        return { player, value: gamesPerSolo, quote: stats.played, count: stats.played, detail: `${stats.played} Solos in ${gamesPlayed} Spielen (${winQuote} % gewonnen)` };
                     })
-                    .filter(item => item.value > 0)
-                    .sort((a, b) => b.value - a.value || b.quote - a.quote);
+                    .filter(item => item.count > 0)
+                    .sort((a, b) => a.value - b.value || b.count - a.count);
             } else if (metricType === 'host') {
                 title = '🏰 Festung (Heim-Schnitt)';
                 sortedList = Object.keys(records.globalHostStats)
@@ -1244,46 +1327,51 @@
                     .filter(item => item.rawVal !== -Infinity)
                     .sort((a, b) => b.rawVal - a.rawVal);
             } else if (metricType === 'tagessiege') {
-                title = '👑 Tagessieg-König';
+                title = '👑 Tagessieg-König (mind. 5 Teilnahmen)';
                 sortedList = Object.keys(records.globalTagessiege)
                     .map(player => {
                         const count = records.globalTagessiege[player] || 0;
                         const participations = records.globalTagessiegeParticipations[player] || 0;
-                        return { player, value: count, detail: `bei ${participations} Teilnahmen` };
+                        const quote = participations > 0 ? Math.round((count / participations) * 1000) / 10 : 0;
+                        return { player, value: quote, quote: count, count, participations, detail: `${count} Siege bei ${participations} Teilnahmen` };
                     })
-                    .filter(item => item.value > 0)
-                    .sort((a, b) => b.value - a.value);
+                    .filter(item => item.participations >= 5)
+                    .sort((a, b) => b.value - a.value || b.count - a.count);
             } else if (metricType === 'totalPoints') {
-                title = '⚡ Punktegott';
+                title = '⚡ Punktegott (mind. 5 Teilnahmen)';
                 sortedList = Object.keys(records.globalTotalPoints)
                     .map(player => {
                         const pts = records.globalTotalPoints[player] || 0;
                         const matchCount = records.globalTotalPointsMatchCount[player] || 0;
-                        const avg = matchCount > 0 ? (pts / matchCount).toFixed(1) : '0.0';
-                        const avgSign = parseFloat(avg) > 0 ? '+' : '';
+                        const avg = matchCount > 0 ? pts / matchCount : 0;
                         return { 
                             player, 
-                            value: pts, 
-                            detail: `Schnitt: ${avgSign}${avg} Pkt. (aus ${matchCount} Abenden)` 
+                            value: avg, 
+                            pts,
+                            matchCount,
+                            detail: `${pts > 0 ? '+' : ''}${pts} Pkt. gesamt (aus ${matchCount} Abenden)` 
                         };
                     })
-                    .filter(item => item.value !== 0)
-                    .sort((a, b) => b.value - a.value);
+                    .filter(item => item.matchCount >= 5)
+                    .sort((a, b) => b.value - a.value || b.pts - a.pts);
             } else if (metricType === 'ansagen') {
                 title = '📢 Ansage-Guru';
                 sortedList = Object.keys(records.globalAnsagen)
                     .map(player => {
                         const count = records.globalAnsagen[player] || 0;
-                        return { player, value: count, detail: 'Ansagen gesamt' };
+                        const gamesPlayed = records.globalGamesPlayed[player] || 0;
+                        const gamesPerAnsage = count > 0 ? gamesPlayed / count : Infinity;
+                        return { player, value: gamesPerAnsage, quote: count, count, detail: `${count} Ansagen in ${gamesPlayed} Spielen` };
                     })
-                    .filter(item => item.value > 0)
-                    .sort((a, b) => b.value - a.value);
+                    .filter(item => item.count > 0)
+                    .sort((a, b) => a.value - b.value || b.count - a.count);
             } else if (metricType === 'streak') {
                 title = '🔥 Längste Siegesserie';
                 sortedList = Object.keys(records.globalLongestStreak)
                     .map(player => {
                         const count = records.globalLongestStreak[player] || 0;
-                        return { player, value: count, detail: 'Siege in Folge' };
+                        const date = records.globalLongestStreakDate ? records.globalLongestStreakDate[player] : null;
+                        return { player, value: count, detail: date ? `Siege in Folge · ${padDateString(date)}` : 'Siege in Folge' };
                     })
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
@@ -1292,7 +1380,8 @@
                 sortedList = Object.keys(records.globalLongestLossStreak)
                     .map(player => {
                         const count = records.globalLongestLossStreak[player] || 0;
-                        return { player, value: count, detail: 'Niederlagen in Folge' };
+                        const date = records.globalLongestLossStreakDate ? records.globalLongestLossStreakDate[player] : null;
+                        return { player, value: count, detail: date ? `Niederlagen in Folge · ${padDateString(date)}` : 'Niederlagen in Folge' };
                     })
                     .filter(item => item.value > 0)
                     .sort((a, b) => b.value - a.value);
@@ -1311,10 +1400,11 @@
                 listHtml = `<p class="text-xs text-gray-500 italic text-center p-4">Noch keine Daten vorhanden.</p>`;
             } else {
                 // Bei gleichem Wert (z.B. zwei Spieler mit je 6 Siegen in Serie) sollen beide
-                // denselben Platz belegen, statt fortlaufend durchnummeriert zu werden. Beim
-                // Solo-Champion zählt zusätzlich die Gewinnquote als Tiebreaker (siehe Sortierung
-                // oben) – zwei Spieler mit gleicher Solo-Anzahl aber unterschiedlicher Quote
-                // dürfen deshalb NICHT denselben Platz bekommen.
+                // denselben Platz belegen, statt fortlaufend durchnummeriert zu werden. Bei
+                // Solo-Champion/Tagessieg-König/Ansage-Guru zählt zusätzlich die absolute Anzahl
+                // (Solos/Tagessiege/Ansagen) als Tiebreaker (siehe Sortierung oben, item.quote) –
+                // zwei Spieler mit gleicher Quote aber unterschiedlicher absoluter Zahl dürfen
+                // deshalb NICHT denselben Platz bekommen.
                 let lastItem = null;
                 let lastRank = 0;
                 const ranks = sortedList.map((item, index) => {
@@ -1335,13 +1425,13 @@
                             if (metricType === 'host') {
                                 valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt.`;
                             } else if (metricType === 'totalPoints') {
-                                valStr = `${item.value > 0 ? '+' : ''}${item.value} Pkt.`;
+                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt. / Abend`;
                             } else if (metricType === 'solo') {
-                                valStr = `${item.value} ${item.value === 1 ? 'Solo' : 'Solos'}`;
+                                valStr = `1 Solo / ${item.value.toFixed(1)} Spiele`;
                             } else if (metricType === 'tagessiege') {
-                                valStr = `${item.value} Tagessiege`;
+                                valStr = `${item.value.toFixed(1)} % Siegquote`;
                             } else if (metricType === 'ansagen') {
-                                valStr = `${item.value} Ansagen`;
+                                valStr = `1 Ansage / ${item.value.toFixed(1)} Spiele`;
                             } else if (metricType === 'streak') {
                                 valStr = `${item.value} Siege`;
                             } else if (metricType === 'lossstreak') {
@@ -1590,7 +1680,12 @@
             }
             if (match.mode === 'detailed' && match.games) {
                 const playersCount = match.order ? match.order.length : Object.keys(match.scores || {}).length;
-                if (playersCount >= 5) {
+                // Die 60%-Regel darf erst greifen, wenn mindestens eine volle Runde (playersCount
+                // reguläre Spiele) gespielt wurde. Sonst hat der aussetzende Geber der 1. Runde nach
+                // Spiel 1 zwangsläufig 0% Beteiligung (er kommt erst in Spiel 2 dran) und würde
+                // fälschlich als disqualifiziert angezeigt, obwohl noch gar keine Runde vorbei ist.
+                const gamesOnly = match.games.filter(g => g && !g.isRoundMarker);
+                if (playersCount >= 5 && gamesOnly.length >= playersCount) {
                     const rate = getEveningParticipation(match, name);
                     if (rate < 0.60) {
                         return true;
@@ -1641,8 +1736,14 @@
             games.forEach(g => {
                 if (!g || g.isRoundMarker) return; // Überspringen (inkl. Firebase-Sparse-Array-Lücken)
                 const gm = normalizeGame(g);
+                // Solospiele ausschließen: Dort teilen sich die 3 Gegenspieler dieselbe (negative)
+                // Punktzahl, sind aber kein "Team" im eigentlichen Sinn – sonst würden sie hier
+                // fälschlich als erfolgreiche Partner eingetragen. Analog zur Dreamteam-Logik oben.
+                const isSoloGame = Object.values(gm.solo).some(v => v === true);
+                if (isSoloGame) return;
                 order.forEach(p1 => {
                     if (gm.points[p1] === undefined) return;
+                    if (gm.points[p1] === 0) return; // Nullsumme – kein aussagekräftiges Team-Ergebnis
                     order.forEach(p2 => {
                         if (p1 === p2) return;
                         if (gm.points[p2] === undefined) return;
@@ -1951,6 +2052,15 @@
             safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
             
             saveLiveDraftToCloud();
+
+            // Sperre erneuern (neuer ts-Zeitstempel), solange aktiv im Eingabebereich gearbeitet
+            // wird. Die 30-Minuten-Ablaufzeit soll nur greifen, wenn wirklich nichts mehr passiert
+            // (Gerät gesperrt/liegen gelassen) – nicht während eines normal laufenden Abends. Da
+            // updateLiveDraft() bei jeder relevanten Eingabe aufgerufen wird (Punkte, neues Spiel,
+            // Datum, Gastgeber, SoG-Checkbox), ist das ein geeigneter zentraler Aktivitäts-Trigger.
+            if (hasEditLock) {
+                acquireEditLock();
+            }
         }
 
         function updateSeasonMinQuota() {
@@ -2102,8 +2212,13 @@
 
         // Effektiver Sichtbarkeitsstatus: explizite Nutzerauswahl (hiddenChartPlayers) hat
         // Vorrang, sonst greift der quotenbasierte Default aus getSeasonPlayerChartDefaultHidden().
+        // WICHTIG: nach seasonKey UND Name geschachtelt (nicht nur nach Name) – sonst würde das
+        // Ausblenden eines Spielers in Saison A denselben Spieler fälschlich auch in Saison B
+        // ausblenden, da beide Saisons sich sonst denselben globalen Eintrag teilen würden.
         function isChartPlayerHidden(seasonKey, name) {
-            if (hiddenChartPlayers[name] !== undefined) return hiddenChartPlayers[name] === true;
+            if (hiddenChartPlayers[seasonKey] && hiddenChartPlayers[seasonKey][name] !== undefined) {
+                return hiddenChartPlayers[seasonKey][name] === true;
+            }
             return getSeasonPlayerChartDefaultHidden(seasonKey, name);
         }
 
@@ -2111,7 +2226,9 @@
         function toggleChartPlayer(name) {
             // Vom aktuellen effektiven Status (inkl. Quoten-Default) aus umschalten, damit ein
             // Klick auch bei standardmäßig ausgeblendeten Spielern sichtbar etwas bewirkt.
-            hiddenChartPlayers[name] = !isChartPlayerHidden(state.currentSeasonKey, name);
+            const seasonKey = state.currentSeasonKey;
+            if (!hiddenChartPlayers[seasonKey]) hiddenChartPlayers[seasonKey] = {};
+            hiddenChartPlayers[seasonKey][name] = !isChartPlayerHidden(seasonKey, name);
             render();
         }
 
@@ -2142,14 +2259,192 @@
             if (!season || !season.matches) return;
 
             let history = [];
+            // Chronologische Historie (nach Timestamp aufsteigend) – separat von der nach
+            // Punktzahl sortierten `history` unten, wird für den motivierenden Text benötigt,
+            // der auf zeitlichen Trends (Serien, Steigerungen) basiert.
+            let chronoHistory = [];
             Object.keys(season.matches).forEach(key => {
                 const match = season.matches[key];
                 const isSpieltagMatch = !season.isHistorical || match.pointType === 'spieltag';
                 if (isSpieltagMatch && match.scores && match.scores[playerName] !== undefined) {
                     if (isPlayerDisqualifiedInMatch(match, playerName)) return; // Disqualifizierte Abende überspringen [11]
                     history.push({ date: match.date, score: match.scores[playerName] });
+
+                    // Tagessieg dieses Abends ermitteln (analog zur globalen Tagessieg-Berechnung
+                    // in calculateAllTimeRecords): höchste Punktzahl unter den nicht disqualifizierten
+                    // Teilnehmern des Abends.
+                    const eveningScores = Object.keys(match.scores)
+                        .filter(p => !isPlayerDisqualifiedInMatch(match, p))
+                        .map(p => match.scores[p]);
+                    const maxScore = eveningScores.length > 0 ? Math.max(...eveningScores) : null;
+                    const won = maxScore !== null && match.scores[playerName] === maxScore;
+
+                    chronoHistory.push({ date: match.date, score: match.scores[playerName], won, timestamp: match.timestamp || 0, id: key });
                 }
             });
+
+            chronoHistory.sort((a, b) => a.timestamp - b.timestamp);
+
+            // Motivierender Text: nur in der aktiven (nicht-historischen) Saison, basierend auf
+            // zeitlichen Trends der bisherigen Saisondaten. Es wird nur EIN Hinweis angezeigt –
+            // in Prioritätsreihenfolge (auffälligstes/seltenstes Ereignis zuerst). Trifft nichts
+            // zu, bleibt die Box einfach weg – eine erzwungene, nichtssagende Motivationsfloskel
+            // wäre schlechter als gar keine.
+            //
+            // Heuristische Schwellenwerte (basieren auf den rohen Abend-Punktesummen, nicht auf
+            // Platzierungspunkten) – bei Bedarf hier leicht anpassbar:
+            const KONSTANZ_SPREAD_THRESHOLD = 15; // max. Punkte-Spanne innerhalb des Konstanz-Fensters
+            const DEUTLICHER_SIEG_MARGIN = 20;     // Mindestvorsprung auf Platz 2 für "deutlichen Sieg"
+
+            let motivationText = '';
+            if (!season.isHistorical && chronoHistory.length > 0) {
+                const lastEntry = chronoHistory[chronoHistory.length - 1];
+                const seasonAvg = chronoHistory.reduce((sum, m) => sum + m.score, 0) / chronoHistory.length;
+                const seasonBestScore = Math.max(...chronoHistory.map(m => m.score));
+                const seasonWorstScore = Math.min(...chronoHistory.map(m => m.score));
+
+                // 6. Persönlicher Allzeit-Bestwert (über alle Saisons hinweg) war der letzte Abend
+                let allTimeBestScore = -Infinity;
+                Object.values(state.seasons).forEach(s => {
+                    if (!s.matches) return;
+                    Object.values(s.matches).forEach(m => {
+                        const isMD = !s.isHistorical || m.pointType === 'spieltag';
+                        if (!isMD || !m.scores || m.scores[playerName] === undefined) return;
+                        if (isPlayerDisqualifiedInMatch(m, playerName)) return;
+                        if (m.scores[playerName] > allTimeBestScore) allTimeBestScore = m.scores[playerName];
+                    });
+                });
+                // "Bester Abend aller Zeiten" ist nur eine erfreuliche Nachricht, wenn das Ergebnis
+                // auch tatsächlich im Plus lag. Sonst wäre z.B. bei einem neuen Spieler mit bisher
+                // drei durchweg negativen Abenden (-25, -15, -5) das "-5" zwar mathematisch der
+                // Bestwert, aber sportlich kein Grund zum Feiern.
+                const lastIsAllTimeBest = chronoHistory.length >= 3 && lastEntry.score >= allTimeBestScore && lastEntry.score > 0;
+
+                // Aktuelle Siegesserie
+                let winStreak = 0;
+                for (let i = chronoHistory.length - 1; i >= 0; i--) {
+                    if (chronoHistory[i].won) winStreak++; else break;
+                }
+
+                // 4. Deutlicher Sieg am letzten Abend (großer Abstand zum Zweitplatzierten)
+                let deutlicherSieg = false;
+                if (lastEntry.won && lastEntry.id && season.matches[lastEntry.id]) {
+                    const lastMatch = season.matches[lastEntry.id];
+                    const eveningScoresSorted = Object.keys(lastMatch.scores)
+                        .filter(p => !isPlayerDisqualifiedInMatch(lastMatch, p))
+                        .map(p => lastMatch.scores[p])
+                        .sort((a, b) => b - a);
+                    if (eveningScoresSorted.length >= 2) {
+                        deutlicherSieg = (eveningScoresSorted[0] - eveningScoresSorted[1]) >= DEUTLICHER_SIEG_MARGIN;
+                    }
+                }
+
+                // 5. Punktebilanz von negativ auf positiv/null gedreht
+                let cumBeforeLast = 0;
+                for (let i = 0; i < chronoHistory.length - 1; i++) cumBeforeLast += chronoHistory[i].score;
+                const cumAfterLast = cumBeforeLast + lastEntry.score;
+                const wentPositive = chronoHistory.length >= 2 && cumBeforeLast < 0 && cumAfterLast >= 0;
+
+                // 11. Starke Erholung direkt nach dem bisher schwächsten Abend der Saison
+                const secondToLast = chronoHistory.length >= 2 ? chronoHistory[chronoHistory.length - 2] : null;
+                const strongRebound = chronoHistory.length >= 3 && secondToLast && secondToLast.score === seasonWorstScore && lastEntry.score > seasonAvg;
+
+                // 1. Comeback nach zwei schwächeren Abenden (beide unter dem Saison-Schnitt)
+                const gutesComeback = chronoHistory.length >= 3 &&
+                    lastEntry.score > seasonAvg &&
+                    chronoHistory[chronoHistory.length - 2].score < seasonAvg &&
+                    chronoHistory[chronoHistory.length - 3].score < seasonAvg;
+
+                // Kontinuierlich steigender Punkteschnitt
+                let improvingStreak = 0;
+                for (let i = chronoHistory.length - 1; i > 0; i--) {
+                    if (chronoHistory[i].score > chronoHistory[i - 1].score) improvingStreak++; else break;
+                }
+
+                // 3. Konstanz über die letzten 3–4 Abende (nur wenn alle Werte >= 0 waren)
+                let constancyCount = 0;
+                for (let w = Math.min(4, chronoHistory.length); w >= 3; w--) {
+                    const windowScores = chronoHistory.slice(chronoHistory.length - w).map(m => m.score);
+                    if (windowScores.every(s => s >= 0) && (Math.max(...windowScores) - Math.min(...windowScores)) <= KONSTANZ_SPREAD_THRESHOLD) {
+                        constancyCount = w;
+                        break;
+                    }
+                }
+
+                // Bester Abend der (aktiven) Saison war der letzte
+                const lastIsSeasonBest = chronoHistory.length >= 3 && lastEntry.score === seasonBestScore;
+
+                // 12. Rangverbesserung in der Saisontabelle durch den letzten Abend
+                const computeRank = (matchesObj, targetPlayer) => {
+                    const seasonPlayers = season.players || [];
+                    let totalPts = {}, counts = {};
+                    seasonPlayers.forEach(p => { totalPts[p] = 0; counts[p] = 0; });
+                    const totalMatchesCount = Object.keys(matchesObj).length;
+                    if (totalMatchesCount === 0) return null;
+                    Object.values(matchesObj).forEach(match => {
+                        if (!match.scores) return;
+                        Object.keys(match.scores).forEach(name => {
+                            if (counts[name] !== undefined && !isPlayerDisqualifiedInMatch(match, name)) counts[name]++;
+                        });
+                        const isMatchdayType = !season.isHistorical || match.pointType === 'spieltag';
+                        const placements = isMatchdayType ? getPlacementScoresForMatch(match.scores, match) : match.scores;
+                        Object.keys(placements).forEach(name => {
+                            if (totalPts[name] !== undefined) totalPts[name] += placements[name];
+                        });
+                    });
+                    const minQuota = season.minQuota !== undefined ? season.minQuota : 40;
+                    const minQuotaRatio = minQuota / 100;
+                    const list = seasonPlayers
+                        .map(name => {
+                            const played = counts[name] || 0;
+                            const ratio = played / totalMatchesCount;
+                            return { name, avg: played > 0 ? totalPts[name] / played : -Infinity, played, ratio };
+                        })
+                        .filter(p => p.played > 0 && p.ratio >= minQuotaRatio)
+                        .sort((a, b) => b.avg - a.avg);
+                    const idx = list.findIndex(p => p.name === targetPlayer);
+                    return idx === -1 ? null : idx + 1;
+                };
+                let rankImprovedBy = 0;
+                if (lastEntry.id) {
+                    const matchesBeforeLast = {};
+                    Object.keys(season.matches).forEach(k => { if (k !== lastEntry.id) matchesBeforeLast[k] = season.matches[k]; });
+                    const rankBefore = computeRank(matchesBeforeLast, playerName);
+                    const rankAfter = computeRank(season.matches, playerName);
+                    if (rankBefore !== null && rankAfter !== null && rankAfter < rankBefore) {
+                        rankImprovedBy = rankBefore - rankAfter;
+                    }
+                }
+
+                // 2. Mehrere (nicht zwingend aufeinanderfolgende) Tagessiege in der Saison
+                const totalWinsThisSeason = chronoHistory.filter(m => m.won).length;
+
+                if (lastIsAllTimeBest) {
+                    motivationText = `Der letzte Abend war der beste, den du je gespielt hast!`;
+                } else if (winStreak >= 2) {
+                    motivationText = `Du hast ${winStreak} Abende in Folge gewonnen. Weiter so!`;
+                } else if (deutlicherSieg) {
+                    motivationText = `Deinen letzten Abend hast du mit deutlichem Abstand gewonnen. Weiter so!`;
+                } else if (wentPositive) {
+                    motivationText = `Deine Punktebilanz ist wieder im Plus. Der Trend zeigt nach oben!`;
+                } else if (strongRebound) {
+                    motivationText = `Nach deinem bisher schwächsten Abend direkt eine starke Reaktion gezeigt!`;
+                } else if (gutesComeback) {
+                    motivationText = `Nach zwei schwächeren Abenden bist du wieder über deinem Schnitt gelandet. Gutes Comeback!`;
+                } else if (improvingStreak >= 2) {
+                    motivationText = `Dein Punkteschnitt verbessert sich seit ${improvingStreak + 1} Spielen kontinuierlich. Du hast einen guten Lauf!`;
+                } else if (constancyCount >= 3) {
+                    motivationText = `Du spielst seit ${constancyCount} Abenden sehr konstant. Das zahlt sich am Ende der Saison aus!`;
+                } else if (lastIsSeasonBest) {
+                    motivationText = `Dein bisher bester Abend dieser Saison war dein letzter. Weiter so!`;
+                } else if (rankImprovedBy > 0) {
+                    motivationText = rankImprovedBy === 1
+                        ? `Du bist in der Tabelle einen Platz nach oben geklettert. Weiter so!`
+                        : `Du bist in der Tabelle ${rankImprovedBy} Plätze nach oben geklettert. Weiter so!`;
+                } else if (totalWinsThisSeason >= 2) {
+                    motivationText = `Du hast in dieser Saison schon ${totalWinsThisSeason} Abende gewonnen – stark!`;
+                }
+            }
 
             history.sort((a, b) => b.score - a.score);
 
@@ -2170,6 +2465,12 @@
 
                 modalContent.innerHTML = `
                     <div class="space-y-4">
+                        ${motivationText ? `
+                        <div class="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/60 text-amber-900 dark:text-amber-300 p-3 rounded-lg flex items-start gap-2">
+                            <span class="text-lg leading-none">💪</span>
+                            <p class="text-sm font-semibold">${escapeHtml(motivationText)}</p>
+                        </div>
+                        ` : ''}
                         <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg border border-slate-200/60 dark:border-slate-800">
                             <p class="text-xs text-gray-500 dark:text-slate-400 uppercase font-bold mb-2">Teilnahmen / Spieltagspunkte</p>
                             <div class="flex justify-between items-center text-sm font-semibold">
@@ -2224,15 +2525,34 @@
             });
         }
 
-        function toggleAdminModal(show) {
+        async function toggleAdminModal(show) {
             const modal = document.getElementById('adminModal');
             const drawer = document.getElementById('adminDrawer');
             if (show) {
-                // Höhere Datensicherheit: Der Eingabebereich darf nicht gleichzeitig von
-                // mehreren Spielern geöffnet werden.
-                if (editLockInfo && !hasEditLock) {
-                    showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Bitte kurz warten.', 'error');
+                // Abgeschlossene Saisons dürfen grundsätzlich nicht mehr bearbeitet werden (siehe
+                // auch der ausgegraute Button in updateEntryButtonLockUI()).
+                const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+                if (season && season.status === "abgeschlossen") {
+                    showToast('Diese Saison ist abgeschlossen und kann nicht mehr bearbeitet werden.', 'error');
                     return;
+                }
+                // Höhere Datensicherheit: Der Eingabebereich darf nicht gleichzeitig von mehreren
+                // Spielern geöffnet werden. Eine Sperre gilt nach EDIT_LOCK_TIMEOUT_MS als verwaist
+                // (z.B. Gerät ausgegangen, App vergessen zu schließen) und wird dann automatisch und
+                // ohne Rückfrage übernommen. Ist sie noch aktiv, muss die Übernahme bewusst bestätigt
+                // werden – das jeweils andere Gerät verliert die Sperre dadurch sofort (siehe
+                // startEditLockListener()), was dort per Toast angezeigt wird.
+                if (editLockInfo && !hasEditLock) {
+                    const lockAgeMs = (Date.now() + serverTimeOffset) - (editLockInfo.ts || 0);
+                    if (lockAgeMs < EDIT_LOCK_TIMEOUT_MS) {
+                        const confirmed = await showConfirm(`Der Eingabebereich wird gerade von einem anderen Gerät bearbeitet. Sperre trotzdem übernehmen?`);
+                        if (!confirmed) return;
+                        // Zwischenzeitlich könnte sich der Sperrstatus geändert haben (z.B. das andere
+                        // Gerät hat währenddessen selbst wieder freigegeben) – das ist unkritisch,
+                        // acquireEditLock() unten überschreibt in jedem Fall mit der eigenen Sitzung.
+                    } else {
+                        showToast('Die Sperre eines inaktiven Geräts wurde automatisch übernommen.', 'success');
+                    }
                 }
                 isAdminModalOpen = true;
                 acquireEditLock();
@@ -2337,6 +2657,14 @@
             const toggle = document.getElementById('blitztabelleToggle');
             isBlitztabelleActive = toggle ? toggle.checked : false;
             render();
+        }
+
+        function toggleAllTimeTable() {
+            isAllTimeTableExpanded = !isAllTimeTableExpanded;
+            const container = document.getElementById('allTimeTableContainer');
+            const icon = document.getElementById('allTimeTableToggleIcon');
+            if (container) container.classList.toggle('hidden', !isAllTimeTableExpanded);
+            if (icon) icon.style.transform = isAllTimeTableExpanded ? 'rotate(180deg)' : '';
         }
 
         let dbListenerAttached = false;
@@ -2609,7 +2937,11 @@
                         if (!cloudLiveDraft) return;
                         const localTs = (state.seasons[key].liveDraft && state.seasons[key].liveDraft.timestamp) || 0;
                         const cloudTs = cloudLiveDraft.timestamp || 0;
-                        if (cloudTs > localTs) {
+                        // Nur wiederherstellen, wenn der Cloud-Entwurf neuer ist als der lokale
+                        // UND nicht bereits durch ein Speichern/Abbrechen bewusst verworfen wurde
+                        // (siehe lastCancelledDraftTs) – sonst würde ein kurz zuvor gespeicherter
+                        // oder abgebrochener Entwurf hier unbemerkt wieder aufleben.
+                        if (cloudTs > localTs && cloudTs > lastCancelledDraftTs) {
                             state.seasons[key].liveDraft = cloudLiveDraft;
                         }
                     });
@@ -2704,19 +3036,26 @@
                 editLockInfo = snapshot.val();
                 hasEditLock = !!(editLockInfo && editLockInfo.session === mySessionId);
 
-                // Selbstheilung: Bei einer kurzen Verbindungsunterbrechung (z.B. Bildschirm
-                // gesperrt / App im Hintergrund) entfernt Firebase die Sperre automatisch
-                // (onDisconnect). Ist der Eingabebereich hier noch (beabsichtigt) offen und
-                // hält aktuell niemand sonst die Sperre, wird sie automatisch neu beansprucht –
-                // sonst würden weitere Eingaben unbemerkt nicht mehr synchronisiert werden.
-                // Wichtig: isAdminModalOpen statt DOM-Klasse prüfen, da toggleAdminModal(false)
-                // die .hidden-Klasse erst nach der 300ms-Transition setzt.
+                // Selbstheilung: Sollte die Sperre trotz weiterhin offenem Eingabebereich auf
+                // diesem Gerät aus irgendeinem Grund in der Cloud verschwinden (z.B. manuelles
+                // Löschen in der Firebase-Konsole), automatisch neu beanspruchen – sonst würden
+                // weitere Eingaben unbemerkt nicht mehr synchronisiert werden. Wichtig:
+                // isAdminModalOpen statt DOM-Klasse prüfen, da toggleAdminModal(false) die
+                // .hidden-Klasse erst nach der 300ms-Transition setzt.
                 if (isAdminModalOpen && !hasEditLock && !editLockInfo) {
                     acquireEditLock();
                 }
 
                 updateEntryButtonLockUI();
             });
+
+            // Periodisches Update, damit der Button nach Ablauf von EDIT_LOCK_TIMEOUT_MS auch OHNE
+            // ein neues Firebase-Event automatisch wieder freigeschaltet wird (relevant, falls
+            // niemand mehr aktiv im Eingabebereich arbeitet und daher kein updateLiveDraft() mehr
+            // die Sperre erneuert).
+            if (!editLockUiRefreshInterval) {
+                editLockUiRefreshInterval = setInterval(updateEntryButtonLockUI, 30000);
+            }
         }
 
         function stopEditLockListener() {
@@ -2724,6 +3063,10 @@
             editLockListenerAttached = false;
             editLockInfo = null;
             hasEditLock = false;
+            if (editLockUiRefreshInterval) {
+                clearInterval(editLockUiRefreshInterval);
+                editLockUiRefreshInterval = null;
+            }
         }
 
         function updateEntryButtonLockUI() {
@@ -2731,11 +3074,33 @@
             if (!btn) return;
             const modal = document.getElementById('adminModal');
             const modalIsOpen = modal && !modal.classList.contains('hidden');
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
 
-            if (editLockInfo && !hasEditLock) {
+            if (season && season.status === "abgeschlossen") {
                 btn.disabled = true;
                 btn.classList.add('opacity-60', 'cursor-not-allowed', 'grayscale');
                 btn.classList.remove('cursor-pointer');
+                btn.innerHTML = `🔒 Saison abgeschlossen`;
+                if (modalIsOpen) {
+                    toggleAdminModal(false);
+                }
+                return;
+            }
+
+            // Eine Sperre gilt erst als "aktiv blockierend", solange sie jünger als
+            // EDIT_LOCK_TIMEOUT_MS ist – danach gilt sie als verwaist (siehe acquireEditLock()) und
+            // der Button verhält sich wie im freien Zustand; toggleAdminModal() übernimmt sie dann
+            // beim Öffnen automatisch.
+            const lockAgeMs = editLockInfo ? (Date.now() + serverTimeOffset) - (editLockInfo.ts || 0) : Infinity;
+            const lockIsActive = !!(editLockInfo && !hasEditLock && lockAgeMs < EDIT_LOCK_TIMEOUT_MS);
+
+            if (lockIsActive) {
+                // Bewusst NICHT btn.disabled = true: Der Button muss klickbar bleiben, damit
+                // toggleAdminModal() den "Sperre trotzdem übernehmen?"-Dialog anzeigen kann.
+                btn.disabled = false;
+                btn.classList.add('opacity-60', 'grayscale');
+                btn.classList.remove('cursor-not-allowed');
+                btn.classList.add('cursor-pointer');
                 btn.innerHTML = `🔒 Gesperrt`;
                 // Falls sich der Bereich gerade öffnet, während eine fremde Sperre eintrifft
                 // (Race Condition), sofort wieder schließen und informieren.
@@ -2764,16 +3129,19 @@
 
         function acquireEditLock() {
             const lockRef = db.ref('editLock');
+            // Bewusst KEIN lockRef.onDisconnect().remove() mehr: Bei einer Bildschirmsperre trennt
+            // das Handy kurzzeitig die Firebase-Verbindung, was die Sperre sonst sofort freigegeben
+            // und den Eingabebereich für ein anderes Gerät geöffnet hätte. Die Sperre läuft
+            // stattdessen nach EDIT_LOCK_TIMEOUT_MS automatisch ab (siehe updateEntryButtonLockUI())
+            // oder wird per explizitem "Sperre übernehmen" in toggleAdminModal() übersteuert.
             lockRef.set({
                 session: mySessionId,
                 ts: firebase.database.ServerValue.TIMESTAMP
             });
-            lockRef.onDisconnect().remove();
         }
 
         function releaseEditLockRaw() {
             const lockRef = db.ref('editLock');
-            lockRef.onDisconnect().cancel();
             lockRef.remove();
         }
 
@@ -3179,7 +3547,11 @@
                 let isQualified = true;
                 if (match && match.mode === 'detailed' && match.games) {
                     const orderLength = match.order ? match.order.length : Object.keys(matchScores).length;
-                    if (orderLength >= 5) {
+                    // Analog zu isPlayerDisqualifiedInMatch(): 60%-Regel erst ab einer vollen
+                    // gespielten Runde greifen lassen, sonst DQ-Fehlalarm nach Spiel 1 in der
+                    // Blitztabelle (der Geber der 1. Runde hat da zwangsläufig 0% Beteiligung).
+                    const gamesOnly = match.games.filter(g => g && !g.isRoundMarker);
+                    if (orderLength >= 5 && gamesOnly.length >= orderLength) {
                         const rate = getEveningParticipation(match, name);
                         if (rate < 0.60) {
                             isQualified = false;
@@ -3306,9 +3678,13 @@
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
             let globalTagessiege = {}; // { player: 0 }
             let globalTagessiegeParticipations = {}; // { player: 0 } - gewertete Teilnahmen (nicht disqualifiziert)
-            let globalTotalPoints = {}; // { player: 0 }
+            let globalTotalPoints = {}; // { player: 0 } - rohe Spieltagspunkte-Summe (Basis für Punktegott)
             let globalTotalPointsMatchCount = {}; // { player: 0 }
+            let globalPlacementPoints = {}; // { player: 0 } - Platzierungspunkte-Summe (Basis für die Ewige Gesamttabelle, analog zur normalen Saisontabelle/calculateSeasonStats)
+            let globalPlacementPointsMatchCount = {}; // { player: 0 }
+            let globalTotalMatchdaysEver = 0; // Anzahl aller je gespielten (gewerteten) Abende, saisonübergreifend
             let globalAnsagen = {}; // { player: 0 }
+            let globalGamesPlayed = {}; // { player: 0 } - Anzahl tatsächlich gespielter Einzelspiele (nicht ausgesetzt), Basis für Solo-/Ansage-Quote
             let allUniquePlayers = new Set();
 
             Object.values(state.seasons).forEach(s => {
@@ -3322,7 +3698,10 @@
                 globalTagessiegeParticipations[p] = 0;
                 globalTotalPoints[p] = 0;
                 globalTotalPointsMatchCount[p] = 0;
+                globalPlacementPoints[p] = 0;
+                globalPlacementPointsMatchCount[p] = 0;
                 globalAnsagen[p] = 0;
+                globalGamesPlayed[p] = 0;
             });
 
             Object.keys(state.seasons).forEach(sKey => {
@@ -3352,7 +3731,8 @@
                         });
                     }
 
-                    // 2. Host-Statistik & Punktegott (ohne disqualifizierte Leistungen) [11]
+                    // 2. Host-Statistik & Punktegott (ohne disqualifizierte Leistungen), nur für
+                    // Abende mit tatsächlichen Spieltagspunkten [11]
                     const isMatchdayData = !isHist || match.pointType === 'spieltag';
                     if (isMatchdayData) {
                         Object.keys(match.scores).forEach(name => {
@@ -3369,6 +3749,25 @@
                         });
                     }
 
+                    // 2b. Platzierungspunkte für die Ewige Gesamttabelle (analog zu
+                    // calculateSeasonStats): ALLE bisher erfassten Abende zählen, nicht nur die
+                    // mit Spieltagspunkte-Typ. Bei Abenden mit echten Spieltagspunkten werden die
+                    // Platzierungspunkte daraus abgeleitet (getPlacementScoresForMatch); bei
+                    // historischen Abenden anderen Punktetyps stehen in match.scores bereits die
+                    // fertigen Platzierungspunkte selbst (exakt wie in calculateSeasonStats).
+                    globalTotalMatchdaysEver++; // Nenner für "x/y" in der Ewigen Gesamttabelle
+                    Object.keys(match.scores).forEach(name => {
+                        if (globalPlacementPointsMatchCount[name] !== undefined && !isPlayerDisqualifiedInMatch(match, name)) {
+                            globalPlacementPointsMatchCount[name]++;
+                        }
+                    });
+                    const placementScoresForMatch = isMatchdayData ? getPlacementScoresForMatch(match.scores, match) : match.scores;
+                    Object.keys(placementScoresForMatch).forEach(name => {
+                        if (globalPlacementPoints[name] !== undefined) {
+                            globalPlacementPoints[name] += placementScoresForMatch[name];
+                        }
+                    });
+
                     // Solos (detailed games) & Ansagen
                     if (match.mode === 'detailed' && match.games) {
                         match.games.forEach(g => {
@@ -3379,6 +3778,11 @@
                                 // nicht in die ewige Solo-/Ansagen-Bestenliste einfließen – analog
                                 // zur Behandlung bei Tagessieg und Host-Statistik weiter oben.
                                 if (isPlayerDisqualifiedInMatch(match, p)) return;
+                                // Zählt jedes Spiel, an dem der Spieler tatsächlich teilgenommen hat
+                                // (nicht ausgesetzt) – Basis für die Solo-/Ansage-Häufigkeitsquote.
+                                if (gm.points && gm.points[p] !== undefined) {
+                                    globalGamesPlayed[p]++;
+                                }
                                 if (gm.solo && gm.solo[p] === true) {
                                     globalSoloStats[p].played++;
                                     if (gm.points && gm.points[p] !== undefined && gm.points[p] > 0) {
@@ -3414,71 +3818,134 @@
                 ? Object.keys(hostAverages).filter(p => Math.abs(hostAverages[p] - bestAllTimeHostAvg) < 0.0001)
                 : [];
 
-            // Find Ewiger Solo-Champion: primär nach Anzahl gespielter Solos, bei Gleichstand
-            // nach Gewinnquote (exakte Bruchzahl won/played statt des gerundeten Anzeige-
-            // Prozentwerts, um Rundungs-Kanteneffekte im Vergleich zu vermeiden). Wer z.B. 2 von
-            // 2 Solos gewonnen hat, liegt damit vor jemandem mit 1 von 2 – auch wenn beide
-            // dieselbe Anzahl gespielter Solos haben.
+            // Find Ewiger Solo-Champion: primär nach Häufigkeitsquote "Spiele pro Solo"
+            // (gespielte Einzelspiele / Anzahl Solos – je NIEDRIGER, desto öfter geht der Spieler
+            // solo, also desto besser). Bei Gleichstand entscheidet die absolute Anzahl Solos.
             let bestSoloPlayer = "-";
             let bestSoloCount = 0;
-            let bestSoloQuote = 0;
-            let bestSoloWinRatio = -1;
+            let bestSoloGamesPlayed = 0;
+            let bestSoloGamesPerSolo = Infinity;
             Object.keys(globalSoloStats).forEach(p => {
                 const stats = globalSoloStats[p];
                 if (stats.played === 0) return;
-                const winRatio = stats.won / stats.played;
-                if (stats.played > bestSoloCount || (stats.played === bestSoloCount && winRatio > bestSoloWinRatio)) {
+                const gamesPlayed = globalGamesPlayed[p] || 0;
+                const gamesPerSolo = gamesPlayed / stats.played;
+                if (gamesPerSolo < bestSoloGamesPerSolo || (gamesPerSolo === bestSoloGamesPerSolo && stats.played > bestSoloCount)) {
+                    bestSoloGamesPerSolo = gamesPerSolo;
                     bestSoloCount = stats.played;
-                    bestSoloWinRatio = winRatio;
+                    bestSoloGamesPlayed = gamesPlayed;
                     bestSoloPlayer = p;
-                    bestSoloQuote = Math.round(winRatio * 100);
                 }
             });
-            // Gleichauf an der Spitze sind nur Spieler mit identischer Solo-Anzahl UND
-            // identischer (gerundeter) Gewinnquote wie der ermittelte Bestwert.
+            // Gleichauf an der Spitze sind nur Spieler mit identischer (exakter) Häufigkeitsquote
+            // UND identischer absoluter Solo-Anzahl wie der ermittelte Bestwert.
             const bestSoloPlayers = Object.keys(globalSoloStats).filter(p => {
                 const stats = globalSoloStats[p];
-                if (stats.played !== bestSoloCount || stats.played === 0) return false;
-                return Math.round((stats.won / stats.played) * 100) === bestSoloQuote;
+                if (stats.played === 0 || stats.played !== bestSoloCount) return false;
+                const gamesPerSolo = (globalGamesPlayed[p] || 0) / stats.played;
+                return Math.abs(gamesPerSolo - bestSoloGamesPerSolo) < 0.0001;
             });
 
-            // Find Tagessieg-König
+            // Find Tagessieg-König: primär nach Siegquote (Tagessiege / gewertete Teilnahmen),
+            // bei Gleichstand nach absoluter Anzahl Tagessiege. Für den Quotenvergleich wird die
+            // exakte Bruchzahl statt des gerundeten Anzeige-Prozentwerts verwendet, um
+            // Rundungs-Kanteneffekte zu vermeiden (analog zum Solo-Champion oben). Um zu verhindern,
+            // dass ein Spieler mit z.B. nur 1 Teilnahme und 1 Tagessieg (100 %) die Wertung anführt,
+            // werden nur Spieler mit mindestens MIN_TAGESSIEG_PARTICIPATIONS gewerteten Teilnahmen
+            // berücksichtigt.
+            const MIN_TAGESSIEG_PARTICIPATIONS = 5;
             let bestTagessiegPlayer = "-";
-            let maxTagessiege = 0;
+            let bestTagessiegCount = 0;
+            let bestTagessiegQuote = 0;
+            let bestTagessiegWinRatio = -1;
             Object.keys(globalTagessiege).forEach(p => {
-                if (globalTagessiege[p] > maxTagessiege) {
-                    maxTagessiege = globalTagessiege[p];
+                const count = globalTagessiege[p] || 0;
+                const participations = globalTagessiegeParticipations[p] || 0;
+                if (participations < MIN_TAGESSIEG_PARTICIPATIONS) return;
+                const winRatio = count / participations;
+                if (winRatio > bestTagessiegWinRatio || (winRatio === bestTagessiegWinRatio && count > bestTagessiegCount)) {
+                    bestTagessiegWinRatio = winRatio;
+                    bestTagessiegCount = count;
                     bestTagessiegPlayer = p;
+                    bestTagessiegQuote = Math.round(winRatio * 1000) / 10;
                 }
             });
-            const bestTagessiegPlayers = namesAtMax(globalTagessiege, maxTagessiege);
+            // Gleichauf an der Spitze sind nur Spieler mit identischer (auf eine Nachkommastelle
+            // gerundeter) Siegquote UND identischer absoluter Anzahl Tagessiege wie der ermittelte
+            // Bestwert (und natürlich ebenfalls mit mindestens MIN_TAGESSIEG_PARTICIPATIONS
+            // Teilnahmen).
+            const bestTagessiegPlayers = Object.keys(globalTagessiege).filter(p => {
+                const count = globalTagessiege[p] || 0;
+                const participations = globalTagessiegeParticipations[p] || 0;
+                if (participations < MIN_TAGESSIEG_PARTICIPATIONS || count !== bestTagessiegCount) return false;
+                return Math.round((count / participations) * 1000) / 10 === bestTagessiegQuote;
+            });
 
-            // Find Punktegott
+            // Find Punktegott: primär nach Punkteschnitt pro Abend (Gesamtpunkte / gewertete
+            // Teilnahmen), bei Gleichstand nach absoluter Gesamtpunktzahl. Nur Spieler mit
+            // mindestens MIN_POINTS_PARTICIPATIONS gewerteten Teilnahmen werden berücksichtigt,
+            // damit nicht ein Spieler mit z.B. nur 1 sehr guten Abend die Wertung anführt.
+            const MIN_POINTS_PARTICIPATIONS = 5;
             let bestPointsPlayer = "-";
-            let maxTotalPoints = -Infinity;
+            let bestPointsTotal = 0;
+            let bestPointsAvg = -Infinity;
             Object.keys(globalTotalPoints).forEach(p => {
-                if (globalTotalPoints[p] > maxTotalPoints) {
-                    maxTotalPoints = globalTotalPoints[p];
+                const total = globalTotalPoints[p] || 0;
+                const matchCount = globalTotalPointsMatchCount[p] || 0;
+                if (matchCount < MIN_POINTS_PARTICIPATIONS) return;
+                const avg = total / matchCount;
+                if (avg > bestPointsAvg || (avg === bestPointsAvg && total > bestPointsTotal)) {
+                    bestPointsAvg = avg;
+                    bestPointsTotal = total;
                     bestPointsPlayer = p;
                 }
             });
-            const bestPointsPlayers = maxTotalPoints > -Infinity
-                ? Object.keys(globalTotalPoints).filter(p => Math.abs(globalTotalPoints[p] - maxTotalPoints) < 0.0001)
+            // Gleichauf an der Spitze sind alle Spieler mit demselben (exakten) Punkteschnitt wie
+            // der ermittelte Bestwert (und natürlich ebenfalls mit mindestens
+            // MIN_POINTS_PARTICIPATIONS Teilnahmen) – unabhängig von der absoluten Gesamtpunktzahl,
+            // die bei gleichem Schnitt aber unterschiedlicher Abendzahl durchaus verschieden sein kann.
+            const bestPointsPlayers = bestPointsAvg > -Infinity
+                ? Object.keys(globalTotalPoints).filter(p => {
+                    const total = globalTotalPoints[p] || 0;
+                    const matchCount = globalTotalPointsMatchCount[p] || 0;
+                    if (matchCount < MIN_POINTS_PARTICIPATIONS) return false;
+                    return Math.abs((total / matchCount) - bestPointsAvg) < 0.0001;
+                })
                 : [];
 
-            // Find Ewiger Ansage-Guru
+            // Find Ewiger Ansage-Guru: primär nach Häufigkeitsquote "Spiele pro Ansage"
+            // (gespielte Einzelspiele / Anzahl Ansagen – je NIEDRIGER, desto öfter sagt der
+            // Spieler an, also desto besser). Bei Gleichstand entscheidet die absolute Anzahl Ansagen.
             let bestAllTimeAnsagenPlayer = "-";
-            let maxAllTimeAnsagen = 0;
+            let bestAllTimeAnsagenCount = 0;
+            let bestAllTimeAnsagenGamesPlayed = 0;
+            let bestAllTimeAnsagenGamesPerAnsage = Infinity;
             Object.keys(globalAnsagen).forEach(p => {
-                if (globalAnsagen[p] > maxAllTimeAnsagen) {
-                    maxAllTimeAnsagen = globalAnsagen[p];
+                const count = globalAnsagen[p] || 0;
+                if (count === 0) return;
+                const gamesPlayed = globalGamesPlayed[p] || 0;
+                const gamesPerAnsage = gamesPlayed / count;
+                if (gamesPerAnsage < bestAllTimeAnsagenGamesPerAnsage || (gamesPerAnsage === bestAllTimeAnsagenGamesPerAnsage && count > bestAllTimeAnsagenCount)) {
+                    bestAllTimeAnsagenGamesPerAnsage = gamesPerAnsage;
+                    bestAllTimeAnsagenCount = count;
+                    bestAllTimeAnsagenGamesPlayed = gamesPlayed;
                     bestAllTimeAnsagenPlayer = p;
                 }
             });
-            const bestAllTimeAnsagenPlayers = namesAtMax(globalAnsagen, maxAllTimeAnsagen);
+            // Gleichauf an der Spitze sind nur Spieler mit identischer (exakter) Häufigkeitsquote
+            // UND identischer absoluter Ansagen-Anzahl wie der ermittelte Bestwert.
+            const bestAllTimeAnsagenPlayers = Object.keys(globalAnsagen).filter(p => {
+                const count = globalAnsagen[p] || 0;
+                if (count === 0 || count !== bestAllTimeAnsagenCount) return false;
+                const gamesPerAnsage = (globalGamesPlayed[p] || 0) / count;
+                return Math.abs(gamesPerAnsage - bestAllTimeAnsagenGamesPerAnsage) < 0.0001;
+            });
 
-            // Längste Siegesserie (über alle Saisons hinweg, chronologisch sortiert)
+            // Längste Siegesserie (bezieht sich immer nur auf EINEN Abend – die Serie wird bei
+            // jedem neuen Match/Abend zurückgesetzt, nicht abendübergreifend fortgeführt. Innerhalb
+            // eines Abends bleibt die chronologische Reihenfolge über allDetailedMatches erhalten).
             let globalLongestStreak = {};
+            let globalLongestStreakDate = {}; // { player: 'DD.MM.YYYY' } - Datum des Abends, an dem der Rekord erreicht wurde
             allUniquePlayers.forEach(p => { globalLongestStreak[p] = 0; });
 
             let allDetailedMatches = [];
@@ -3491,16 +3958,20 @@
             allDetailedMatches.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
             allUniquePlayers.forEach(player => {
-                let currentStreak = 0;
                 let maxStreak = 0;
+                let maxStreakDate = null;
                 allDetailedMatches.forEach(match => {
+                    let currentStreak = 0; // Reset pro Abend: Serien enden am Abend, an dem sie entstanden sind.
                     match.games.forEach(g => {
                         if (!g || g.isRoundMarker) return;
                         if (g.points && g.points[player] !== undefined) {
                             const pts = g.points[player];
                             if (pts > 0) {
                                 currentStreak++;
-                                if (currentStreak > maxStreak) maxStreak = currentStreak;
+                                if (currentStreak > maxStreak) {
+                                    maxStreak = currentStreak;
+                                    maxStreakDate = match.date || null;
+                                }
                             } else if (pts < 0) {
                                 currentStreak = 0;
                             }
@@ -3509,6 +3980,7 @@
                     });
                 });
                 globalLongestStreak[player] = maxStreak;
+                globalLongestStreakDate[player] = maxStreakDate;
             });
 
             let bestStreakPlayer = "-";
@@ -3523,20 +3995,26 @@
 
             // Längste Niederlagenserie (gleiches Prinzip wie Siegesserie, nur umgekehrt):
             // Nullspiele zählen nicht mit (pausieren die Serie, brechen sie aber nicht ab).
+            // Auch hier: Reset pro Abend, keine abendübergreifende Serie.
             let globalLongestLossStreak = {};
+            let globalLongestLossStreakDate = {}; // { player: 'DD.MM.YYYY' } - Datum des Abends, an dem der Rekord erreicht wurde
             allUniquePlayers.forEach(p => { globalLongestLossStreak[p] = 0; });
 
             allUniquePlayers.forEach(player => {
-                let currentStreak = 0;
                 let maxStreak = 0;
+                let maxStreakDate = null;
                 allDetailedMatches.forEach(match => {
+                    let currentStreak = 0; // Reset pro Abend.
                     match.games.forEach(g => {
                         if (!g || g.isRoundMarker) return;
                         if (g.points && g.points[player] !== undefined) {
                             const pts = g.points[player];
                             if (pts < 0) {
                                 currentStreak++;
-                                if (currentStreak > maxStreak) maxStreak = currentStreak;
+                                if (currentStreak > maxStreak) {
+                                    maxStreak = currentStreak;
+                                    maxStreakDate = match.date || null;
+                                }
                             } else if (pts > 0) {
                                 currentStreak = 0;
                             }
@@ -3545,6 +4023,7 @@
                     });
                 });
                 globalLongestLossStreak[player] = maxStreak;
+                globalLongestLossStreakDate[player] = maxStreakDate;
             });
 
             let bestLossStreakPlayer = "-";
@@ -3557,18 +4036,25 @@
             });
             const bestLossStreakPlayers = namesAtMax(globalLongestLossStreak, maxLossStreakValue);
 
-            // Dreamteam: alle Zweierteams, die je in einem Spiel zusammen gespielt haben (gleiche
-            // Punktzahl im selben Spiel = gleiches Team), gerankt nach erreichtem Punkteschnitt.
+            // Dreamteam: alle Zweierteams, die je in einem echten 2-gegen-2-Spiel zusammen
+            // gespielt haben (gleiche Punktzahl im selben Spiel = gleiches Team), gerankt nach
+            // erreichtem Punkteschnitt. Solospiele zählen NICHT mit (dort teilen sich die 3
+            // Gegenspieler zwar ebenfalls dieselbe Punktzahl, sind aber kein "Team" im
+            // eigentlichen Sinn), ebenso wenig Nullsummen-Spiele (0 Punkte, z.B. bei
+            // Doppelkopf/Aufgehoben – kein aussagekräftiges Team-Ergebnis).
             let globalPairStats = {}; // key: "A|||B" -> { players: [A, B], sum, count }
             allDetailedMatches.forEach(match => {
                 const matchOrder = match.order || [];
                 match.games.forEach(g => {
                     if (!g || g.isRoundMarker) return;
                     const gm = normalizeGame(g);
+                    const isSoloGame = Object.values(gm.solo).some(v => v === true);
+                    if (isSoloGame) return;
                     for (let i = 0; i < matchOrder.length; i++) {
                         for (let j = i + 1; j < matchOrder.length; j++) {
                             const p1 = matchOrder[i], p2 = matchOrder[j];
                             if (gm.points[p1] === undefined || gm.points[p2] === undefined) continue;
+                            if (gm.points[p1] === 0) continue; // Nullsumme – kein Team-Ergebnis
                             if (gm.points[p1] === gm.points[p2]) {
                                 const pairKey = [p1, p2].sort().join('|||');
                                 if (!globalPairStats[pairKey]) {
@@ -3602,28 +4088,39 @@
                 globalTagessiegeParticipations,
                 globalTotalPoints,
                 globalTotalPointsMatchCount,
+                globalPlacementPoints,
+                globalPlacementPointsMatchCount,
+                globalTotalMatchdaysEver,
                 bestAllTimeHostName,
                 bestAllTimeHostAvg,
                 bestAllTimeHostNames,
                 bestSoloPlayer,
                 bestSoloCount,
-                bestSoloQuote,
+                bestSoloGamesPlayed,
+                bestSoloGamesPerSolo,
                 bestSoloPlayers,
                 bestTagessiegPlayer,
-                maxTagessiege,
+                bestTagessiegCount,
+                bestTagessiegQuote,
                 bestTagessiegPlayers,
                 bestPointsPlayer,
-                maxTotalPoints,
+                bestPointsTotal,
+                bestPointsAvg,
                 bestPointsPlayers,
                 bestAllTimeAnsagenPlayer,
-                maxAllTimeAnsagen,
+                bestAllTimeAnsagenCount,
+                bestAllTimeAnsagenGamesPlayed,
+                bestAllTimeAnsagenGamesPerAnsage,
                 bestAllTimeAnsagenPlayers,
                 globalAnsagen,
+                globalGamesPlayed,
                 globalLongestStreak,
+                globalLongestStreakDate,
                 bestStreakPlayer,
                 maxStreakValue,
                 bestStreakPlayers,
                 globalLongestLossStreak,
+                globalLongestLossStreakDate,
                 bestLossStreakPlayer,
                 maxLossStreakValue,
                 bestLossStreakPlayers,
@@ -4075,9 +4572,44 @@
 
             const processedGames = processGamesList(detailedOrder, detailedGames);
 
-            let detailedGameNum = 1;
+            // Fortlaufende Spielnummer VOR der Umkehrung vergeben, damit sie unabhängig von der
+            // Anzeige-Reihenfolge stabil die tatsächliche chronologische Position im Abend zeigt
+            // (das zuletzt erfasste Spiel soll oben stehen, aber weiterhin seine echte Nummer tragen).
+            let seqNum = 1;
+            processedGames.forEach(g => {
+                if (!g.isRoundMarker) g._displayNumber = seqNum++;
+            });
+
+            // Für die Anzeige "neuestes Spiel oben": in Runden-Blöcke gruppieren, dann sowohl die
+            // Blockreihenfolge als auch die Spiele INNERHALB jedes Blocks umkehren. Der Rundenmarker
+            // bleibt dabei am Anfang seines (jetzt umgekehrten) Blocks stehen.
+            const gameBlocks = [];
+            let currentGameBlock = null;
+            processedGames.forEach(g => {
+                if (g.isRoundMarker) {
+                    currentGameBlock = { marker: g, games: [] };
+                    gameBlocks.push(currentGameBlock);
+                } else {
+                    if (!currentGameBlock) {
+                        currentGameBlock = { marker: null, games: [] };
+                        gameBlocks.push(currentGameBlock);
+                    }
+                    currentGameBlock.games.push(g);
+                }
+            });
+            const displayGames = [];
+            gameBlocks.slice().reverse().forEach(block => {
+                if (block.marker) displayGames.push(block.marker);
+                block.games.slice().reverse().forEach(g => displayGames.push(g));
+            });
+
             let editingDisplayNumber = null;
-            const gamesListHtml = processedGames.length === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : processedGames.map((g, idx) => {
+            // Nicht auf displayGames.length prüfen: processGamesList() hängt bei 0 echten Spielen
+            // einen virtuellen Platzhalter-Rundenmarker an (isVirtualPlaceholder), wodurch
+            // displayGames.length auf 1 statt 0 stünde und fälschlich ein "Runde 1"-Header über
+            // einem leeren Feld erschiene. Stattdessen auf die tatsächliche Spieleanzahl prüfen.
+            const actualGamesCount = detailedGames.filter(g => g && !g.isRoundMarker).length;
+            const gamesListHtml = actualGamesCount === 0 ? '<p class="text-xs text-gray-400 italic">Noch keine Spiele erfasst.</p>' : displayGames.map((g, idx) => {
                 if (g.isRoundMarker) {
                     return `
                         <div class="flex items-center justify-between bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900 rounded-lg p-2 text-xs text-indigo-900 dark:text-indigo-300 font-bold">
@@ -4087,11 +4619,11 @@
                 }
                 const originalIdx = (detailedOrder.length >= 4 && detailedOrder.length <= 7) ? g._indexInGamesOnly : idx;
                 const isBeingEdited = isEditing && originalIdx === editingGameIndex;
-                if (isBeingEdited) editingDisplayNumber = detailedGameNum;
+                if (isBeingEdited) editingDisplayNumber = g._displayNumber;
                 const html = `
                     <div class="bg-white dark:bg-slate-900 border ${isBeingEdited ? 'border-blue-400 dark:border-blue-600 ring-2 ring-blue-100 dark:ring-blue-950' : 'border-gray-200 dark:border-slate-700'} rounded-lg p-2 text-xs">
                         <div class="flex justify-between items-center mb-1">
-                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${detailedGameNum} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${escapeHtml(g._dealerName)})</span>` : ''} ${isBeingEdited ? '<span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold ml-1">✏️ wird bearbeitet</span>' : ''}</span>
+                            <span class="font-bold text-gray-700 dark:text-slate-300">Spiel ${g._displayNumber} ${g._dealerName ? `<span class="text-[10px] text-amber-600 font-semibold ml-1">(Geber: ${escapeHtml(g._dealerName)})</span>` : ''} ${isBeingEdited ? '<span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold ml-1">✏️ wird bearbeitet</span>' : ''}</span>
                             <span class="flex items-center gap-2 shrink-0">
                                 <button onclick="editGame(${originalIdx})" class="text-blue-500 hover:text-blue-700 cursor-pointer" title="Spiel bearbeiten">✏️</button>
                                 <button onclick="deleteGame(${originalIdx})" class="text-red-500 hover:text-red-700 cursor-pointer" title="Spiel löschen">🗑️</button>
@@ -4120,7 +4652,6 @@
                         </div>
                     </div>
                 `;
-                detailedGameNum++;
                 return html;
             }).join('');
 
@@ -4277,7 +4808,14 @@
             // entstanden ist (z.B. ein durch Fokusverlust beim Klick auf "Bestätigen" im Modal noch
             // ausgelöstes updateLiveDraft()), gilt ab jetzt als überholt. Siehe Deklaration von
             // lastCancelledDraftTs und startDatabaseListener().
-            lastCancelledDraftTs = Date.now();
+            //
+            // WICHTIG: Auf geschätzte SERVERZEIT umrechnen (Date.now() + serverTimeOffset), nicht
+            // die rohe Geräte-Uhr verwenden. Cloud-Timestamps werden per ServerValue.TIMESTAMP vom
+            // Firebase-Server vergeben; geht die Handy-Uhr eines Spielers nach, würde ein alter
+            // Cloud-Entwurf sonst fälschlich als "neuer als lastCancelledDraftTs" durchgehen und
+            // trotz Abbruch wiederhergestellt werden. +2000ms als Sicherheitspuffer, analog zu
+            // CLOCK_TOLERANCE_MS oben im Realtime-Listener.
+            lastCancelledDraftTs = Date.now() + serverTimeOffset + 2000;
 
             // WICHTIG: isAdminModalOpen SOFORT synchron auf false setzen, BEVOR die Cloud-Löschung
             // angestoßen wird. Der Realtime-Listener (siehe skipLiveDraftSync in
@@ -4493,6 +5031,23 @@
             // Live-Entwurf aus dem In-Memory-Zustand entfernen, damit der anschließende
             // Cloud-Schreibvorgang den bereinigten Zustand (Abend gespeichert, kein
             // Entwurf mehr offen) in einem Rutsch überträgt.
+            //
+            // Tombstone setzen: writeSeasonsToCloudRaw() vergleicht den Cloud-liveDraft-Timestamp
+            // gegen lastCancelledDraftTs und stellt ihn NICHT wieder her, wenn er auf/vor diesem
+            // Zeitpunkt liegt (siehe dortiger Kommentar). Ein separater remove()-Call auf den
+            // liveDraft-Cloud-Pfad ist daher nicht mehr nötig – er würde sonst zwischen diesem
+            // Schreibvorgang und dem anschließenden saveToCloud() ein eigenes 'value'-Event beim
+            // Realtime-Listener auslösen, der zu diesem Zwischenzeitpunkt state.seasons komplett
+            // mit dem (den neuen Abend noch NICHT enthaltenden) Cloud-Stand überschreiben würde –
+            // saveToCloud() würde dann genau diesen bereits wieder leeren Stand hochladen und den
+            // gerade gespeicherten Abend dadurch unbemerkt verlieren. Firebase entfernt liveDraft
+            // stattdessen automatisch mit, sobald saveToCloud() unten den kompletten seasons-Baum
+            // in einem einzigen atomaren .set() schreibt (liveDraft ist darin bereits gelöscht).
+            //
+            // Auf geschätzte Serverzeit umrechnen statt rohe Geräte-Uhr – siehe ausführlicher
+            // Kommentar dazu in cancelMatchEntry().
+            lastCancelledDraftTs = Date.now() + serverTimeOffset + 2000;
+            const seasonKey = state.currentSeasonKey;
             delete season.liveDraft;
             // WICHTIG: Die lokale Offline-Sicherung in localStorage wird bewusst NICHT
             // hier sofort gelöscht, sondern erst weiter unten, nachdem die Cloud-Speicherung
@@ -4500,7 +5055,7 @@
             // die offline nur im Speicher der Firebase-SDK "gequeued" wird, ein Schließen
             // des Tabs vor Verbindungswiederherstellung zu einem unwiederbringlichen Verlust
             // des gesamten Spielabends führen (weder in der Cloud noch lokal vorhanden).
-            const liveDraftStorageKey = `doko_live_draft_${state.currentSeasonKey}`;
+            const liveDraftStorageKey = `doko_live_draft_${seasonKey}`;
 
             document.getElementById('matchDate').value = "";
             const hSelect = document.getElementById('matchHostSelect');
@@ -4520,6 +5075,14 @@
             if (liveStatsCont) liveStatsCont.classList.add('hidden');
             const liveStatsB = document.getElementById('toggleLiveStatsBtn');
             if (liveStatsB) liveStatsB.textContent = "📊 Live-Statistiken dieses Abends einblenden";
+
+            // Wichtig: Anders als bei anderen formularverändernden Funktionen (z.B. setEntryMode(),
+            // cancelMatchEntry()) fehlte hier bisher der direkte render()-Aufruf. Die Liveansicht
+            // (liveMatchViewer) wird ausschließlich innerhalb von render() ein-/ausgeblendet – ohne
+            // diesen synchronen Aufruf blieb sie nach dem Speichern (insb. bei geöffnet bleibendem
+            // Eingabebereich für den nächsten Abend) fälschlich mit dem alten Spielstand sichtbar,
+            // bis ein anderer Trigger (z.B. Abbrechen) zufällig einen render() auslöste.
+            render();
 
             if (!navigator.onLine) {
                 showToast("📴 Offline: Abend ist lokal gesichert und wird automatisch synchronisiert, sobald wieder eine Verbindung besteht.", 'info');
@@ -5600,23 +6163,89 @@
                 bestAllTimeHostAvg,
                 bestAllTimeHostNames,
                 bestSoloCount,
-                bestSoloQuote,
+                bestSoloGamesPlayed,
+                bestSoloGamesPerSolo,
                 bestSoloPlayers,
-                maxTagessiege,
+                bestTagessiegCount,
+                bestTagessiegQuote,
                 bestTagessiegPlayers,
-                maxTotalPoints,
+                bestPointsTotal,
+                bestPointsAvg,
                 bestPointsPlayers,
-                maxAllTimeAnsagen,
+                bestAllTimeAnsagenCount,
+                bestAllTimeAnsagenGamesPlayed,
+                bestAllTimeAnsagenGamesPerAnsage,
                 bestAllTimeAnsagenPlayers,
                 maxStreakValue,
                 bestStreakPlayers,
                 maxLossStreakValue,
                 bestLossStreakPlayers,
                 bestDreamteamAvg,
-                bestDreamteamPairs
+                bestDreamteamPairs,
+                globalTotalPoints,
+                globalTotalPointsMatchCount,
+                globalPlacementPoints,
+                globalPlacementPointsMatchCount,
+                globalTotalMatchdaysEver
             } = calculateAllTimeRecords();
 
             const joinNames = (arr) => arr && arr.length > 0 ? arr.map(escapeHtml).join(', ') : '-';
+
+            // Ewige Gesamttabelle: alle Spieler, die jemals teilgenommen haben, nach Punkteschnitt
+            // pro Abend sortiert (analog zur normalen Saisontabelle). Unter 10 Teilnahmen zählt der
+            // Spieler zwar mit, bleibt aber ohne Wertung (kein Rangplatz, ausgegraut) – zu wenige
+            // Abende würden den Schnitt sonst verzerren.
+            const allTimeTableBody = document.getElementById('allTimeTableBody');
+            if (allTimeTableBody) {
+                const MIN_ALLTIME_TABLE_PARTICIPATIONS = 10;
+                let allTimePlayerData = Object.keys(globalPlacementPoints)
+                    .filter(name => (globalPlacementPointsMatchCount[name] || 0) > 0)
+                    .map(name => {
+                        const played = globalPlacementPointsMatchCount[name] || 0;
+                        const pts = globalPlacementPoints[name] || 0;
+                        return { name, played, pts, avg: played > 0 ? pts / played : 0, inRating: played >= MIN_ALLTIME_TABLE_PARTICIPATIONS };
+                    });
+
+                let atQualified = allTimePlayerData.filter(p => p.inRating).sort((a, b) => b.avg - a.avg);
+                let atUnqualified = allTimePlayerData.filter(p => !p.inRating).sort((a, b) => b.avg - a.avg || b.played - a.played);
+
+                let atLastAvg = null, atLastRank = 0;
+                const mapAllTimeRow = (p, isQ) => {
+                    if (isQ) {
+                        return `
+                        <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
+                            <td class="p-2 text-emerald-400 font-bold">${atLastRank}.</td>
+                            <td class="p-2 font-semibold text-slate-100">${escapeHtml(p.name)}</td>
+                            <td class="p-2 text-right font-bold text-emerald-400">${p.avg.toFixed(2)}</td>
+                            <td class="p-2 text-right text-slate-300">${p.played}/${globalTotalMatchdaysEver}</td>
+                            <td class="p-2 text-right text-slate-400">${p.pts} Pkt.</td>
+                        </tr>
+                        `;
+                    } else {
+                        return `
+                        <tr class="bg-slate-900/40 text-slate-500 italic">
+                            <td class="p-2 text-center font-bold font-mono">-</td>
+                            <td class="p-2 font-semibold">${escapeHtml(p.name)}</td>
+                            <td class="p-2 text-right font-semibold">${p.avg.toFixed(2)}</td>
+                            <td class="p-2 text-right text-amber-500">${p.played}/${globalTotalMatchdaysEver}</td>
+                            <td class="p-2 text-right">${p.pts} Pkt.</td>
+                        </tr>
+                        `;
+                    }
+                };
+
+                if (allTimePlayerData.length === 0) {
+                    allTimeTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Keine Daten.</td></tr>';
+                } else {
+                    allTimeTableBody.innerHTML = atQualified.map((p, i) => {
+                        if (atLastAvg === null || Math.abs(p.avg - atLastAvg) > 0.0001) {
+                            atLastRank = i + 1;
+                            atLastAvg = p.avg;
+                        }
+                        return mapAllTimeRow(p, true);
+                    }).join('') + atUnqualified.map(p => mapAllTimeRow(p, false)).join('');
+                }
+            }
 
             // Mischmeister: manuell gepflegter Rekord (siehe openMischmeisterModal/saveMischmeisterRecord),
             // da die häufigste Geben-Serie in Folge nicht aus den erfassten Spieldaten ableitbar ist.
@@ -5626,28 +6255,30 @@
             document.getElementById('allTimeRecordsContainer').innerHTML = `
                 <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Champion</p>
-                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `${bestSoloCount} ${bestSoloCount === 1 ? 'Solo' : 'Solos'}` : '0 Solos'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloCount > 0 ? ` (${bestSoloQuote} % gewonnen)` : ''}</p>
+                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `1 Solo / ${bestSoloGamesPerSolo.toFixed(1)} Spiele` : '-'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloCount > 0 ? ` (${bestSoloCount} Solos in ${bestSoloGamesPlayed} Spielen)` : ''}</p>
                 </div>
                 <div onclick="showAllTimeDetail('host')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
                     <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Heim-Schnitt: <b>${joinNames(bestAllTimeHostNames)}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Bester Heim-Schnitt: <b>${joinNames(bestAllTimeHostNames)}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('tagessiege')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
-                    <p class="text-xl font-black text-white mt-1">${maxTagessiege > 0 ? `${maxTagessiege} Siege` : '0 Siege'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Meiste 1. Plätze: <b>${joinNames(bestTagessiegPlayers)}</b></p>
+                    <p class="text-xl font-black text-white mt-1">${bestTagessiegCount > 0 ? `${bestTagessiegQuote.toFixed(1)} % Siegquote` : '0 %'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestTagessiegPlayers)}</b>${bestTagessiegCount > 0 ? ` (${bestTagessiegCount} Tagessiege)` : ''}</p>
+                    <p class="text-[9px] text-slate-500 mt-1">Mind. 5 Teilnahmen erforderlich</p>
                 </div>
                 <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
-                    <p class="text-xl font-black text-white mt-1">${maxTotalPoints > -Infinity ? `${maxTotalPoints > 0 ? '+' : ''}${maxTotalPoints}` : '0'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Meiste Punkte: <b>${joinNames(bestPointsPlayers)}</b></p>
+                    <p class="text-xl font-black text-white mt-1">${bestPointsAvg > -Infinity ? `${bestPointsAvg > 0 ? '+' : ''}${bestPointsAvg.toFixed(1)}` : '0.0'} Pkt. / Abend</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestPointsPlayers)}</b>${bestPointsAvg > -Infinity ? ` (${bestPointsTotal > 0 ? '+' : ''}${bestPointsTotal} Pkt. gesamt)` : ''}</p>
+                    <p class="text-[9px] text-slate-500 mt-1">Mind. 5 Teilnahmen erforderlich</p>
                 </div>
                 <div onclick="showAllTimeDetail('ansagen')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ansage-Guru</p>
-                    <p class="text-xl font-black text-white mt-1">${maxAllTimeAnsagen > 0 ? `${maxAllTimeAnsagen} Ansagen` : '0 Ansagen'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestAllTimeAnsagenPlayers)}</b></p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeAnsagenCount > 0 ? `1 Ansage / ${bestAllTimeAnsagenGamesPerAnsage.toFixed(1)} Spiele` : '-'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestAllTimeAnsagenPlayers)}</b>${bestAllTimeAnsagenCount > 0 ? ` (${bestAllTimeAnsagenCount} Ansagen in ${bestAllTimeAnsagenGamesPlayed} Spielen)` : ''}</p>
                 </div>
                 <div onclick="showAllTimeDetail('streak')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">🔥 Längste Siegesserie</p>
@@ -5662,7 +6293,7 @@
                 <div onclick="showAllTimeDetail('dreamteam')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
                     <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
                     <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${bestDreamteamAvg.toFixed(2)}` : '0.00'} Pkt.</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
+                    <p class="text-xs text-slate-400 mt-0.5">Bestes Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
                 </div>
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-between">
                     <p class="text-xs text-fuchsia-400 font-semibold uppercase tracking-wider flex items-center gap-1">🔀 Mischmeister<button onclick="openMischmeisterModal()" class="text-slate-500 hover:text-white transition cursor-pointer p-0.5 leading-none normal-case" title="Mischmeister-Rekord bearbeiten">✏️</button></p>
@@ -5684,20 +6315,10 @@
                         score: match.scores[pName]
                     })).sort((a, b) => b.score - a.score);
 
-                    // Abend-Beteiligungscheck für jeden Spieler einpflegen
+                    // Abend-Beteiligungscheck für jeden Spieler einpflegen (zentrale Funktion nutzen,
+                    // damit die Mindestrunden-Bedingung konsistent überall greift).
                     sortedEveningPlayers.forEach(p => {
-                        let isQualified = true;
-                        if (match.mode === 'detailed' && match.games) {
-                            const playersCount = match.order ? match.order.length : Object.keys(match.scores).length;
-                            if (playersCount >= 5) {
-                                const rate = getEveningParticipation(match, p.name);
-                                if (rate < 0.60) isQualified = false;
-                            }
-                        }
-                        if (match.belowSixty && match.belowSixty[p.name] === true) {
-                            isQualified = false;
-                        }
-                        p.isQualified = isQualified;
+                        p.isQualified = !isPlayerDisqualifiedInMatch(match, p.name);
                     });
 
                     // Rankings nur unter den qualifizierten Spielern vergeben
