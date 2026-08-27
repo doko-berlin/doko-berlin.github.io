@@ -5,6 +5,218 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doko-Saisonverwaltung</title>
     <link rel="stylesheet" href="tailwind.css">
+
+    <style>
+        /* Ewige-Gesamttabelle Zeitraum-Filter: eigenständiges CSS statt neuer Tailwind-Klassen, da
+           tailwind.css eine statisch vorkompilierte Datei ist (kein Live-Compiler) und nur die beim
+           Build tatsächlich verwendeten Klassen enthält – neu hinzugefügte Utility-Klassen wie h-9
+           oder focus-within:* würden sonst schlicht ignoriert und Elemente auf ihre unkontrollierte
+           Browser-Standardgröße zurückfallen (Ursache des zu großen "Zurücksetzen"-Buttons).
+        */
+        .atf-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            background: rgba(30, 41, 59, .4);
+            border: 1px solid rgba(51, 65, 85, .6);
+            border-radius: .75rem;
+            padding: .75rem;
+        }
+        .atf-group { display: flex; flex-direction: column; gap: .25rem; }
+        .atf-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 600;
+        }
+        .atf-field {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            box-sizing: border-box;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: .5rem;
+            padding-right: 4px;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .atf-field:focus-within {
+            border-color: #10b981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, .4);
+        }
+        .atf-field input {
+            background: transparent;
+            border: none;
+            outline: none;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 0 10px;
+            font-size: 12px;
+            font-variant-numeric: tabular-nums;
+            color: #f1f5f9;
+            width: 100px;
+        }
+        .atf-field input::placeholder { color: #475569; }
+        .atf-iconbtn {
+            background: transparent;
+            border: none;
+            font-size: 14px;
+            color: #94a3b8;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: .375rem;
+            transition: color .15s;
+            flex-shrink: 0;
+            padding: 0;
+        }
+        .atf-iconbtn:hover { color: #34d399; }
+        .atf-reset-btn {
+            height: 36px;
+            box-sizing: border-box;
+            font-size: 12px;
+            font-weight: 600;
+            color: #cbd5e1;
+            background: rgba(51, 65, 85, .6);
+            border: 1px solid rgba(71, 85, 105, .6);
+            border-radius: .5rem;
+            padding: 0 12px;
+            cursor: pointer;
+            transition: background-color .15s, color .15s;
+            flex-shrink: 0;
+        }
+        .atf-reset-btn:hover { background: #334155; color: #fff; }
+        .atf-info { font-size: 10px; color: #64748b; flex-basis: 100%; }
+        @media (min-width: 640px) {
+            .atf-info { flex-basis: auto; margin-left: auto; align-self: center; }
+        }
+
+        /* Eigenes Kalender-Popup statt native Browser-Vorgabe (siehe atfCalendarPopup) */
+        .atf-calendar {
+            position: fixed;
+            z-index: 250;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: .75rem;
+            padding: .6rem;
+            width: 236px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .5);
+        }
+        .atf-cal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: .5rem;
+        }
+        .atf-cal-header button {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            border-radius: .375rem;
+        }
+        .atf-cal-header button:hover { background: #1e293b; color: #fff; }
+        .atf-cal-header span { font-size: 12px; font-weight: 600; color: #e2e8f0; }
+        .atf-cal-weekdays, .atf-cal-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+        }
+        .atf-cal-weekdays span {
+            font-size: 9px;
+            color: #64748b;
+            text-transform: uppercase;
+            padding: 2px 0;
+        }
+        .atf-cal-day, .atf-cal-empty { font-size: 11px; padding: 5px 0; border-radius: .375rem; }
+        .atf-cal-day { background: transparent; border: none; color: #e2e8f0; cursor: pointer; }
+        .atf-cal-day:hover { background: #1e293b; }
+        .atf-cal-day-selected { background: #10b981 !important; color: #fff; font-weight: 700; }
+
+        /* Monats- bzw. Jahresauswahl im Kalender-Popup (via Klick auf die Kopfzeile erreichbar) */
+        .atf-cal-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        .atf-cal-cell {
+            background: transparent;
+            border: none;
+            color: #e2e8f0;
+            font-size: 11px;
+            padding: 9px 0;
+            border-radius: .375rem;
+            cursor: pointer;
+        }
+        .atf-cal-cell:hover { background: #1e293b; }
+
+        /* Klickbare/editierbare Mindestteilnahmen-Zahl im Beschreibungstext der Ewigen Gesamttabelle */
+        .atf-min-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed #64748b;
+            color: #e2e8f0;
+            font: inherit;
+            font-weight: 700;
+            width: 28px;
+            text-align: center;
+            padding: 0 1px;
+            cursor: pointer;
+        }
+        .atf-min-input:hover { border-bottom-color: #94a3b8; }
+        .atf-min-input:focus {
+            outline: none;
+            border-bottom: 1px solid #10b981;
+            color: #10b981;
+            cursor: text;
+        }
+
+        /* Umschalter Punkteschnitt / Leistungswert oberhalb der Ewigen Gesamttabelle */
+        .atf-mode-toggle {
+            display: inline-flex;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: .5rem;
+            padding: 2px;
+            margin-bottom: .5rem;
+            gap: 2px;
+        }
+        .atf-mode-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: .375rem;
+            cursor: pointer;
+            transition: background-color .15s, color .15s;
+        }
+        .atf-mode-btn:hover { color: #e2e8f0; }
+        .atf-mode-btn-active, .atf-mode-btn-active:hover { background: #10b981; color: #fff; }
+
+        /* Klickbare, sortierbare Spaltenüberschriften der Ewigen Gesamttabelle */
+        .atf-sortable { cursor: pointer; user-select: none; }
+        .atf-sortable:hover { color: #e2e8f0; }
+        .atf-sort-arrow { display: inline-block; width: 10px; margin-left: 2px; color: #10b981; }
+
+        /* Restliche native <input type="date">-Felder der App (Abend-Datum, Mischmeister-Rekorddatum):
+           der Browser rendert den leeren Platzhalter ("tt.mm.jjjj") standardmäßig kleingeschrieben,
+           was uneinheitlich zum Rest der App aussieht. text-transform wirkt auch auf die intern vom
+           Browser gerenderten Platzhalter-Segmente, nicht nur auf eingegebene Ziffern. */
+        input[type="date"] { text-transform: uppercase; }
+    </style>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -71,14 +283,30 @@
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onclick="event.stopPropagation()">
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
-                
-                <!-- Version 2.0 -->
+
+                <!-- Version 2.1 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.0</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.1</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Neuer Zeitraum-Filter in der Ewigen Gesamttabelle:</strong> Von/Bis-Auswahl mit Datumsfeld und Kalender-Popup.</li>
+                        <li><strong>Zweite Wertungsart in der Ewigen Gesamttabelle:</strong> Umschaltbar zwischen „Punkteschnitt“ (bisherige Wertung) und „Leistungswert“ – normiert jeden Abend auf 0–100 %, unabhängig von der Spieleranzahl (1. Platz = 100 %, Letzter = 0 %).</li>
+                        <li><strong>Sortierbare Spalten in der Ewigen Gesamttabelle:</strong> Klick auf „Spieler“, „Schnitt“/„Leistung“, „Teilnahmen“ oder „Gesamt-Pkt.“ sortiert die Anzeige.</li>
+                        <li><strong>Neu: Datenbank exportieren/importieren:</strong> JSON-Backup der kompletten Saisons und Rekorde.</li>
+                        <li><strong>Entfernt:</strong> Excel-Export.</li>
+                        <li><strong>Bugfix Detail-Kacheln:</strong> Zu lange Texte wurden im Hochformat abgeschnitten statt umzubrechen.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.0 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.0</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">17.08.2026</span>
                     </div>
-                    <div class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                    <div class="text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <p class="font-bold text-slate-700 dark:text-slate-300">Statistikbereich umfassend überarbeitet:</p>
                         <ul class="list-disc list-inside space-y-1.5">
                             <li><strong>Solo-Champion, Tagessieg-König, Punktegott, Ansage-Guru:</strong> Platzierung erfolgt jetzt nach Quote/Schnitt statt nach absoluter Anzahl.</li>
@@ -641,8 +869,11 @@
                     <button onclick="openSeasonSettingsModal(); closeHeaderMenu();" id="seasonSettingsBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         🛠️ Saison-Einstellungen
                     </button>
-                    <button onclick="exportToExcel(); closeHeaderMenu();" id="excelExportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
-                        📊 Excel-Export
+                    <button onclick="exportToJson(); closeHeaderMenu();" id="jsonExportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        💾 Datenbank exportieren
+                    </button>
+                    <button onclick="triggerJsonImport(); closeHeaderMenu();" id="jsonImportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        📥 Datenbank importieren
                     </button>
                     <button onclick="openRegelnModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         📜 Regeln
@@ -777,16 +1008,42 @@
                     <span id="allTimeTableToggleIcon" class="transition-transform">▼</span>
                 </button>
                 <div id="allTimeTableContainer" class="hidden mt-3">
-                    <p class="text-[11px] text-slate-400 mb-2">Gewertet nach Schnitt der Platzierungspunkte pro Abend, saisonübergreifend über die komplette Historie. Unter 10 Teilnahmen ohne Wertung.</p>
+                    <div class="atf-mode-toggle" role="group">
+                        <button type="button" id="allTimeTableModeBtnPunkte" class="atf-mode-btn atf-mode-btn-active" onclick="setAllTimeTableMode('punkte')">Punkteschnitt</button>
+                        <button type="button" id="allTimeTableModeBtnLeistung" class="atf-mode-btn" onclick="setAllTimeTableMode('leistung')">Leistungswert</button>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mb-2"><span id="allTimeTableDescMetric">Gewertet nach Schnitt der Platzierungspunkte pro Abend</span>, saisonübergreifend über die komplette Historie. Unter <span id="allTimeTableMinParticipationsDisplay">10</span> Teilnahmen ohne Wertung.</p>
+                    <div class="atf-bar">
+                        <div class="atf-group">
+                            <label for="allTimeTableFromInput" class="atf-label">Von</label>
+                            <div class="atf-field">
+                                <input type="text" id="allTimeTableFromInput" inputmode="numeric" maxlength="10"
+                                       placeholder="TT.MM.JJJJ" autocomplete="off"
+                                       oninput="onAtfDateInput(this)" onchange="applyAllTimeTableFilterFromInputs(true)">
+                                <button type="button" class="atf-iconbtn" onclick="openAllTimeTableDatePicker('allTimeTableFromInput')" title="Kalender öffnen">📅</button>
+                            </div>
+                        </div>
+                        <div class="atf-group">
+                            <label for="allTimeTableToInput" class="atf-label">Bis</label>
+                            <div class="atf-field">
+                                <input type="text" id="allTimeTableToInput" inputmode="numeric" maxlength="10"
+                                       placeholder="TT.MM.JJJJ" autocomplete="off"
+                                       oninput="onAtfDateInput(this)" onchange="applyAllTimeTableFilterFromInputs(true)">
+                                <button type="button" class="atf-iconbtn" onclick="openAllTimeTableDatePicker('allTimeTableToInput')" title="Kalender öffnen">📅</button>
+                            </div>
+                        </div>
+                        <button onclick="resetAllTimeTableFilter()" class="atf-reset-btn">Zurücksetzen</button>
+                        <span id="allTimeTableFilterInfo" class="atf-info"></span>
+                    </div>
                     <div class="overflow-x-auto -mx-1 px-1">
                         <table class="w-full text-left border-collapse min-w-[500px]">
                             <thead>
                                 <tr class="text-slate-400 uppercase text-xs tracking-wider border-b border-slate-700/60">
                                     <th class="p-2 w-14">Platz</th>
-                                    <th class="p-2">Spieler</th>
-                                    <th class="p-2 text-right">Schnitt</th>
-                                    <th class="p-2 text-right">Teilnahmen</th>
-                                    <th class="p-2 text-right">Gesamt-Pkt.</th>
+                                    <th class="p-2 atf-sortable" onclick="setAllTimeTableSort('name')">Spieler<span class="atf-sort-arrow" id="allTimeTableSortArrow-name"></span></th>
+                                    <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('avg')"><span id="allTimeTableAvgHeader">Schnitt</span><span class="atf-sort-arrow" id="allTimeTableSortArrow-avg"></span></th>
+                                    <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('played')">Teilnahmen<span class="atf-sort-arrow" id="allTimeTableSortArrow-played"></span></th>
+                                    <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('pts')">Gesamt-Pkt.<span class="atf-sort-arrow" id="allTimeTableSortArrow-pts"></span></th>
                                 </tr>
                             </thead>
                             <tbody id="allTimeTableBody" class="divide-y divide-slate-800 text-sm"></tbody>
@@ -796,6 +1053,26 @@
             </div>
 
         </div>
+    </div>
+
+    <!-- Verstecktes File-Input für den JSON-Backup-Import (siehe triggerJsonImport/handleJsonImport) -->
+    <input type="file" id="jsonImportInput" accept=".json" onchange="handleJsonImport(event)" class="hidden">
+
+    <!-- Eigenständiges Kalender-Popup für den Zeitraum-Filter der Ewigen Gesamttabelle. Bewusst kein
+         natives <input type="date">, da dessen Platzhalter-Groß-/Kleinschreibung und Segment-Sprung-
+         Verhalten browserabhängig und nicht zuverlässig steuerbar sind. Klick auf die Kopfzeile
+         wechselt in eine Monats- bzw. Jahresauswahl, damit man auch weit zurückliegende Zeiträume
+         nicht mühsam Monat für Monat zurückblättern muss. -->
+    <div id="atfCalendarPopup" class="atf-calendar hidden" onclick="event.stopPropagation()">
+        <div class="atf-cal-header">
+            <button type="button" onclick="atfCalNav(-1)" title="Zurück">‹</button>
+            <span id="atfCalMonthLabel" onclick="atfCalHeaderClick()" title="Klicken für Monats-/Jahresauswahl" style="cursor:pointer;"></span>
+            <button type="button" onclick="atfCalNav(1)" title="Vor">›</button>
+        </div>
+        <div class="atf-cal-weekdays" id="atfCalWeekdays">
+            <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+        </div>
+        <div id="atfCalDays" class="atf-cal-days"></div>
     </div>
 
     <script>
@@ -929,6 +1206,22 @@
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
         let isAllTimeTableExpanded = false; // Ewige Gesamttabelle unter der Ewigen Bestenliste, standardmäßig eingeklappt
+        let allTimeTableFilterFrom = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
+        let allTimeTableFilterTo = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
+        // Mindestteilnahmen für eine Wertung in der Ewigen Gesamttabelle. Standard 10, vom Nutzer über
+        // das editierbare Zahlenfeld im Beschreibungstext anpassbar; Persistenz rein lokal je Gerät/
+        // Browser (localStorage), da es sich um eine Anzeige-Einstellung und keine Turnierdaten handelt.
+        let allTimeTableMinParticipations = parseInt(safeLocalStorageGet('allTimeTableMinParticipations'), 10) || 10;
+        // Anzeigemodus der Ewigen Gesamttabelle: 'punkte' = Schnitt der rohen Platzierungspunkte
+        // (bisheriges Verhalten), 'leistung' = auf 0-100 normierter Leistungswert je Abend (siehe
+        // setAllTimeTableMode/calculateAllTimeTableData), der die Feldgröße pro Abend herausrechnet.
+        let allTimeTableMode = safeLocalStorageGet('allTimeTableMode') === 'leistung' ? 'leistung' : 'punkte';
+        // Sortierung der Ewigen Gesamttabelle per Klick auf die Spaltenüberschriften. 'avg' (Schnitt
+        // bzw. Leistung) ist die Standardsortierung und entspricht der eigentlichen Rangfolge; die
+        // Platz-Nummer je Zeile bleibt davon unabhängig immer die anhand des Schnitts berechnete
+        // offizielle Platzierung (siehe renderAllTimeTable) – nur die Anzeigereihenfolge ändert sich.
+        let allTimeTableSortKey = 'avg'; // 'name' | 'avg' | 'played' | 'pts'
+        let allTimeTableSortDir = 'desc'; // 'asc' | 'desc'
         let editingMatchId = null;
         let isPopulatingEditForm = false;
 
@@ -1294,7 +1587,7 @@
                 showToast("Mischmeister-Rekord gespeichert!", 'success');
             }).catch((err) => {
                 if (err === 'locked') return; // Eigener Warn-Toast kommt bereits aus saveToCloud()
-                showToast("⚠️ Speichern fehlgeschlagen – bitte Internetverbindung prüfen.", 'error');
+                showToast("Speichern fehlgeschlagen – bitte Internetverbindung prüfen.", 'error');
             });
         }
 
@@ -1445,9 +1738,9 @@
                             
                             return `
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
-                                    <div class="flex items-center gap-3 truncate mr-2">
-                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none ${placeCls}">${rank}</span>
-                                        <div class="truncate">
+                                    <div class="flex items-center gap-3 min-w-0 mr-2">
+                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none shrink-0 ${placeCls}">${rank}</span>
+                                        <div class="min-w-0">
                                             <p class="font-bold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(item.player)}</p>
                                             ${item.detail ? `<p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${item.detail}</p>` : ''}
                                         </div>
@@ -2667,6 +2960,492 @@
             if (icon) icon.style.transform = isAllTimeTableExpanded ? 'rotate(180deg)' : '';
         }
 
+        function formatYMDToGerman(ymd) {
+            if (!ymd || typeof ymd !== 'string') return '';
+            const parts = ymd.split('-');
+            if (parts.length !== 3) return ymd;
+            return `${parts[2]}.${parts[1]}.${parts[0]}`;
+        }
+
+        // Prüft, ob ein Abend innerhalb des gewählten Zeitraum-Filters der Ewigen Gesamttabelle liegt.
+        // Abende ohne echtes Datum (z.B. "Alter Abend Nr. X") lassen sich nicht einordnen und werden
+        // bei aktivem Filter ausgeschlossen, damit der Zeitraum sauber bleibt.
+        function isMatchInDateRange(match, fromYMD, toYMD) {
+            if (!fromYMD && !toYMD) return true;
+            const ymd = parseGermanDateToYMD(match.date);
+            if (!ymd) return false;
+            if (fromYMD && ymd < fromYMD) return false;
+            if (toYMD && ymd > toYMD) return false;
+            return true;
+        }
+
+        // Berechnet die Platzierungspunkte-Basis für die Ewige Gesamttabelle, optional beschränkt auf
+        // einen selbst gewählten Zeitraum. Bewusst getrennt von calculateAllTimeRecords(), damit ein
+        // Zeitraum-Filter nur die Ewige Gesamttabelle betrifft und nicht die übrigen Ewige-Bestenliste-
+        // Kacheln (Solo-Champion, Festung, etc.), die weiterhin die komplette Historie zeigen.
+        function calculateAllTimeTableData(fromYMD, toYMD) {
+            let globalPlacementPoints = {};
+            let globalPlacementPointsMatchCount = {};
+            // Leistungswert (siehe Kopf-Kommentar zur Funktion): (P-1)/(N-1)*100, mit P = erzielte
+            // Platzierungspunkte und N = Zahl der an diesem Abend gewerteten (nicht disqualifizierten)
+            // Spieler. Bildet ab, wie gut jemand relativ zur jeweiligen Feldgröße abgeschnitten hat,
+            // z.B. Zweiter von 4 (66,7%) vs. Zweiter von 6 (80%).
+            let globalLeistungSum = {};
+            let globalLeistungMatchCount = {};
+            let totalMatchdays = 0;
+            let allUniquePlayers = new Set();
+
+            Object.values(state.seasons).forEach(s => {
+                if (s.players) s.players.forEach(p => allUniquePlayers.add(p));
+            });
+            allUniquePlayers.forEach(p => {
+                globalPlacementPoints[p] = 0;
+                globalPlacementPointsMatchCount[p] = 0;
+                globalLeistungSum[p] = 0;
+                globalLeistungMatchCount[p] = 0;
+            });
+
+            Object.keys(state.seasons).forEach(sKey => {
+                const season = state.seasons[sKey];
+                if (!season.matches) return;
+                const isHist = season.isHistorical;
+
+                Object.values(season.matches).forEach(match => {
+                    if (!match.scores) return;
+                    if (!isMatchInDateRange(match, fromYMD, toYMD)) return;
+
+                    totalMatchdays++;
+                    Object.keys(match.scores).forEach(name => {
+                        if (globalPlacementPointsMatchCount[name] !== undefined && !isPlayerDisqualifiedInMatch(match, name)) {
+                            globalPlacementPointsMatchCount[name]++;
+                        }
+                    });
+                    const isMatchdayData = !isHist || match.pointType === 'spieltag';
+                    const placementScoresForMatch = isMatchdayData ? getPlacementScoresForMatch(match.scores, match) : match.scores;
+                    Object.keys(placementScoresForMatch).forEach(name => {
+                        if (globalPlacementPoints[name] !== undefined) {
+                            globalPlacementPoints[name] += placementScoresForMatch[name];
+                        }
+                    });
+
+                    // "isMatchdayData" entscheidet nur, WIE placementScoresForMatch zustande kommt:
+                    // bei 'spieltag' (bzw. allen nicht-historischen Abenden) aus rohen Punkten über
+                    // getPlacementScoresForMatch berechnet, bei 'platzierung' sind match.scores bereits
+                    // direkt eingegebene Platzierungspunkte. Beide folgen derselben 1-bis-N-Skala
+                    // (letzter Platz = 1, erster Platz = N) und fließen daher gleichermaßen in den
+                    // Leistungswert ein – es gibt bei historischen Abenden keinen dritten Punktetyp.
+                    const rankedNames = Object.keys(placementScoresForMatch).filter(name => placementScoresForMatch[name] > 0);
+                    const n = rankedNames.length > 0 ? Math.max(...rankedNames.map(name => placementScoresForMatch[name])) : 0;
+                    if (n > 1) {
+                        rankedNames.forEach(name => {
+                            if (globalLeistungSum[name] === undefined) return;
+                            const p = placementScoresForMatch[name];
+                            globalLeistungSum[name] += (p - 1) / (n - 1) * 100;
+                            globalLeistungMatchCount[name]++;
+                        });
+                    }
+                });
+            });
+
+            return { globalPlacementPoints, globalPlacementPointsMatchCount, globalLeistungSum, globalLeistungMatchCount, totalMatchdays };
+        }
+
+        function setAllTimeTableMode(mode) {
+            if (mode !== 'punkte' && mode !== 'leistung') return;
+            if (mode === allTimeTableMode) return;
+            allTimeTableMode = mode;
+            safeLocalStorageSet('allTimeTableMode', mode);
+            renderAllTimeTable();
+        }
+
+        // Klick auf eine Spaltenüberschrift der Ewigen Gesamttabelle: gleiche Spalte -> Richtung
+        // umkehren, andere Spalte -> Wechsel mit sinnvoller Standardrichtung (Name aufsteigend,
+        // alles andere absteigend, da höhere Werte dort das "bessere" Ergebnis sind).
+        function setAllTimeTableSort(key) {
+            if (key === allTimeTableSortKey) {
+                allTimeTableSortDir = allTimeTableSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                allTimeTableSortKey = key;
+                allTimeTableSortDir = key === 'name' ? 'asc' : 'desc';
+            }
+            renderAllTimeTable();
+        }
+
+        function renderAllTimeTable() {
+            const allTimeTableBody = document.getElementById('allTimeTableBody');
+            if (!allTimeTableBody) return;
+
+            const isLeistung = allTimeTableMode === 'leistung';
+
+            // UI-Elemente außerhalb der Tabelle passend zum aktuellen Modus aktualisieren.
+            const btnPunkte = document.getElementById('allTimeTableModeBtnPunkte');
+            const btnLeistung = document.getElementById('allTimeTableModeBtnLeistung');
+            if (btnPunkte) btnPunkte.classList.toggle('atf-mode-btn-active', !isLeistung);
+            if (btnLeistung) btnLeistung.classList.toggle('atf-mode-btn-active', isLeistung);
+
+            const avgHeader = document.getElementById('allTimeTableAvgHeader');
+            if (avgHeader) avgHeader.textContent = isLeistung ? 'Leistung' : 'Schnitt';
+
+            const descMetric = document.getElementById('allTimeTableDescMetric');
+            if (descMetric) {
+                descMetric.textContent = isLeistung
+                    ? 'Gewertet nach Ø Leistungswert pro Abend (0–100 %, normiert auf die jeweilige Spielerzahl)'
+                    : 'Gewertet nach Schnitt der Platzierungspunkte pro Abend';
+            }
+
+            // Anzeige der Mindestteilnahmen-Schwelle im Beschreibungstext synchron halten. Bewusst nur
+            // Anzeige, nicht mehr editierbar (siehe onAtfMinParticipationsInput/-Change weiter unten,
+            // die für eine spätere Wiedereinführung im Code bleiben, aber aktuell nicht mehr verdrahtet
+            // sind) – die Berechnung selbst nutzt weiterhin allTimeTableMinParticipations.
+            const minDisplay = document.getElementById('allTimeTableMinParticipationsDisplay');
+            if (minDisplay) minDisplay.textContent = allTimeTableMinParticipations;
+
+            const { globalPlacementPoints, globalPlacementPointsMatchCount, globalLeistungSum, globalLeistungMatchCount, totalMatchdays } =
+                calculateAllTimeTableData(allTimeTableFilterFrom, allTimeTableFilterTo);
+
+            let allTimePlayerData = Object.keys(globalPlacementPoints)
+                .map(name => {
+                    const pts = globalPlacementPoints[name] || 0;
+                    const playedPunkte = globalPlacementPointsMatchCount[name] || 0;
+                    const playedLeistung = globalLeistungMatchCount[name] || 0;
+                    const played = isLeistung ? playedLeistung : playedPunkte;
+                    const avg = isLeistung
+                        ? (playedLeistung > 0 ? globalLeistungSum[name] / playedLeistung : 0)
+                        : (playedPunkte > 0 ? pts / playedPunkte : 0);
+                    return { name, played, pts, avg, inRating: played >= allTimeTableMinParticipations };
+                })
+                .filter(p => p.played > 0);
+
+            // Der Platz (Rang) bildet immer die offizielle Platzierung nach Schnitt ab, unabhängig
+            // davon, nach welcher Spalte die Tabelle gerade zur Anzeige sortiert ist – nur die
+            // Reihenfolge der Zeilen ändert sich per Klick auf eine Spaltenüberschrift.
+            let atQualifiedByAvg = allTimePlayerData.filter(p => p.inRating).sort((a, b) => b.avg - a.avg);
+            let atLastAvg = null, atLastRank = 0;
+            atQualifiedByAvg.forEach((p, i) => {
+                if (atLastAvg === null || Math.abs(p.avg - atLastAvg) > 0.0001) {
+                    atLastRank = i + 1;
+                    atLastAvg = p.avg;
+                }
+                p.rank = atLastRank;
+            });
+
+            function compareAllTimeRows(a, b) {
+                let cmp;
+                switch (allTimeTableSortKey) {
+                    case 'name': cmp = a.name.localeCompare(b.name, 'de'); break;
+                    case 'played': cmp = a.played - b.played; break;
+                    case 'pts': cmp = a.pts - b.pts; break;
+                    default: cmp = a.avg - b.avg; break;
+                }
+                if (allTimeTableSortDir === 'desc') cmp = -cmp;
+                if (cmp === 0 && allTimeTableSortKey !== 'avg') cmp = b.avg - a.avg; // stabiler Tie-Breaker
+                return cmp;
+            }
+
+            let atQualified = [...atQualifiedByAvg].sort(compareAllTimeRows);
+            let atUnqualified = allTimePlayerData.filter(p => !p.inRating).sort(compareAllTimeRows);
+
+            const mapAllTimeRow = (p, isQ) => {
+                const avgDisplay = isLeistung ? `${p.avg.toFixed(1)} %` : p.avg.toFixed(2);
+                if (isQ) {
+                    return `
+                    <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
+                        <td class="p-2 text-emerald-400 font-bold">${p.rank}.</td>
+                        <td class="p-2 font-semibold text-slate-100">${escapeHtml(p.name)}</td>
+                        <td class="p-2 text-right font-bold text-emerald-400">${avgDisplay}</td>
+                        <td class="p-2 text-right text-slate-300">${p.played}/${totalMatchdays}</td>
+                        <td class="p-2 text-right text-slate-400">${p.pts} Pkt.</td>
+                    </tr>
+                    `;
+                } else {
+                    return `
+                    <tr class="bg-slate-900/40 text-slate-500 italic">
+                        <td class="p-2 text-center font-bold font-mono">-</td>
+                        <td class="p-2 font-semibold">${escapeHtml(p.name)}</td>
+                        <td class="p-2 text-right font-semibold">${avgDisplay}</td>
+                        <td class="p-2 text-right text-amber-500">${p.played}/${totalMatchdays}</td>
+                        <td class="p-2 text-right">${p.pts} Pkt.</td>
+                    </tr>
+                    `;
+                }
+            };
+
+            const isFiltered = !!(allTimeTableFilterFrom || allTimeTableFilterTo);
+
+            if (allTimePlayerData.length === 0) {
+                allTimeTableBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">${isFiltered ? 'Keine Daten im gewählten Zeitraum.' : 'Keine Daten.'}</td></tr>`;
+            } else {
+                allTimeTableBody.innerHTML = atQualified.map(p => mapAllTimeRow(p, true)).join('') + atUnqualified.map(p => mapAllTimeRow(p, false)).join('');
+            }
+
+            // Sortierpfeile an den Spaltenüberschriften aktualisieren.
+            ['name', 'avg', 'played', 'pts'].forEach(key => {
+                const arrowEl = document.getElementById(`allTimeTableSortArrow-${key}`);
+                if (!arrowEl) return;
+                arrowEl.textContent = key === allTimeTableSortKey ? (allTimeTableSortDir === 'asc' ? '▲' : '▼') : '';
+            });
+
+            const filterInfo = document.getElementById('allTimeTableFilterInfo');
+            if (filterInfo) {
+                if (isFiltered) {
+                    const fromTxt = allTimeTableFilterFrom ? formatYMDToGerman(allTimeTableFilterFrom) : 'Beginn';
+                    const toTxt = allTimeTableFilterTo ? formatYMDToGerman(allTimeTableFilterTo) : 'heute';
+                    filterInfo.textContent = `Zeitraum: ${fromTxt} – ${toTxt}`;
+                } else {
+                    filterInfo.textContent = '';
+                }
+            }
+        }
+
+        // Formatiert die Eingabe im Zeitraum-Filter live als TT.MM.JJJJ: Nicht-Ziffern werden verworfen,
+        // die Punkte automatisch nach dem 2. bzw. 4. Zeichen eingefügt. Da der Nutzer so immer genau
+        // 2 Ziffern für Tag/Monat eintippt, springt der Cursor – anders als beim nativen
+        // <input type="date"> – nie vorzeitig ins nächste Segment (z.B. nach nur einer "2" beim Monat).
+        function onAtfDateInput(inputEl) {
+            const digits = inputEl.value.replace(/\D/g, '').slice(0, 8);
+            let formatted = digits;
+            if (digits.length > 4) {
+                formatted = `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4)}`;
+            } else if (digits.length > 2) {
+                formatted = `${digits.slice(0, 2)}.${digits.slice(2)}`;
+            }
+            inputEl.value = formatted;
+
+            if (allTimeTableFilterDebounceTimer) clearTimeout(allTimeTableFilterDebounceTimer);
+            allTimeTableFilterDebounceTimer = setTimeout(() => applyAllTimeTableFilterFromInputs(false), 500);
+        }
+
+        // Wandelt eine vom Nutzer eingegebene "TT.MM.JJJJ"-Zeichenkette in ein ISO-Datum (YYYY-MM-DD)
+        // um, das intern für den Zeitraum-Vergleich verwendet wird. Gibt '' zurück, wenn die Eingabe
+        // (noch) unvollständig ist oder kein gültiges Kalenderdatum in einem sinnvollen Jahresbereich
+        // beschreibt (z.B. 31.02., oder ein Jahr wie 187 oder 20245).
+        const ATF_MIN_YEAR = 1900;
+        const ATF_MAX_YEAR = 2199;
+        function parseAtfDateToYMD(text) {
+            const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec((text || '').trim());
+            if (!m) return '';
+            const day = parseInt(m[1], 10), month = parseInt(m[2], 10), year = parseInt(m[3], 10);
+            if (year < ATF_MIN_YEAR || year > ATF_MAX_YEAR) return '';
+            const d = new Date(Date.UTC(year, month - 1, day));
+            // new Date() korrigiert überlaufende Werte (z.B. 31.02. -> 03.03.) automatisch; ein Abgleich
+            // mit den eingegebenen Werten stellt sicher, dass wirklich ein gültiges Datum vorliegt.
+            if (d.getUTCFullYear() !== year || (d.getUTCMonth() + 1) !== month || d.getUTCDate() !== day) return '';
+            return `${m[3]}-${m[2]}-${m[1]}`;
+        }
+
+        let allTimeTableFilterDebounceTimer = null;
+
+        function applyAllTimeTableFilterFromInputs(showErrors) {
+            const fromInput = document.getElementById('allTimeTableFromInput');
+            const toInput = document.getElementById('allTimeTableToInput');
+            const fromText = fromInput ? fromInput.value.trim() : '';
+            const toText = toInput ? toInput.value.trim() : '';
+
+            const newFrom = fromText ? parseAtfDateToYMD(fromText) : '';
+            const newTo = toText ? parseAtfDateToYMD(toText) : '';
+
+            // Ein fertig getipptes (10-stelliges), aber ungültiges Datum bekommt beim Verlassen des
+            // Feldes eine Fehlermeldung; während des Tippens (showErrors=false) wird nur still gewartet.
+            if (fromText && !newFrom) {
+                if (showErrors && fromText.length === 10) showToast('Ungültiges Datum im Feld „Von" – bitte TT.MM.JJJJ verwenden.', 'error');
+                return;
+            }
+            if (toText && !newTo) {
+                if (showErrors && toText.length === 10) showToast('Ungültiges Datum im Feld „Bis" – bitte TT.MM.JJJJ verwenden.', 'error');
+                return;
+            }
+            if (newFrom && newTo && newFrom > newTo) {
+                showToast("Der Start des Zeitraums liegt nach dessen Ende.", 'error');
+                return;
+            }
+            if (newFrom === allTimeTableFilterFrom && newTo === allTimeTableFilterTo) return;
+
+            allTimeTableFilterFrom = newFrom;
+            allTimeTableFilterTo = newTo;
+            renderAllTimeTable();
+        }
+
+        function resetAllTimeTableFilter() {
+            if (allTimeTableFilterDebounceTimer) {
+                clearTimeout(allTimeTableFilterDebounceTimer);
+                allTimeTableFilterDebounceTimer = null;
+            }
+            allTimeTableFilterFrom = '';
+            allTimeTableFilterTo = '';
+            const fromInput = document.getElementById('allTimeTableFromInput');
+            const toInput = document.getElementById('allTimeTableToInput');
+            if (fromInput) fromInput.value = '';
+            if (toInput) toInput.value = '';
+            closeAtfCalendar();
+            renderAllTimeTable();
+        }
+
+        // Editierbare Mindestteilnahmen-Zahl im Beschreibungstext der Ewigen Gesamttabelle: während der
+        // Eingabe nur auf Ziffern beschränken, die eigentliche Übernahme (inkl. Validierung) erfolgt
+        // erst beim Verlassen des Feldes bzw. Enter, damit nicht bei jeder einzelnen Ziffer neu
+        // gerechnet wird und ein Zwischenstand wie "0" nicht kurzzeitig als gültiger Wert durchrutscht.
+        function onAtfMinParticipationsInput(inputEl) {
+            inputEl.value = inputEl.value.replace(/\D/g, '').slice(0, 3);
+        }
+
+        function onAtfMinParticipationsChange(inputEl) {
+            const parsed = parseInt(inputEl.value, 10);
+            const value = (!isNaN(parsed) && parsed >= 1) ? parsed : allTimeTableMinParticipations;
+            inputEl.value = value;
+
+            if (value === allTimeTableMinParticipations) return;
+
+            allTimeTableMinParticipations = value;
+            safeLocalStorageSet('allTimeTableMinParticipations', String(value));
+            renderAllTimeTable();
+        }
+
+        // --- Eigenes Kalender-Popup für den Zeitraum-Filter (siehe #atfCalendarPopup im HTML) ---
+        // Drei Ansichten: 'days' (Standard), 'months' und 'years' – per Klick auf die Kopfzeile
+        // erreichbar. Ohne das müsste man für weit zurückliegende Zeiträume Monat für Monat
+        // zurückblättern, was bei mehreren Jahren Historie sehr mühsam wäre.
+        let atfCalTargetInputId = null;
+        let atfCalYear = null;
+        let atfCalMonth = null; // 0-11
+        let atfCalView = 'days'; // 'days' | 'months' | 'years'
+        let atfCalYearRangeStart = null; // Start einer 12er-Jahresspanne in der Jahresansicht
+        const ATF_MONTH_NAMES = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+
+        function openAllTimeTableDatePicker(inputId) {
+            const input = document.getElementById(inputId);
+            const popup = document.getElementById('atfCalendarPopup');
+            if (!input || !popup) return;
+
+            atfCalTargetInputId = inputId;
+            const ymd = parseAtfDateToYMD(input.value);
+            const base = ymd ? new Date(`${ymd}T00:00:00Z`) : new Date();
+            atfCalYear = ymd ? parseInt(ymd.slice(0, 4), 10) : base.getFullYear();
+            atfCalMonth = ymd ? parseInt(ymd.slice(5, 7), 10) - 1 : base.getMonth();
+            atfCalView = 'days';
+            renderAtfCalendar();
+
+            const rect = input.closest('.atf-field').getBoundingClientRect();
+            popup.style.top = `${rect.bottom + 4}px`;
+            popup.style.left = `${rect.left}px`;
+            popup.classList.remove('hidden');
+
+            // Klick außerhalb des Popups (und außerhalb der 📅-Buttons) schließt es wieder.
+            setTimeout(() => document.addEventListener('click', atfCalOutsideClick), 0);
+        }
+
+        function atfCalOutsideClick(e) {
+            const popup = document.getElementById('atfCalendarPopup');
+            if (!popup) return;
+            if (!popup.contains(e.target) && !e.target.closest('.atf-iconbtn')) {
+                closeAtfCalendar();
+            }
+        }
+
+        function closeAtfCalendar() {
+            const popup = document.getElementById('atfCalendarPopup');
+            if (popup) popup.classList.add('hidden');
+            document.removeEventListener('click', atfCalOutsideClick);
+        }
+
+        // Klick auf die Kopfzeile führt eine Ebene nach oben: Tage -> Monate -> Jahre.
+        function atfCalHeaderClick() {
+            if (atfCalView === 'days') {
+                atfCalView = 'months';
+            } else if (atfCalView === 'months') {
+                atfCalYearRangeStart = atfCalYear - (atfCalYear % 12);
+                atfCalView = 'years';
+            }
+            renderAtfCalendar();
+        }
+
+        // ‹ / › bedeuten je nach Ansicht: Monat, Jahr oder ganze 12er-Jahresspanne weiterspringen.
+        function atfCalNav(delta) {
+            if (atfCalView === 'months') {
+                atfCalYear += delta;
+            } else if (atfCalView === 'years') {
+                atfCalYearRangeStart += delta * 12;
+            } else {
+                atfCalMonth += delta;
+                if (atfCalMonth < 0) { atfCalMonth = 11; atfCalYear--; }
+                if (atfCalMonth > 11) { atfCalMonth = 0; atfCalYear++; }
+            }
+            renderAtfCalendar();
+        }
+
+        function atfCalSelectYear(year) {
+            atfCalYear = year;
+            atfCalView = 'months';
+            renderAtfCalendar();
+        }
+
+        function atfCalSelectMonth(month) {
+            atfCalMonth = month;
+            atfCalView = 'days';
+            renderAtfCalendar();
+        }
+
+        function renderAtfCalendar() {
+            const label = document.getElementById('atfCalMonthLabel');
+            const weekdays = document.getElementById('atfCalWeekdays');
+            const daysContainer = document.getElementById('atfCalDays');
+            if (!label || !daysContainer) return;
+
+            if (atfCalView === 'years') {
+                if (weekdays) weekdays.classList.add('hidden');
+                label.textContent = `${atfCalYearRangeStart}–${atfCalYearRangeStart + 11}`;
+                let html = '';
+                for (let y = atfCalYearRangeStart; y <= atfCalYearRangeStart + 11; y++) {
+                    const selectedClass = y === atfCalYear ? ' atf-cal-day-selected' : '';
+                    html += `<button type="button" class="atf-cal-cell${selectedClass}" onclick="atfCalSelectYear(${y})">${y}</button>`;
+                }
+                daysContainer.className = 'atf-cal-grid-4';
+                daysContainer.innerHTML = html;
+                return;
+            }
+
+            if (atfCalView === 'months') {
+                if (weekdays) weekdays.classList.add('hidden');
+                label.textContent = String(atfCalYear);
+                let html = '';
+                ATF_MONTH_NAMES.forEach((name, idx) => {
+                    const selectedClass = idx === atfCalMonth ? ' atf-cal-day-selected' : '';
+                    html += `<button type="button" class="atf-cal-cell${selectedClass}" onclick="atfCalSelectMonth(${idx})">${name.slice(0, 3)}</button>`;
+                });
+                daysContainer.className = 'atf-cal-grid-4';
+                daysContainer.innerHTML = html;
+                return;
+            }
+
+            // Tagesansicht (Standard)
+            if (weekdays) weekdays.classList.remove('hidden');
+            label.textContent = `${ATF_MONTH_NAMES[atfCalMonth]} ${atfCalYear}`;
+            daysContainer.className = 'atf-cal-days';
+
+            const firstOfMonth = new Date(Date.UTC(atfCalYear, atfCalMonth, 1));
+            const startWeekday = (firstOfMonth.getUTCDay() + 6) % 7; // Montag = 0 ... Sonntag = 6
+            const daysInMonth = new Date(Date.UTC(atfCalYear, atfCalMonth + 1, 0)).getUTCDate();
+
+            const targetInput = document.getElementById(atfCalTargetInputId);
+            const selectedYMD = targetInput ? parseAtfDateToYMD(targetInput.value) : '';
+
+            let html = '';
+            for (let i = 0; i < startWeekday; i++) html += '<span class="atf-cal-empty"></span>';
+            for (let d = 1; d <= daysInMonth; d++) {
+                const ymd = `${atfCalYear}-${String(atfCalMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const selectedClass = ymd === selectedYMD ? ' atf-cal-day-selected' : '';
+                html += `<button type="button" class="atf-cal-day${selectedClass}" onclick="atfCalSelectDay(${d})">${d}</button>`;
+            }
+            daysContainer.innerHTML = html;
+        }
+
+        function atfCalSelectDay(day) {
+            const input = document.getElementById(atfCalTargetInputId);
+            if (!input) return;
+            input.value = `${String(day).padStart(2, '0')}.${String(atfCalMonth + 1).padStart(2, '0')}.${atfCalYear}`;
+            closeAtfCalendar();
+            applyAllTimeTableFilterFromInputs(true);
+        }
+
         let dbListenerAttached = false;
         // Zählt Firebase-Schreibvorgänge, die noch nicht bestätigt sind. Die Realtime-Database-
         // Web-SDK bietet – anders als die nativen Android/iOS/Flutter-SDKs (dort: setPersistenceEnabled) –
@@ -2970,7 +3749,7 @@
                 const now = Date.now();
                 if (now - lockWarningToastShownAt > 5000) {
                     lockWarningToastShownAt = now;
-                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade durch jemand anderen gesperrt.', 'error');
+                    showToast('Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade durch jemand anderen gesperrt.', 'error');
                 }
                 return Promise.reject('locked');
             }
@@ -2991,7 +3770,7 @@
                 const now = Date.now();
                 if (now - lockWarningToastShownAt > 5000) {
                     lockWarningToastShownAt = now;
-                    showToast('⚠️ Achtung: Deine Änderung wurde NICHT gespeichert – der Eingabebereich ist gerade nicht (mehr) für dich gesperrt. Bitte schließen und neu öffnen.', 'error');
+                    showToast('Achtung: Deine Änderung wurde NICHT gespeichert – deine Sperre für den Eingabebereich ist abgelaufen oder wurde aufgehoben. Bitte den Eingabebereich schließen und neu öffnen.', 'error');
                 }
                 return;
             }
@@ -3014,7 +3793,7 @@
                 if (retryCount < 3 && hasEditLock) {
                     liveDraftRetryTimeout = setTimeout(() => saveLiveDraftToCloud(retryCount + 1), 1200);
                 } else {
-                    showToast('⚠️ Speichern fehlgeschlagen – bitte Internetverbindung prüfen. Das zuletzt erfasste Spiel notfalls erneut speichern.', 'error');
+                    showToast('Speichern fehlgeschlagen – bitte Internetverbindung prüfen. Das zuletzt erfasste Spiel notfalls erneut speichern.', 'error');
                 }
             });
         }
@@ -4864,7 +5643,7 @@
                     if (!editLockInfo || hasEditLock) {
                         trackPendingWrite(db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).remove()).catch((err) => {
                             console.warn('Löschen des Live-Entwurfs in der Cloud fehlgeschlagen:', err);
-                            showToast('⚠️ Der Entwurf konnte nicht in der Cloud gelöscht werden. Bitte Internetverbindung prüfen.', 'error');
+                            showToast('Der Entwurf konnte nicht in der Cloud gelöscht werden. Bitte Internetverbindung prüfen.', 'error');
                         });
                     }
                 }
@@ -5099,7 +5878,7 @@
                 // Vermutlich Verbindungsproblem: Lokale Sicherung bewusst NICHT löschen,
                 // damit der Abend beim nächsten Start der App erneut synchronisiert werden kann.
                 console.warn('Cloud-Speicherung fehlgeschlagen, lokale Sicherung bleibt erhalten:', err);
-                showToast("⚠️ Cloud-Synchronisierung fehlgeschlagen. Der Abend bleibt lokal gesichert und wird automatisch nachgeholt.", 'error');
+                showToast("Cloud-Synchronisierung fehlgeschlagen. Der Abend bleibt lokal gesichert und wird automatisch nachgeholt.", 'error');
             });
         }
 
@@ -5278,420 +6057,143 @@
             });
         }
 
-        // Asynchrones Laden der styled-Excel Bibliothek bei Bedarf
-        function loadSheetJS() {
-            return new Promise((resolve, reject) => {
-                if (window.XLSX) {
-                    resolve(window.XLSX);
-                    return;
-                }
-                let script = document.querySelector('script[src*="xlsx.bundle.js"], script[src*="xlsx.full.min.js"]');
-                if (script) {
-                    script.addEventListener('load', () => resolve(window.XLSX));
-                    script.addEventListener('error', () => reject(new Error("SheetJS (xlsx-js-style) konnte nicht geladen werden.")));
-                    return;
-                }
-                script = document.createElement('script');
-                script.src = "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"; // Styled Excel-Fork
-                script.onload = () => resolve(window.XLSX);
-                script.onerror = () => reject(new Error("SheetJS (xlsx-js-style) konnte nicht geladen werden."));
-                document.head.appendChild(script);
-            });
+        // === JSON-BACKUP: EXPORT & IMPORT ===
+        // Exportiert exakt die Firebase-Struktur (doko_v2_data -> manualRecords/seasons), damit eine
+        // exportierte Datei 1:1 wieder importierbar ist bzw. auch manuell in Firebase eingespielt
+        // werden könnte. state.seasons enthält bereits den aktuellen liveDraft eines laufenden Abends
+        // (wird bei jeder Eingabe live nachgeführt, siehe updateLiveDraft()) – ein zusätzlicher
+        // updateLiveDraft()-Aufruf hier ist daher nicht nötig und würde als unerwünschter Nebeneffekt
+        // eines reinen Lese-/Export-Vorgangs einen weiteren Cloud-Schreibvorgang auslösen.
+        // Aktualisiert season.liveDraft rein lokal mit dem aktuellen Formular-/tempScores-Stand,
+        // ohne Cloud-Schreibvorgang oder Sperren-Erneuerung auszulösen (im Gegensatz zu
+        // updateLiveDraft()). Für den JSON-Export reicht ein lokal korrekter Snapshot; ein
+        // Cloud-Write wäre hier unpassend und führt fälschlich zur Sperr-Warnung, wenn der
+        // Eingabebereich gerade gar nicht (mehr) durch diese Sitzung gesperrt ist.
+        function refreshLiveDraftLocalOnly() {
+            if (isPopulatingEditForm) return;
+            if (editingMatchId) return;
+            if (!state.currentSeasonKey) return;
+            const season = state.seasons[state.currentSeasonKey];
+            if (!season || season.status === "abgeschlossen") return;
+            season.liveDraft = getLiveDraftSnapshot();
         }
 
-        // Excel-Export für alle Saisons, Spieltage und Runden-Details mit edlen Styles
-        async function exportToExcel() {
-            const btn = document.getElementById('excelExportBtn');
-            const originalContent = btn.innerHTML;
-            
+        function exportToJson() {
             try {
-                // UI Feedback: Button sperren und Ladestatus signalisieren
-                btn.disabled = true;
-                btn.classList.add('opacity-50', 'cursor-not-allowed');
-                btn.innerHTML = `
-                    <svg class="animate-spin h-4 w-4 text-slate-700 dark:text-slate-300 inline-block mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Wird geladen...</span>
-                `;
+                // Falls gerade in einem Punkte-Feld getippt wird: season.liveDraft.scores hinkt
+                // tempScores hinterher, da onchange (nicht oninput) den Live-Draft aktualisiert.
+                // Vor dem Snapshot lokal auffrischen, damit der Export den zuletzt getippten Wert
+                // enthält, auch wenn das Feld noch fokussiert ist.
+                refreshLiveDraftLocalOnly();
 
-                const XLSX = await loadSheetJS();
-                
-                // --- Sheet 1: Saison-Tabellen (Overview) ---
-                const tabellenData = [];
-                tabellenData.push([
-                    "Saison", "Status", "Typ", "Mindestquote (%)", "Platz", "Spieler", 
-                    "Schnitt", "Teilnahmen", "Gesamt-Spieltage", "Quote (%)", 
-                    "Saison-Punkte", "Gewertet"
-                ]);
-                
-                const seasonKeys = Object.keys(state.seasons);
-                sortSeasonsChronologically(seasonKeys);
-                
-                seasonKeys.forEach(sKey => {
-                    const season = state.seasons[sKey];
-                    const seasonPlayers = season.players || [];
-                    const minQuota = season.minQuota !== undefined ? season.minQuota : 40;
-                    const minQuotaRatio = minQuota / 100;
-                    const isHist = season.isHistorical;
-                    
-                    const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(sKey);
-                    
-                    let playerData = seasonPlayers.map(name => {
-                        let played = matchCounts[name] || 0;
-                        let pts = totalSeasonPoints[name] || 0;
-                        let ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
-                        return { 
-                            name, played, pts, ratio, 
-                            avg: played > 0 ? (pts / played) : 0,
-                            inRating: ratio >= minQuotaRatio 
-                        };
-                    });
-                    
-                    let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
-                    let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
-                    
-                    let lastAvg = null;
-                    let lastRank = 0;
-                    
-                    qualified.forEach((p, idx) => {
-                        if (lastAvg === null || Math.abs(p.avg - lastAvg) > 0.0001) {
-                            lastRank = idx + 1;
-                            lastAvg = p.avg;
-                        }
-                        tabellenData.push([
-                            sKey,
-                            season.status,
-                            isHist ? "Historisch" : "Regulär",
-                            minQuota,
-                            lastRank,
-                            p.name,
-                            parseFloat(p.avg.toFixed(2)),
-                            p.played,
-                            totalMatchesCount,
-                            Math.round(p.ratio * 100),
-                            p.pts,
-                            "Ja"
-                        ]);
-                    });
-                    
-                    unqualified.forEach(p => {
-                        tabellenData.push([
-                            sKey,
-                            season.status,
-                            isHist ? "Historisch" : "Regulär",
-                            minQuota,
-                            "-",
-                            p.name,
-                            p.played > 0 ? parseFloat(p.avg.toFixed(2)) : 0.00,
-                            p.played,
-                            totalMatchesCount,
-                            Math.round(p.ratio * 100),
-                            p.pts,
-                            "Nein"
-                        ]);
-                    });
-                });
-                
-                // --- Sheet 2: Spieltage (Abend-Uebersicht) ---
-                const spieltageData = [];
-                spieltageData.push([
-                    "Saison", "Saison-Typ", "Datum", "Gastgeber", "Eingabe-Modus", 
-                    "Spieler", "Platzierung (Abend)", "Punkte", "Punkte-Typ", 
-                    "Beteiligung (%)", "Qualifiziert", "SoG genutzt"
-                ]);
-                
-                seasonKeys.forEach(sKey => {
-                    const season = state.seasons[sKey];
-                    if (!season.matches) return;
-                    
-                    const matchesEntries = Object.entries(season.matches)
-                        .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
-                        
-                    matchesEntries.forEach(([matchId, match]) => {
-                        if (!match.scores) return;
-                        
-                        let sortedEvening = Object.keys(match.scores).map(pName => {
-                            let isQualified = !isPlayerDisqualifiedInMatch(match, pName);
-                            let ratePercent = 100;
-                            if (match.mode === 'detailed' && match.games) {
-                                const playersCount = match.order ? match.order.length : Object.keys(match.scores).length;
-                                if (playersCount >= 5) {
-                                    const rate = getEveningParticipation(match, pName);
-                                    ratePercent = Math.round(rate * 100);
-                                }
-                            }
-                            if (match.belowSixty && match.belowSixty[pName] === true) {
-                                ratePercent = 0;
-                            }
-                            return {
-                                name: pName,
-                                score: match.scores[pName],
-                                isQualified,
-                                ratePercent,
-                                sog: !!(match.jokers && match.jokers[pName])
-                            };
-                        }).sort((a, b) => b.score - a.score);
-                        
-                        let qualifiedRankCount = 0;
-                        let lastEveningScore = null;
-                        let lastEveningRank = 1;
-                        
-                        sortedEvening.forEach(p => {
-                            if (!p.isQualified) {
-                                p.rank = "DQ";
-                            } else {
-                                qualifiedRankCount++;
-                                if (lastEveningScore === null || p.score !== lastEveningScore) {
-                                    lastEveningRank = qualifiedRankCount;
-                                    lastEveningScore = p.score;
-                                }
-                                p.rank = lastEveningRank;
-                            }
-                        });
-                        
-                        const pointsLabelText = season.isHistorical 
-                            ? (match.pointType === 'spieltag' ? 'Spieltag' : 'Platzierung') 
-                            : 'Spieltag';
-                            
-                        sortedEvening.forEach(p => {
-                            spieltageData.push([
-                                sKey,
-                                season.isHistorical ? "Historisch" : "Regulär",
-                                padDateString(match.date),
-                                match.host || "-",
-                                match.mode === 'detailed' ? "Spiel für Spiel" : "Nur Endergebnis",
-                                p.name,
-                                p.rank,
-                                p.score,
-                                pointsLabelText,
-                                p.ratePercent,
-                                p.isQualified ? "Ja" : "Nein",
-                                p.sog ? "Ja" : "Nein"
-                            ]);
-                        });
-                    });
-                });
-                
-                // --- Sheet 3: Einzelspiele (Granulare Runden-Details) ---
-                const einzelspieleData = [];
-                einzelspieleData.push([
-                    "Saison", "Datum", "Runde", "Spiel-Nr", "Geber", 
-                    "Spieler", "Punkte", "Solo", "Solo-Typ", "Solo-Klasse", "Ansage"
-                ]);
-                
-                seasonKeys.forEach(sKey => {
-                    const season = state.seasons[sKey];
-                    if (!season.matches) return;
-                    
-                    const matchesEntries = Object.entries(season.matches)
-                        .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
-                        
-                    matchesEntries.forEach(([matchId, match]) => {
-                        if (match.mode !== 'detailed' || !match.games) return;
-                        
-                        const order = match.order || Object.keys(match.scores || {});
-                        const processedGames = processGamesList(order, match.games);
-                        
-                        let gameNum = 1;
-                        let currentRound = 1;
-                        
-                        processedGames.forEach(g => {
-                            if (g.isRoundMarker) {
-                                currentRound = g.roundNumber;
-                                return;
-                            }
-                            
-                            const gm = normalizeGame(g);
-                            
-                            order.forEach(pName => {
-                                if (gm.points[pName] === undefined) {
-                                    einzelspieleData.push([
-                                        sKey,
-                                        padDateString(match.date),
-                                        currentRound,
-                                        gameNum,
-                                        gm._dealerName || "-",
-                                        pName,
-                                        "Ausgesetzt",
-                                        "-",
-                                        "-",
-                                        "-",
-                                        "-"
-                                    ]);
-                                } else {
-                                    const pts = gm.points[pName];
-                                    const isSolo = !!(gm.solo && gm.solo[pName]);
-                                    const sType = isSolo ? (gm.soloType?.[pName] || "Unbekannt") : "-";
-                                    const sKind = isSolo ? (soloKindLabel(gm.soloKind?.[pName]) || "Lust/Pflicht") : "-";
-                                    const hasAnsage = !!(gm.ansage && gm.ansage[pName]);
-                                    
-                                    einzelspieleData.push([
-                                        sKey,
-                                        padDateString(match.date),
-                                        currentRound,
-                                        gameNum,
-                                        gm._dealerName || "-",
-                                        pName,
-                                        pts,
-                                        isSolo ? "Ja" : "Nein",
-                                        sType,
-                                        sKind,
-                                        hasAnsage ? "Ja" : "Nein"
-                                    ]);
-                                }
-                            });
-                            
-                            gameNum++;
-                        });
-                    });
-                });
-                
-                // Arbeitsmappe erstellen und Blaetter befuellen
-                const wb = XLSX.utils.book_new();
-                
-                const wsTabellen = XLSX.utils.aoa_to_sheet(tabellenData);
-                const wsSpieltage = XLSX.utils.aoa_to_sheet(spieltageData);
-                const wsEinzelspiele = XLSX.utils.aoa_to_sheet(einzelspieleData);
-
-                // Helper zum Stylen der Sheets mit xlsx-js-style
-                const styleWorksheet = (ws, colWidths, columnAlignments, specialRowRules) => {
-                    // Setze explizite Spaltenbreiten
-                    ws['!cols'] = colWidths.map(w => ({ wch: w }));
-                    
-                    // Loop über alle Zellen
-                    for (let key in ws) {
-                        if (key[0] === '!') continue;
-                        
-                        const cell = ws[key];
-                        const parsed = XLSX.utils.decode_cell(key);
-                        const col = parsed.c;
-                        const row = parsed.r;
-                        
-                        // Basis-Design
-                        let style = {
-                            font: { name: "Arial", sz: 10, color: { rgb: "1E293B" } },
-                            alignment: { vertical: "center" },
-                            border: {
-                                top: { style: "thin", color: { rgb: "E2E8F0" } },
-                                bottom: { style: "thin", color: { rgb: "E2E8F0" } },
-                                left: { style: "thin", color: { rgb: "E2E8F0" } },
-                                right: { style: "thin", color: { rgb: "E2E8F0" } }
-                            }
-                        };
-                        
-                        if (row === 0) {
-                            // Header-Design: Dunkelgrüner Doko-Theme
-                            style.font = { name: "Arial", sz: 11, bold: true, color: { rgb: "FFFFFF" } };
-                            style.fill = { fgColor: { rgb: "065F46" } }; // Emerald-800
-                            style.alignment = { horizontal: "center", vertical: "center", wrapText: true };
-                            style.border = {
-                                bottom: { style: "medium", color: { rgb: "047857" } }
-                            };
-                        } else {
-                            // Zebra Wechsellayout für verbesserte Lesbarkeit
-                            if (row % 2 === 1) {
-                                style.fill = { fgColor: { rgb: "F8FAFC" } }; // Slate-50 alternating background
-                            } else {
-                                style.fill = { fgColor: { rgb: "FFFFFF" } };
-                            }
-                            
-                            // Alignments anwenden
-                            style.alignment.horizontal = columnAlignments[col] || "left";
-                            
-                            // Zahlendarstellung standardisieren
-                            if (cell.t === 'n') {
-                                if (Number.isInteger(cell.v)) {
-                                    style.numFmt = "#,##0";
-                                } else {
-                                    style.numFmt = "0.00";
-                                }
-                            }
-                            
-                            // Sonderregeln anwenden
-                            if (specialRowRules) {
-                                specialRowRules(ws, row, col, cell, style);
-                            }
-                        }
-                        
-                        cell.s = style;
+                const payload = {
+                    doko_v2_data: {
+                        manualRecords: state.manualRecords || {},
+                        seasons: state.seasons || {}
                     }
                 };
 
-                // Styling: "Saison-Tabellen"
-                styleWorksheet(
-                    wsTabellen,
-                    [18, 14, 14, 20, 10, 20, 12, 14, 18, 12, 14, 12],
-                    ["left", "center", "center", "center", "center", "left", "right", "center", "center", "center", "right", "center"],
-                    (ws, row, col, cell, style) => {
-                        // Wenn Spieler nicht gewertet ist, Zeile dezent ausgrauen
-                        const gewertetCellAddress = XLSX.utils.encode_cell({ r: row, c: 11 });
-                        const gewertetVal = ws[gewertetCellAddress] ? ws[gewertetCellAddress].v : '';
-                        if (gewertetVal === 'Nein') {
-                            style.font.color = { rgb: "94A3B8" };
-                            style.font.italic = true;
-                            style.fill = { fgColor: { rgb: "F1F5F9" } };
-                        }
-                    }
-                );
+                const jsonString = JSON.stringify(payload, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
 
-                // Styling: "Spieltage"
-                styleWorksheet(
-                    wsSpieltage,
-                    [18, 14, 12, 18, 18, 18, 22, 12, 14, 18, 14, 14],
-                    ["left", "center", "center", "left", "center", "left", "center", "right", "center", "center", "center", "center"],
-                    (ws, row, col, cell, style) => {
-                        // Wenn Spieler am Abend disqualifiziert war, dezent rötlich hinterlegen
-                        const qualCellAddress = XLSX.utils.encode_cell({ r: row, c: 10 });
-                        const qualVal = ws[qualCellAddress] ? ws[qualCellAddress].v : '';
-                        if (qualVal === 'Nein') {
-                            style.font.color = { rgb: "991B1B" };
-                            style.fill = { fgColor: { rgb: "FEF2F2" } };
-                        }
-                    }
-                );
+                const dateStr = new Date().toISOString().slice(0, 10);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `doko_saisonverwaltung_backup_${dateStr}.json`;
 
-                // Styling: "Einzelspiele"
-                styleWorksheet(
-                    wsEinzelspiele,
-                    [18, 12, 10, 10, 18, 18, 12, 10, 18, 14, 10],
-                    ["left", "center", "center", "center", "left", "left", "right", "center", "center", "center", "center"],
-                    (ws, row, col, cell, style) => {
-                        // Ausgesetzte Spieler ausgrauen
-                        if (col === 6 && cell.v === "Ausgesetzt") {
-                            style.font.color = { rgb: "94A3B8" };
-                            style.font.italic = true;
-                        }
-                        // Solos hervorheben
-                        const isSoloAddress = XLSX.utils.encode_cell({ r: row, c: 7 });
-                        const isSoloVal = ws[isSoloAddress] ? ws[isSoloAddress].v : '';
-                        if (isSoloVal === 'Ja') {
-                            if (col === 7 || col === 8 || col === 9) {
-                                style.fill = { fgColor: { rgb: "FEF3C7" } }; // Warmes Bernstein
-                                style.font.color = { rgb: "92400E" };
-                                style.font.bold = true;
-                            }
-                        }
-                    }
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                showToast("JSON-Backup heruntergeladen!", 'success');
+            } catch (err) {
+                console.error("Fehler beim JSON-Export:", err);
+                showToast("Fehler beim Erstellen des JSON-Exports.", 'error');
+            }
+        }
+
+        function triggerJsonImport() {
+            const input = document.getElementById('jsonImportInput');
+            if (input) input.click();
+        }
+
+        // Liest die JSON-Datei ein, validiert die Struktur und überschreibt state.seasons /
+        // state.manualRecords vollständig – anschließend Cloud-Schreibvorgang nach demselben Muster
+        // wie andere volle Überschreib-Vorgänge der App (siehe deleteMatch()): Sperre respektieren,
+        // lokalen Stand vor dem Überschreiben sichern und bei einem fehlgeschlagenen Cloud-Schreiben
+        // wiederherstellen, statt einen Erfolg vorzutäuschen, der beim nächsten Sync wieder verschwindet.
+        async function handleJsonImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const rawContent = await file.text();
+                const parsed = JSON.parse(rawContent);
+
+                // Erkennt sowohl {"doko_v2_data": {...}} als auch flache Objekte {seasons, manualRecords}
+                const importedData = parsed && parsed.doko_v2_data ? parsed.doko_v2_data : parsed;
+
+                if (!importedData || typeof importedData.seasons !== 'object' || importedData.seasons === null) {
+                    throw new Error("Der Schlüssel 'seasons' fehlt oder ist ungültig.");
+                }
+
+                if (editLockInfo && !hasEditLock) {
+                    showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Import ist gerade nicht möglich.', 'error');
+                    return;
+                }
+
+                const confirmed = await showConfirm(
+                    "⚠️ ACHTUNG!\n\nDas Importieren dieser Datei überschreibt alle aktuellen Saisons, Abende und Rekorde in der Cloud – für alle Nutzer.\n\nMöchtest du wirklich fortfahren?"
                 );
-                
-                XLSX.utils.book_append_sheet(wb, wsTabellen, "Saison-Tabellen");
-                XLSX.utils.book_append_sheet(wb, wsSpieltage, "Spieltage");
-                XLSX.utils.book_append_sheet(wb, wsEinzelspiele, "Einzelspiele");
-                
-                // XLSX abspeichern
-                XLSX.writeFile(wb, `Doko_Gesamtexport_${new Date().toISOString().slice(0, 10)}.xlsx`);
-                showToast("Excel-Export erfolgreich erstellt!", 'success');
-                
-            } catch (error) {
-                console.error(error);
-                showToast("Fehler beim Excel-Export: " + error.message, 'error');
+                if (!confirmed) return;
+
+                // Sicherheitskopie für den Fehlerfall (siehe handleFailure unten).
+                const backupSeasons = state.seasons;
+                const backupManualRecords = state.manualRecords;
+                const backupCurrentSeasonKey = state.currentSeasonKey;
+
+                state.seasons = importedData.seasons || {};
+                state.manualRecords = importedData.manualRecords || {};
+
+                // Falls die aktuelle Saison im importierten Datensatz nicht mehr existiert, auf die
+                // neueste vorhandene Saison wechseln.
+                const keys = Object.keys(state.seasons);
+                if (keys.length > 0 && (!state.currentSeasonKey || !state.seasons[state.currentSeasonKey])) {
+                    sortSeasonsChronologically(keys);
+                    state.currentSeasonKey = keys[0];
+                }
+
+                render();
+
+                const handleFailure = (err) => {
+                    console.error("Fehler beim Cloud-Schreiben des JSON-Imports:", err);
+                    state.seasons = backupSeasons;
+                    state.manualRecords = backupManualRecords;
+                    state.currentSeasonKey = backupCurrentSeasonKey;
+                    render();
+                    showToast("Import fehlgeschlagen: Cloud-Speicherung nicht möglich. Vorheriger Stand wiederhergestellt.", 'error');
+                };
+
+                if (hasEditLock) {
+                    saveToCloud().then(() => {
+                        showToast("JSON-Backup erfolgreich importiert!", 'success');
+                    }).catch(handleFailure);
+                } else {
+                    // Sperre kurz belegen, damit der Voll-Überschreib-Import sicher hochgeladen werden darf.
+                    acquireEditLock();
+                    writeSeasonsToCloudRaw().then(() => {
+                        showToast("JSON-Backup erfolgreich importiert!", 'success');
+                    }).catch(handleFailure).finally(() => {
+                        releaseEditLockRaw();
+                    });
+                }
+            } catch (err) {
+                console.error("Fehler beim JSON-Import:", err);
+                showToast("Import fehlgeschlagen: " + err.message, 'error');
             } finally {
-                // UI zurücksetzen
-                btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                btn.innerHTML = originalContent;
+                event.target.value = '';
             }
         }
 
@@ -6192,60 +6694,11 @@
             const joinNames = (arr) => arr && arr.length > 0 ? arr.map(escapeHtml).join(', ') : '-';
 
             // Ewige Gesamttabelle: alle Spieler, die jemals teilgenommen haben, nach Punkteschnitt
-            // pro Abend sortiert (analog zur normalen Saisontabelle). Unter 10 Teilnahmen zählt der
-            // Spieler zwar mit, bleibt aber ohne Wertung (kein Rangplatz, ausgegraut) – zu wenige
-            // Abende würden den Schnitt sonst verzerren.
-            const allTimeTableBody = document.getElementById('allTimeTableBody');
-            if (allTimeTableBody) {
-                const MIN_ALLTIME_TABLE_PARTICIPATIONS = 10;
-                let allTimePlayerData = Object.keys(globalPlacementPoints)
-                    .filter(name => (globalPlacementPointsMatchCount[name] || 0) > 0)
-                    .map(name => {
-                        const played = globalPlacementPointsMatchCount[name] || 0;
-                        const pts = globalPlacementPoints[name] || 0;
-                        return { name, played, pts, avg: played > 0 ? pts / played : 0, inRating: played >= MIN_ALLTIME_TABLE_PARTICIPATIONS };
-                    });
-
-                let atQualified = allTimePlayerData.filter(p => p.inRating).sort((a, b) => b.avg - a.avg);
-                let atUnqualified = allTimePlayerData.filter(p => !p.inRating).sort((a, b) => b.avg - a.avg || b.played - a.played);
-
-                let atLastAvg = null, atLastRank = 0;
-                const mapAllTimeRow = (p, isQ) => {
-                    if (isQ) {
-                        return `
-                        <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
-                            <td class="p-2 text-emerald-400 font-bold">${atLastRank}.</td>
-                            <td class="p-2 font-semibold text-slate-100">${escapeHtml(p.name)}</td>
-                            <td class="p-2 text-right font-bold text-emerald-400">${p.avg.toFixed(2)}</td>
-                            <td class="p-2 text-right text-slate-300">${p.played}/${globalTotalMatchdaysEver}</td>
-                            <td class="p-2 text-right text-slate-400">${p.pts} Pkt.</td>
-                        </tr>
-                        `;
-                    } else {
-                        return `
-                        <tr class="bg-slate-900/40 text-slate-500 italic">
-                            <td class="p-2 text-center font-bold font-mono">-</td>
-                            <td class="p-2 font-semibold">${escapeHtml(p.name)}</td>
-                            <td class="p-2 text-right font-semibold">${p.avg.toFixed(2)}</td>
-                            <td class="p-2 text-right text-amber-500">${p.played}/${globalTotalMatchdaysEver}</td>
-                            <td class="p-2 text-right">${p.pts} Pkt.</td>
-                        </tr>
-                        `;
-                    }
-                };
-
-                if (allTimePlayerData.length === 0) {
-                    allTimeTableBody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">Keine Daten.</td></tr>';
-                } else {
-                    allTimeTableBody.innerHTML = atQualified.map((p, i) => {
-                        if (atLastAvg === null || Math.abs(p.avg - atLastAvg) > 0.0001) {
-                            atLastRank = i + 1;
-                            atLastAvg = p.avg;
-                        }
-                        return mapAllTimeRow(p, true);
-                    }).join('') + atUnqualified.map(p => mapAllTimeRow(p, false)).join('');
-                }
-            }
+            // pro Abend sortiert (analog zur normalen Saisontabelle), optional auf einen selbst
+            // gewählten Zeitraum eingeschränkt (siehe renderAllTimeTable/calculateAllTimeTableData).
+            // Unter 10 Teilnahmen im gewählten Zeitraum zählt der Spieler zwar mit, bleibt aber ohne
+            // Wertung (kein Rangplatz, ausgegraut) – zu wenige Abende würden den Schnitt sonst verzerren.
+            renderAllTimeTable();
 
             // Mischmeister: manuell gepflegter Rekord (siehe openMischmeisterModal/saveMischmeisterRecord),
             // da die häufigste Geben-Serie in Folge nicht aus den erfassten Spieldaten ableitbar ist.
