@@ -3325,9 +3325,27 @@
             renderAtfCalendar();
 
             const rect = input.closest('.atf-field').getBoundingClientRect();
-            popup.style.top = `${rect.bottom + 4}px`;
-            popup.style.left = `${rect.left}px`;
+            const POPUP_WIDTH = 236;
+            const MARGIN = 10;
+
+            // Sichtbar schalten, bevor wir offsetHeight messen (bei display:none wäre das 0) –
+            // Position wird direkt danach synchron gesetzt, daher kein sichtbares Flackern.
             popup.classList.remove('hidden');
+
+            let left = rect.left;
+            if (left + POPUP_WIDTH + MARGIN > window.innerWidth) {
+                left = Math.max(MARGIN, window.innerWidth - POPUP_WIDTH - MARGIN);
+            }
+
+            let top = rect.bottom + 4;
+            const popupHeight = popup.offsetHeight;
+            if (top + popupHeight + MARGIN > window.innerHeight) {
+                // Passt unten nicht mehr hin: stattdessen oberhalb des Feldes anzeigen.
+                top = Math.max(MARGIN, rect.top - popupHeight - 4);
+            }
+
+            popup.style.top = `${top}px`;
+            popup.style.left = `${left}px`;
 
             // Klick außerhalb des Popups (und außerhalb der 📅-Buttons) schließt es wieder.
             setTimeout(() => document.addEventListener('click', atfCalOutsideClick), 0);
