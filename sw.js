@@ -9,7 +9,7 @@
 // Bei jedem Deploy mit neuem Funktionsstand HOCHZÄHLEN (z.B. 'doko-shell-v3').
 // Das ist der einzige Weg, wie Nutzer mit bereits installierter PWA einen alten,
 // gecachten Stand von index.html verlässlich abgelöst bekommen.
-const CACHE_VERSION = 'doko-shell-v1.8';
+const CACHE_VERSION = 'doko-shell-v2.15';
 
 // Nur Dateien, die tatsächlich zur statischen Hülle gehören – siehe <head> von index.html
 // sowie die Icon-Liste in manifest.json.
