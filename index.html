@@ -216,6 +216,76 @@
            was uneinheitlich zum Rest der App aussieht. text-transform wirkt auch auf die intern vom
            Browser gerenderten Platzhalter-Segmente, nicht nur auf eingegebene Ziffern. */
         input[type="date"] { text-transform: uppercase; }
+
+        /* Rekord-Archiv (manuelle Alt-Rekorde) oberhalb der Ewigen Gesamttabelle: eigenständiges CSS
+           aus demselben Grund wie bei .atf-bar oben – border-dashed, border-amber-800/40 und
+           bg-amber-950/20 (jeweils ohne dark:-Präfix) fehlen in der vorkompilierten tailwind.css und
+           wurden bisher stillschweigend ignoriert; der Rahmen fiel dadurch auf currentColor (Weiß)
+           zurück, statt den beabsichtigten Amber-Ton zu zeigen. */
+        .ra-toggle-btn {
+            background: rgba(69, 26, 3, .3);
+            border: 1px solid rgba(146, 64, 14, .4);
+            color: #fde68a;
+        }
+        .ra-toggle-btn:hover {
+            background: rgba(69, 26, 3, .5);
+            border-color: rgba(217, 119, 6, .6);
+        }
+        .ra-card {
+            background: rgba(69, 26, 3, .2);
+            border: 1px dashed rgba(146, 64, 14, .4);
+            border-radius: .75rem;
+            padding: 1rem;
+        }
+
+        /* SoG-Toggle ("Schmeißen ohne Grund"): kreisförmiger Orange-Ring-Chip statt der früheren
+           eckigen Checkbox-Badge. Eigenständiges CSS statt neuer Tailwind-Klassen, da orange-*
+           Utilities generell nicht in der vorkompilierten tailwind.css enthalten sind (kein
+           Live-Compiler, siehe .atf-bar-Kommentar oben). Die Checkbox bleibt für Klick-/State-
+           Handling erhalten, wird aber visuell versteckt – der Zustand zeigt sich rein über die
+           sog-chip-on-Klasse (siehe onchange-Handler am Element).
+        */
+        .sog-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .25rem;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .02em;
+            padding: 3px 11px;
+            border-radius: 999px;
+            border: 1px solid rgba(249, 115, 22, .45);
+            color: #f97316;
+            background: #fff;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color .15s, color .15s, opacity .15s, border-color .15s;
+        }
+        .sog-chip input { display: none; }
+        .sog-chip:hover { background: #fff7ed; }
+        /* "An"-Zustand (aktiv/genutzt): dezent über kräftigeren (aber weiterhin dünnen) Rand und
+           einen zarten Hintergrundton markiert, keine dicke Linie/Schatten mehr. */
+        .sog-chip.sog-chip-on {
+            border-color: #f97316;
+            background: #fff7ed;
+        }
+        .sog-chip.sog-chip-on:hover { background: #ffedd5; }
+        .sog-chip.sog-chip-dim { opacity: .4; }
+        .sog-chip.sog-chip-disabled {
+            border-color: #cbd5e1;
+            color: #94a3b8;
+            opacity: .35;
+            cursor: not-allowed;
+            background: #fff;
+        }
+        /* Statische Variante für reine Info-Badges (Historie, Blitztabelle) ohne Interaktion. */
+        .sog-chip.sog-chip-static { cursor: help; }
+        /* Kleinere Variante für die Blitztabelle, mit etwas mehr Abstand zum Spielernamen. */
+        .sog-chip.sog-chip-table {
+            font-size: 8px;
+            padding: 2px 7px;
+            margin-left: 10px;
+        }
     </style>
     
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -239,7 +309,27 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('App bereit!'))
+                    .then(reg => {
+                        console.log('App bereit!');
+
+                        // Erkennt eine ECHTE Aktualisierung (nicht die Erstinstallation): reg.update-
+                        // found feuert, sobald sich sw.js byteweise geändert hat (siehe CACHE_VERSION-
+                        // Kommentar dort). navigator.serviceWorker.controller ist zu diesem Zeitpunkt
+                        // (state 'installed', VOR 'activating'/clients.claim()) noch der alte,
+                        // bisherige Worker – ist er gesetzt, gab es also bereits eine ältere Version
+                        // auf diesem Gerät. Bei der allerersten Installation ist er dagegen null,
+                        // wodurch hier bewusst kein Banner erscheint.
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            if (!newWorker) return;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    const banner = document.getElementById('swUpdateBanner');
+                                    if (banner) banner.classList.remove('hidden');
+                                }
+                            });
+                        });
+                    })
                     .catch(err => console.log('PWA Fehler', err));
             });
         }
@@ -249,6 +339,18 @@
 
     <!-- Toast-Container (ersetzt native alert()-Meldungen) -->
     <div id="toastContainer" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] flex flex-col items-center gap-2 w-full max-w-sm px-4 pointer-events-none"></div>
+
+    <!-- App-Update-Banner: erscheint, wenn ein neuer Service-Worker-Stand (sw.js) eine bereits
+         offene Seite übernommen hat. Bewusst kein Auto-Dismiss wie beim Toast und ein echter
+         Reload-Button, da die installierte PWA im Standalone-Modus keinen Browser-Reload-Button
+         hat. -->
+    <div id="swUpdateBanner" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4">
+        <div class="pointer-events-auto bg-emerald-600 text-white text-sm font-semibold rounded-xl shadow-2xl px-4 py-3 flex items-center gap-3">
+            <span class="shrink-0">✨</span>
+            <span class="leading-snug flex-1">Neue Version verfügbar</span>
+            <button onclick="location.reload()" class="shrink-0 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-bold cursor-pointer transition">Neu laden</button>
+        </div>
+    </div>
 
     <!-- Bestätigungs-Modal (ersetzt native confirm()-Dialoge) -->
     <div id="confirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[200] hidden flex items-center justify-center p-4">
@@ -269,6 +371,18 @@
         </div>
     </div>
 
+    <!-- Ewige Gesamttabelle: Spieler-Detail Modal (Saison-Platzierungen + Leistungswert-Verlauf über
+         alle Saisons hinweg). Bewusst ein eigenes Modal statt Wiederverwendung von playerDetailsModal,
+         da letzteres saisonspezifisch ist (state.currentSeasonKey) und hier saisonübergreifende Daten
+         inkl. Chart.js-Instanz benötigt werden. -->
+    <div id="allTimePlayerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeAllTimePlayerModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
+            <h2 id="allTimePlayerModalName" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
+            <div id="allTimePlayerModalContent" class="space-y-4 overflow-y-auto flex-1 min-h-0 pr-1"></div>
+            <button onclick="closeAllTimePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
+        </div>
+    </div>
+
     <!-- All-Time stats Detail Modal -->
     <div id="allTimeStatsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeAllTimeModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
@@ -284,13 +398,28 @@
             <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.1 -->
+                <!-- Version 2.15 -->
                 <div class="border-l-2 border-emerald-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.1</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.08.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.15</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Neu: Spielernamen in der Ewigen Gesamttabelle klickbar:</strong> Zeigt Saison-Platzierungen je Spieler – Podest-Zählung sowie Platz/Gesamtzahl gewerteter Spieler je Saison.</li>
+                        <li><strong>Neu: Rekord-Archiv</strong> oberhalb der Ewigen Gesamttabelle.</li>
+                        <li><strong>Festung-Kachel erweitert:</strong> Liste zeigt jetzt alle Spieler mit mindestens einem gehosteten Abend, inkl. Gesamtzahl aller jemals gehosteten Abende.</li>
+                        <li><strong>Ansage-Guru:</strong> Gewinnquote der Ansagen jetzt im Detail-Modal sichtbar.</li>
+                        <li><strong>SoG-Kennzeichnung neu gestaltet:</strong> Einheitlicher, dezenter Look.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.1 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.1</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">26.08.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
                         <li><strong>Neuer Zeitraum-Filter in der Ewigen Gesamttabelle:</strong> Von/Bis-Auswahl mit Datumsfeld und Kalender-Popup.</li>
                         <li><strong>Zweite Wertungsart in der Ewigen Gesamttabelle:</strong> Umschaltbar zwischen „Punkteschnitt“ (bisherige Wertung) und „Leistungswert“ – normiert jeden Abend auf 0–100 %, unabhängig von der Spieleranzahl (1. Platz = 100 %, Letzter = 0 %).</li>
                         <li><strong>Sortierbare Spalten in der Ewigen Gesamttabelle:</strong> Klick auf „Spieler“, „Schnitt“/„Leistung“, „Teilnahmen“ oder „Gesamt-Pkt.“ sortiert die Anzeige.</li>
@@ -1003,6 +1132,107 @@
                 <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
 
+                <button onclick="toggleRecordArchiv()" id="recordArchivToggleBtn" class="ra-toggle-btn w-full mt-4 flex items-center justify-between gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition cursor-pointer">
+                    <span>📜 Rekord-Archiv</span>
+                    <span id="recordArchivToggleIcon" class="transition-transform">▼</span>
+                </button>
+                <div id="recordArchivContainer" class="hidden mt-3">
+                    <p class="text-[11px] text-slate-400 mb-3">Manuell hinterlegte Rekorde aus der Zeit vor Einführung dieser App – nicht aus den erfassten Spieltagen berechnet.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🎯 Spielstand am Ende des Abends</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Höchster</span>
+                                <span class="text-sm font-black text-white">+117</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.11.2016</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Niedrigster</span>
+                                <span class="text-sm font-black text-white">−113</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Wiebke · 21.11.2015</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🌍 Spielstand überhaupt</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Höchster</span>
+                                <span class="text-sm font-black text-white">+126</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.11.2016</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Niedrigster</span>
+                                <span class="text-sm font-black text-white">−113</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Seppl · 01.09.2015, Wiebke · 21.11.2015</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🔥 Serien</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Meiste Siege in Folge</span>
+                                <span class="text-sm font-black text-white">12</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 07.10.2017, Sonja · 11.12.2021</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Meiste Niederlagen in Folge</span>
+                                <span class="text-sm font-black text-white">18</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">David · 04.05.2023, Seppl · 16.04.2026</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">✋ Punkte auf der Hand</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Meiste</span>
+                                <span class="text-sm font-black text-white">104</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.06.2016, Lutz · 09.06.2022, Alex · 19.10.2025</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Wenigste</span>
+                                <span class="text-sm font-black text-white">27</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">David · 16.08.2018, Lutz · 02.11.2016</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">💰 Gesamtumsatz des Abends</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Größter</span>
+                                <span class="text-sm font-black text-white">148</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">02.11.2016</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Kleinster</span>
+                                <span class="text-sm font-black text-white">8</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">15.01.2022</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">📊 Gesamtdifferenz des Abends</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Größte</span>
+                                <span class="text-sm font-black text-white">182</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">30.05.2023</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Kleinste</span>
+                                <span class="text-sm font-black text-white">14</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">02.12.2020</p>
+                        </div>
+                        <div class="ra-card">
+                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🏆 Siegquote am Abend</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Höchste</span>
+                                <span class="text-sm font-black text-white">82,76 %</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mb-2">David · 06.09.2019</p>
+                            <div class="flex justify-between items-baseline gap-2">
+                                <span class="text-[11px] text-slate-400">Niedrigste</span>
+                                <span class="text-sm font-black text-white">12,50 %</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500">Seppl · 16.04.2026</p>
+                        </div>
+                    </div>
+                </div>
+
                 <button onclick="toggleAllTimeTable()" id="allTimeTableToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
                     <span>📋 Ewige Gesamttabelle</span>
                     <span id="allTimeTableToggleIcon" class="transition-transform">▼</span>
@@ -1206,6 +1436,7 @@
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
         let isAllTimeTableExpanded = false; // Ewige Gesamttabelle unter der Ewigen Bestenliste, standardmäßig eingeklappt
+        let isRecordArchivExpanded = false; // Rekord-Archiv (manuell erfasste Alt-Rekorde) über der Ewigen Gesamttabelle, standardmäßig eingeklappt
         let allTimeTableFilterFrom = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         let allTimeTableFilterTo = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         // Mindestteilnahmen für eine Wertung in der Ewigen Gesamttabelle. Standard 10, vom Nutzer über
@@ -1353,6 +1584,7 @@
                 ['mischmeisterModal', closeMischmeisterModal],
                 ['allTimeStatsModal', closeAllTimeModal],
                 ['playerDetailsModal', closePlayerModal],
+                ['allTimePlayerModal', closeAllTimePlayerModal],
                 ['adminModal', () => toggleAdminModal(false)],
             ];
             for (const [id, closeFn] of modalCloseMap) {
@@ -1611,14 +1843,31 @@
                     .sort((a, b) => a.value - b.value || b.count - a.count);
             } else if (metricType === 'host') {
                 title = '🏰 Festung (Heim-Schnitt)';
-                sortedList = Object.keys(records.globalHostStats)
+                sortedList = Object.keys(records.globalHostAllCount)
                     .map(player => {
                         const stats = records.globalHostStats[player];
-                        const avg = stats.count > 0 ? (stats.totalScore / stats.count) : -Infinity;
-                        return { player, value: avg, rawVal: avg, detail: `${stats.count} Abende gehostet` };
+                        const allCount = records.globalHostAllCount[player] || 0;
+                        const hasAvg = stats.count > 0;
+                        const avg = hasAvg ? (stats.totalScore / stats.count) : -Infinity;
+                        return {
+                            player,
+                            value: avg,
+                            rawVal: avg,
+                            allCount,
+                            noRank: !hasAvg,
+                            detail: `${stats.count} Abende mit Spieltagspunkten gehostet (${allCount} insgesamt)`
+                        };
                     })
-                    .filter(item => item.rawVal !== -Infinity)
-                    .sort((a, b) => b.rawVal - a.rawVal);
+                    .filter(item => item.allCount > 0)
+                    .sort((a, b) => {
+                        // Spieler ohne Spieltagspunkte-Abend (nur Platzierungspunkte) haben keinen
+                        // Schnitt und werden hinter allen anderen einsortiert, untereinander nach
+                        // Gesamtzahl gehosteter Abende.
+                        if (a.noRank && b.noRank) return b.allCount - a.allCount || a.player.localeCompare(b.player, 'de');
+                        if (a.noRank) return 1;
+                        if (b.noRank) return -1;
+                        return b.rawVal - a.rawVal;
+                    });
             } else if (metricType === 'tagessiege') {
                 title = '👑 Tagessieg-König (mind. 10 Teilnahmen)';
                 sortedList = Object.keys(records.globalTagessiege)
@@ -1654,7 +1903,11 @@
                         const count = records.globalAnsagen[player] || 0;
                         const gamesPlayed = records.globalGamesPlayed[player] || 0;
                         const gamesPerAnsage = count > 0 ? gamesPlayed / count : Infinity;
-                        return { player, value: gamesPerAnsage, quote: count, count, detail: `${count} Ansagen in ${gamesPlayed} Spielen` };
+                        const decided = records.globalAnsagenDecided[player] || 0;
+                        const won = records.globalAnsagenWon[player] || 0;
+                        const winQuote = decided > 0 ? Math.round((won / decided) * 100) : null;
+                        const winQuoteStr = winQuote !== null ? ` (${winQuote} % gewonnen)` : '';
+                        return { player, value: gamesPerAnsage, quote: count, count, detail: `${count} Ansagen in ${gamesPlayed} Spielen${winQuoteStr}` };
                     })
                     .filter(item => item.count > 0)
                     .sort((a, b) => a.value - b.value || b.count - a.count);
@@ -1701,6 +1954,7 @@
                 let lastItem = null;
                 let lastRank = 0;
                 const ranks = sortedList.map((item, index) => {
+                    if (item.noRank) return null;
                     const sameAsLast = lastItem !== null &&
                         Math.abs(item.value - lastItem.value) < 0.0001 &&
                         (item.quote === undefined || item.quote === lastItem.quote);
@@ -1716,7 +1970,7 @@
                         ${sortedList.map((item, index) => {
                             let valStr = '';
                             if (metricType === 'host') {
-                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt.`;
+                                valStr = item.noRank ? '–' : `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt.`;
                             } else if (metricType === 'totalPoints') {
                                 valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt. / Abend`;
                             } else if (metricType === 'solo') {
@@ -1734,12 +1988,12 @@
                             }
 
                             const rank = ranks[index];
-                            const placeCls = rank === 1 ? 'bg-amber-400 text-amber-900 font-black' : (rank === 2 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (rank === 3 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400'));
+                            const placeCls = rank === null ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600' : (rank === 1 ? 'bg-amber-400 text-amber-900 font-black' : (rank === 2 ? 'bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-100 font-extrabold' : (rank === 3 ? 'bg-amber-600 text-amber-50 font-extrabold' : 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-400')));
                             
                             return `
                                 <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 hover:bg-slate-100/50 dark:hover:bg-slate-700/50 transition">
                                     <div class="flex items-center gap-3 min-w-0 mr-2">
-                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none shrink-0 ${placeCls}">${rank}</span>
+                                        <span class="w-6 h-6 flex items-center justify-center rounded-[3px] text-xs font-mono select-none shrink-0 ${placeCls}">${rank === null ? '–' : rank}</span>
                                         <div class="min-w-0">
                                             <p class="font-bold text-slate-800 dark:text-slate-200 truncate">${escapeHtml(item.player)}</p>
                                             ${item.detail ? `<p class="text-[10px] text-slate-400 dark:text-slate-500 font-medium">${item.detail}</p>` : ''}
@@ -2960,6 +3214,14 @@
             if (icon) icon.style.transform = isAllTimeTableExpanded ? 'rotate(180deg)' : '';
         }
 
+        function toggleRecordArchiv() {
+            isRecordArchivExpanded = !isRecordArchivExpanded;
+            const container = document.getElementById('recordArchivContainer');
+            const icon = document.getElementById('recordArchivToggleIcon');
+            if (container) container.classList.toggle('hidden', !isRecordArchivExpanded);
+            if (icon) icon.style.transform = isRecordArchivExpanded ? 'rotate(180deg)' : '';
+        }
+
         function formatYMDToGerman(ymd) {
             if (!ymd || typeof ymd !== 'string') return '';
             const parts = ymd.split('-');
@@ -3048,6 +3310,189 @@
             });
 
             return { globalPlacementPoints, globalPlacementPointsMatchCount, globalLeistungSum, globalLeistungMatchCount, totalMatchdays };
+        }
+
+        // Ermittelt für EINE Saison die offizielle Endplatzierungs-Rangliste – exakt dieselbe Logik
+        // wie die Saison-Blitztabelle in render() (nur Spieler mit ausreichender Teilnahmequote
+        // gelten als platziert, gleicher Schnitt = gleicher Rang, geteilt). Gemeinsam genutzt von
+        // calculateSeasonPodiums() (Podestplätze) und calculateSeasonRanks() (Rang je Saison für den
+        // Spielstärke-Chart).
+        function getSeasonRankedPlayers(seasonKey) {
+            const season = state.seasons[seasonKey];
+            if (!season || !season.matches) return [];
+            const seasonPlayers = season.players || [];
+            if (seasonPlayers.length === 0) return [];
+
+            const { totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(seasonKey);
+            if (totalMatchesCount === 0) return [];
+
+            const minQuota = season.minQuota !== undefined ? season.minQuota : 40;
+            const minQuotaRatio = minQuota / 100;
+
+            const list = seasonPlayers
+                .map(name => {
+                    const played = matchCounts[name] || 0;
+                    const ratio = totalMatchesCount > 0 ? played / totalMatchesCount : 0;
+                    return { name, played, ratio, avg: played > 0 ? totalSeasonPoints[name] / played : -Infinity };
+                })
+                .filter(p => p.played > 0 && p.ratio >= minQuotaRatio)
+                .sort((a, b) => b.avg - a.avg);
+
+            let lastAvg = null, lastRank = 0;
+            return list.map((p, i) => {
+                if (lastAvg === null || Math.abs(p.avg - lastAvg) > 0.0001) {
+                    lastRank = i + 1;
+                    lastAvg = p.avg;
+                }
+                return { name: p.name, rank: lastRank, avg: p.avg };
+            });
+        }
+
+        // Ermittelt für JEDE ABGESCHLOSSENE Saison die offizielle Endplatzierung und aggregiert
+        // daraus, wie oft jeder Spieler saisonweit 1./2./3. wurde. Laufende Saisons zählen bewusst
+        // nicht mit – deren aktuelle Führung ist nur ein Zwischenstand, keine finale Platzierung.
+        // Basis für das Spieler-Detail-Modal der Ewigen Gesamttabelle.
+        function calculateSeasonPodiums() {
+            const podiums = {}; // { name: { first: 0, second: 0, third: 0 } }
+
+            Object.keys(state.seasons).forEach(seasonKey => {
+                if (state.seasons[seasonKey].status !== 'abgeschlossen') return;
+                getSeasonRankedPlayers(seasonKey).forEach(p => {
+                    if (p.rank > 3) return;
+                    if (!podiums[p.name]) podiums[p.name] = { first: 0, second: 0, third: 0 };
+                    if (p.rank === 1) podiums[p.name].first++;
+                    else if (p.rank === 2) podiums[p.name].second++;
+                    else if (p.rank === 3) podiums[p.name].third++;
+                });
+            });
+
+            return podiums;
+        }
+
+        // Ermittelt für JEDE Saison den Rang jedes qualifizierten Spielers (siehe
+        // getSeasonRankedPlayers). Basis für die Rang-Beschriftung im Spielstärke-Chart des
+        // Spieler-Detail-Modals der Ewigen Gesamttabelle.
+        // Liefert je Saison sowohl den Rang jedes qualifizierten Spielers als auch die
+        // Gesamtzahl gewerteter (= qualifizierter) Spieler dieser Saison (für die "X/Y"-Anzeige).
+        function calculateSeasonRanks() {
+            const ranksBySeasonKey = {}; // { seasonKey: { name: rank } }
+            const totalRankedBySeasonKey = {}; // { seasonKey: Anzahl gewerteter Spieler }
+            Object.keys(state.seasons).forEach(seasonKey => {
+                const ranks = {};
+                const rankedPlayers = getSeasonRankedPlayers(seasonKey);
+                rankedPlayers.forEach(p => { ranks[p.name] = p.rank; });
+                ranksBySeasonKey[seasonKey] = ranks;
+                totalRankedBySeasonKey[seasonKey] = rankedPlayers.length;
+            });
+            return { ranksBySeasonKey, totalRankedBySeasonKey };
+        }
+
+        // Interpoliert eine Farbe zwischen Grün (Platz 1) über Amber (Mitte) nach Rot (letzter
+        // Platz), je nach relativer Position in der Saison-Rangliste. Für die Farbabstufung der
+        // Platzierungen im Spieler-Detail-Modal der Ewigen Gesamttabelle.
+        function getRankGradientColor(rank, total) {
+            if (total <= 1) return '#10b981';
+            const ratio = (rank - 1) / (total - 1); // 0 = Platz 1, 1 = letzter Platz
+            const stops = [
+                { r: 16, g: 185, b: 129 },  // #10b981 grün
+                { r: 245, g: 158, b: 11 },  // #f59e0b amber
+                { r: 239, g: 68, b: 68 }    // #ef4444 rot
+            ];
+            const scaled = ratio * (stops.length - 1);
+            const idx = Math.min(Math.floor(scaled), stops.length - 2);
+            const local = scaled - idx;
+            const a = stops[idx], b = stops[idx + 1];
+            const r = Math.round(a.r + (b.r - a.r) * local);
+            const g = Math.round(a.g + (b.g - a.g) * local);
+            const bl = Math.round(a.b + (b.b - a.b) * local);
+            return `rgb(${r}, ${g}, ${bl})`;
+        }
+
+        // Spieler-Detail-Modal zur Ewigen Gesamttabelle: Podest-Zählung (🥇🥈🥉) oben, darunter die
+        // Platzierung je einzelner Saison als schlichte Liste (bewusst ohne Medaillen-Icons dort,
+        // um es bei vielen Saisons übersichtlich zu halten).
+        function openAllTimePlayerDetails(playerName) {
+            const podiums = calculateSeasonPodiums();
+            const p = podiums[playerName] || { first: 0, second: 0, third: 0 };
+
+            const { ranksBySeasonKey, totalRankedBySeasonKey } = calculateSeasonRanks();
+            // Chronologisch AUFsteigend (älteste zuerst); alle Saisons, in denen der Spieler
+            // mindestens einen gewerteten Abend gespielt hat.
+            const seasonKeysAsc = sortSeasonsChronologically(Object.keys(state.seasons)).reverse();
+            const seasonPoints = seasonKeysAsc
+                .filter(sk => {
+                    const season = state.seasons[sk];
+                    if (!season || !season.matches || !(season.players || []).includes(playerName)) return false;
+                    const { matchCounts } = calculateSeasonStats(sk);
+                    return (matchCounts[playerName] || 0) > 0;
+                })
+                .map(sk => ({
+                    label: sk,
+                    // null, falls der Spieler diese Saison zwar gespielt, aber die Mindestteilnahme-
+                    // quote für eine offizielle Platzierung nicht erreicht hat.
+                    rank: (ranksBySeasonKey[sk] && ranksBySeasonKey[sk][playerName]) || null,
+                    totalRanked: totalRankedBySeasonKey[sk] || 0,
+                    // Laufende Saison: Platzierung ist nur ein Zwischenstand, keine finale Platzierung.
+                    isActive: state.seasons[sk].status !== 'abgeschlossen'
+                }));
+
+            document.getElementById('allTimePlayerModalName').textContent = playerName;
+            const content = document.getElementById('allTimePlayerModalContent');
+
+            const podiumHtml = `
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-amber-50 dark:bg-amber-950/20 p-3 rounded-lg border border-amber-200 dark:border-amber-900/60 text-center">
+                        <p class="text-2xl">🥇</p>
+                        <p class="text-xl font-black text-amber-700 dark:text-amber-400">${p.first}</p>
+                        <p class="text-[10px] text-amber-700/80 dark:text-amber-500 uppercase font-bold">Saisonsiege</p>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-700/40 p-3 rounded-lg border border-slate-300 dark:border-slate-600 text-center">
+                        <p class="text-2xl">🥈</p>
+                        <p class="text-xl font-black text-slate-700 dark:text-slate-200">${p.second}</p>
+                        <p class="text-[10px] text-slate-600/80 dark:text-slate-400 uppercase font-bold">2. Plätze</p>
+                    </div>
+                    <div class="bg-orange-50 dark:bg-orange-950/20 p-3 rounded-lg border border-orange-200 dark:border-orange-900/60 text-center">
+                        <p class="text-2xl">🥉</p>
+                        <p class="text-xl font-black text-orange-700 dark:text-orange-400">${p.third}</p>
+                        <p class="text-[10px] text-orange-700/80 dark:text-orange-500 uppercase font-bold">3. Plätze</p>
+                    </div>
+                </div>
+            `;
+
+            const showSeasons = seasonPoints.length > 0;
+            content.innerHTML = `
+                <div class="space-y-4">
+                    ${podiumHtml}
+                    <div>
+                        <p class="text-xs text-gray-500 dark:text-slate-400 uppercase font-bold mb-2">Platzierungen je Saison</p>
+                        ${showSeasons ? `
+                            <div class="space-y-1">
+                                ${seasonPoints.map(sp => `
+                                    <div class="flex items-center justify-between gap-2 text-sm px-3 py-1.5 rounded-lg ${sp.isActive ? 'bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/60' : 'bg-slate-50 dark:bg-slate-900/40'}">
+                                        <span class="text-slate-600 dark:text-slate-300 flex items-center flex-wrap gap-1.5 min-w-0">
+                                            <span class="truncate">${escapeHtml(sp.label)}</span>
+                                            ${sp.isActive ? '<span class="shrink-0 text-[9px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/40 px-1.5 py-0.5 rounded">läuft</span>' : ''}
+                                        </span>
+                                        <span class="shrink-0 font-bold ${sp.rank !== null ? '' : 'text-slate-400 dark:text-slate-500 font-normal italic text-xs'}" ${sp.rank !== null ? `style="color: ${getRankGradientColor(sp.rank, sp.totalRanked)}"` : ''}>${sp.rank !== null ? sp.rank + '/' + sp.totalRanked : 'außerhalb der Wertung'}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <p class="text-xs text-gray-400 dark:text-slate-500 italic">Noch keine Saison mit Punktedaten für diesen Spieler.</p>
+                        `}
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('allTimePlayerModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
+        }
+
+        function closeAllTimePlayerModal() {
+            document.getElementById('allTimePlayerModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
         }
 
         function setAllTimeTableMode(mode) {
@@ -3147,11 +3592,12 @@
 
             const mapAllTimeRow = (p, isQ) => {
                 const avgDisplay = isLeistung ? `${p.avg.toFixed(1)} %` : p.avg.toFixed(2);
+                const nameBtn = `<button onclick="openAllTimePlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="hover:underline cursor-pointer text-left">${escapeHtml(p.name)}</button>`;
                 if (isQ) {
                     return `
                     <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
                         <td class="p-2 text-emerald-400 font-bold">${p.rank}.</td>
-                        <td class="p-2 font-semibold text-slate-100">${escapeHtml(p.name)}</td>
+                        <td class="p-2 font-semibold text-slate-100">${nameBtn}</td>
                         <td class="p-2 text-right font-bold text-emerald-400">${avgDisplay}</td>
                         <td class="p-2 text-right text-slate-300">${p.played}/${totalMatchdays}</td>
                         <td class="p-2 text-right text-slate-400">${p.pts} Pkt.</td>
@@ -3161,7 +3607,7 @@
                     return `
                     <tr class="bg-slate-900/40 text-slate-500 italic">
                         <td class="p-2 text-center font-bold font-mono">-</td>
-                        <td class="p-2 font-semibold">${escapeHtml(p.name)}</td>
+                        <td class="p-2 font-semibold">${nameBtn}</td>
                         <td class="p-2 text-right font-semibold">${avgDisplay}</td>
                         <td class="p-2 text-right text-amber-500">${p.played}/${totalMatchdays}</td>
                         <td class="p-2 text-right">${p.pts} Pkt.</td>
@@ -4493,6 +4939,7 @@
 
         function calculateAllTimeRecords() {
             let globalHostStats = {};
+            let globalHostAllCount = {}; // { player: 0 } - ALLE jemals gehosteten Abende (unabhängig vom Punktetyp)
             let globalSoloStats = {}; // { player: { played: 0, won: 0 } }
             let globalTagessiege = {}; // { player: 0 }
             let globalTagessiegeParticipations = {}; // { player: 0 } - gewertete Teilnahmen (nicht disqualifiziert)
@@ -4502,6 +4949,8 @@
             let globalPlacementPointsMatchCount = {}; // { player: 0 }
             let globalTotalMatchdaysEver = 0; // Anzahl aller je gespielten (gewerteten) Abende, saisonübergreifend
             let globalAnsagen = {}; // { player: 0 }
+            let globalAnsagenWon = {}; // { player: 0 } - Ansagen in Spielen mit Punkten > 0 (Nullspiele zählen weder hier noch im Nenner)
+            let globalAnsagenDecided = {}; // { player: 0 } - Ansagen in NICHT-Nullspielen (Basis für die Gewinnquote)
             let globalGamesPlayed = {}; // { player: 0 } - Anzahl tatsächlich gespielter Einzelspiele (nicht ausgesetzt), Basis für Solo-/Ansage-Quote
             let allUniquePlayers = new Set();
 
@@ -4511,6 +4960,7 @@
 
             allUniquePlayers.forEach(p => {
                 globalHostStats[p] = { totalScore: 0, count: 0 };
+                globalHostAllCount[p] = 0;
                 globalSoloStats[p] = { played: 0, won: 0 };
                 globalTagessiege[p] = 0;
                 globalTagessiegeParticipations[p] = 0;
@@ -4519,6 +4969,8 @@
                 globalPlacementPoints[p] = 0;
                 globalPlacementPointsMatchCount[p] = 0;
                 globalAnsagen[p] = 0;
+                globalAnsagenWon[p] = 0;
+                globalAnsagenDecided[p] = 0;
                 globalGamesPlayed[p] = 0;
             });
 
@@ -4552,6 +5004,12 @@
                     // 2. Host-Statistik & Punktegott (ohne disqualifizierte Leistungen), nur für
                     // Abende mit tatsächlichen Spieltagspunkten [11]
                     const isMatchdayData = !isHist || match.pointType === 'spieltag';
+                    // Gesamtzahl aller jemals gehosteten Abende zählt unabhängig vom Punktetyp und
+                    // unabhängig von Disqualifikation – "gehostet" bezieht sich rein auf die Rolle
+                    // als Gastgeber, nicht auf eine gewertete Spielleistung.
+                    if (match.host && globalHostAllCount[match.host] !== undefined) {
+                        globalHostAllCount[match.host]++;
+                    }
                     if (isMatchdayData) {
                         Object.keys(match.scores).forEach(name => {
                             if (isPlayerDisqualifiedInMatch(match, name)) return;
@@ -4610,6 +5068,16 @@
                                 if (gm.ansage && gm.ansage[p] === true) {
                                     if (globalAnsagen[p] !== undefined) {
                                         globalAnsagen[p]++;
+                                    }
+                                    // Nullspiele (Punkte === 0) fließen weder in den Zähler (gewonnen)
+                                    // noch in den Nenner (Basis) der Ansage-Gewinnquote ein.
+                                    if (gm.points && gm.points[p] !== undefined && gm.points[p] !== 0) {
+                                        if (globalAnsagenDecided[p] !== undefined) {
+                                            globalAnsagenDecided[p]++;
+                                        }
+                                        if (gm.points[p] > 0 && globalAnsagenWon[p] !== undefined) {
+                                            globalAnsagenWon[p]++;
+                                        }
                                     }
                                 }
                             });
@@ -4759,6 +5227,7 @@
                 return Math.abs(gamesPerAnsage - bestAllTimeAnsagenGamesPerAnsage) < 0.0001;
             });
 
+
             // Längste Siegesserie (bezieht sich immer nur auf EINEN Abend – die Serie wird bei
             // jedem neuen Match/Abend zurückgesetzt, nicht abendübergreifend fortgeführt. Innerhalb
             // eines Abends bleibt die chronologische Reihenfolge über allDetailedMatches erhalten).
@@ -4901,6 +5370,7 @@
 
             return {
                 globalHostStats,
+                globalHostAllCount,
                 globalSoloStats,
                 globalTagessiege,
                 globalTagessiegeParticipations,
@@ -4931,6 +5401,8 @@
                 bestAllTimeAnsagenGamesPerAnsage,
                 bestAllTimeAnsagenPlayers,
                 globalAnsagen,
+                globalAnsagenWon,
+                globalAnsagenDecided,
                 globalGamesPlayed,
                 globalLongestStreak,
                 globalLongestStreakDate,
@@ -5029,12 +5501,15 @@
                 
                 const label = document.getElementById('joker-label-' + name);
                 if (label) {
-                    if (checked && !seasonJokers[name]) {
-                        label.classList.remove('opacity-40', 'cursor-not-allowed');
-                        label.classList.add('cursor-pointer');
+                    if (!checked) label.classList.remove('sog-chip-on'); // synchron zu simpleJoker.checked = false oben
+                    if (seasonJokers[name]) {
+                        label.classList.add('sog-chip-disabled');
+                        label.classList.remove('sog-chip-dim');
+                    } else if (!checked) {
+                        label.classList.add('sog-chip-dim');
+                        label.classList.remove('sog-chip-disabled');
                     } else {
-                        label.classList.remove('cursor-pointer', 'opacity-100');
-                        label.classList.add('opacity-40', 'cursor-not-allowed');
+                        label.classList.remove('sog-chip-dim', 'sog-chip-disabled');
                     }
                 }
             }
@@ -6032,8 +6507,8 @@
                 cubicInterpolationMode: 'monotone',
                 spanGaps: chartViewMode === 'total',
                 borderWidth: 2,
-                pointRadius: 4.5,
-                pointHoverRadius: 7,
+                pointRadius: 2,
+                pointHoverRadius: 4.5,
                 pointHitRadius: 10,
                 borderCapStyle: 'round',
                 borderJoinStyle: 'round',
@@ -6447,9 +6922,14 @@
                     </button>
                 ` : '';
 
+                const sogChipClasses = ['sog-chip'];
+                if (jokerChecked) sogChipClasses.push('sog-chip-on');
+                if (hasUsedJokerAlready) sogChipClasses.push('sog-chip-disabled');
+                else if (!isChecked) sogChipClasses.push('sog-chip-dim');
+
                 const sogHtml = isHist ? '' : `
-                    <label id="joker-label-${escapeHtml(name)}" class="flex items-center gap-1 text-[10px] ${hasUsedJokerAlready ? 'text-gray-400 opacity-20 bg-gray-100 border-gray-200 cursor-not-allowed dark:bg-slate-900 dark:border-slate-800' : 'text-red-700 bg-red-50 dark:text-red-400 dark:bg-red-950/30 border-red-200 dark:border-red-900/60 ' + (isChecked ? 'opacity-101' : 'opacity-40')} font-bold px-2 py-0.5 rounded border select-none transition" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
-                        <input type="checkbox" id="joker-${escapeHtml(name)}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('opacity-100', this.checked); this.parentElement.classList.toggle('opacity-40', !this.checked); saveFormToTemp(); updateLiveDraft();" class="rounded text-red-600 w-3 h-3"> 💥 SoG
+                    <label id="joker-label-${escapeHtml(name)}" class="${sogChipClasses.join(' ')}" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                        <input type="checkbox" id="joker-${escapeHtml(name)}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('sog-chip-on', this.checked); saveFormToTemp(); updateLiveDraft();"> SoG
                     </label>
                 `;
 
@@ -6650,7 +7130,7 @@
 
                 const mapRow = (p, isQ) => {
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
-                    const jokerBadge = hasUsedJoker ? ` <span class="inline-block bg-red-100 dark:bg-red-950/40 text-red-600 dark:text-red-300 font-extrabold text-[9px] px-1.5 py-0.5 rounded tracking-wide border border-red-200 dark:border-red-900 shadow-sm ml-1 cursor-help" title="Schmeißen ohne Grund genutzt">💥 SoG</span>` : '';
+                    const jokerBadge = hasUsedJoker ? ` <span class="sog-chip sog-chip-on sog-chip-static sog-chip-table" title="Schmeißen ohne Grund genutzt">SoG</span>` : '';
 
                     const playerNameContent = hasSpieltagspunkte
                         ? `<button onclick="openPlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${escapeHtml(p.name)}</button>`
@@ -6799,7 +7279,7 @@
                 const matchesEntries = Object.entries(season.matches);
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
-                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="text-red-600 dark:text-red-400 font-bold bg-red-50 dark:bg-red-950/20 px-1 rounded border border-red-200 dark:border-red-900/60 text-[10px]" title="Schmeißen ohne Grund">💥 SoG: ${eveningJokers.map(escapeHtml).join(', ')}</span>` : '';
+                    let jokerInfo = eveningJokers.length > 0 ? ` <span class="sog-chip sog-chip-on sog-chip-static" title="Schmeißen ohne Grund">SoG: ${eveningJokers.map(escapeHtml).join(', ')}</span>` : '';
                     let modeBadge = (!isHist && match.mode === 'detailed') ? ` <span class="text-blue-700 dark:text-blue-300 font-bold bg-blue-50 dark:bg-blue-950/20 px-1 rounded border border-blue-200 dark:border-blue-900/60 text-[10px]" title="Spiel für Spiel erfasst">🎮 Spiel für Spiel</span>` : '';
 
                     let sortedEveningPlayers = Object.keys(match.scores).map(pName => ({
