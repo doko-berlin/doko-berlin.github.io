@@ -5,13 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doko-Saisonverwaltung</title>
     <link rel="stylesheet" href="tailwind.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Ewige-Gesamttabelle Zeitraum-Filter: eigenständiges CSS statt neuer Tailwind-Klassen, da
-           tailwind.css eine statisch vorkompilierte Datei ist (kein Live-Compiler) und nur die beim
-           Build tatsächlich verwendeten Klassen enthält – neu hinzugefügte Utility-Klassen wie h-9
-           oder focus-within:* würden sonst schlicht ignoriert und Elemente auf ihre unkontrollierte
-           Browser-Standardgröße zurückfallen (Ursache des zu großen "Zurücksetzen"-Buttons).
+        /* Sora als Standardschrift: überschreibt die von tailwind.css gesetzte CSS-Variable
+           --font-sans (auf der die Utility-Klasse font-sans basiert, die am <body> hängt) - dadurch
+           übernehmen alle Textelemente automatisch die neue Schrift, ohne tailwind.css selbst
+           anfassen oder neu kompilieren zu müssen. Sora bietet kein 900er-Schnitt; die App nutzt an
+           vielen Stellen font-black (Gewicht 900) für große Zahlen - der Browser greift dafür
+           automatisch auf den fettesten verfügbaren Schnitt (800) zurück, das ist optisch kaum vom
+           echten 900er zu unterscheiden.
+        */
+        :root {
+            --font-sans: 'Sora', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        }
+
+        /* Tabellarische Ziffern app-weit: alle Ziffern bekommen dieselbe Breite, damit Punktestände,
+           Prozentwerte und Ränge beim Aktualisieren nicht "flackern"/springen. Bewusst global auf
+           body statt als Tailwind-Klasse (z.B. "tabular-nums") an jeder einzelnen Zahl-Stelle
+           gesetzt - bei ~50+ Stellen mit Zahlen (Kachel-Werte, Tabellen, Chart-Labels) wäre das
+           unvollständig und fehleranfällig geworden, und font-variant-numeric wirkt sich ohnehin nur
+           auf Ziffern aus, schadet also auch bei Fließtext nicht.
+        */
+        body {
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Ewige-Gesamttabelle Zeitraum-Filter: eigenständiges CSS statt neuer Tailwind-Klassen.
+           tailwind.css wurde am 11.09.2026 neu aus dieser HTML-Datei kompiliert und enthält daher
+           aktuell alle hier verwendeten Utility-Klassen – sie ist aber weiterhin eine STATISCHE
+           Datei (kein Live-Compiler): jede künftig neu hinzugefügte Tailwind-Klasse (z.B. h-9 oder
+           focus-within:*), die noch nicht in dieser HTML-Datei vorkommt, wird beim nächsten Build
+           nicht automatisch mit aufgenommen und muss dann durch erneutes Kompilieren nachgezogen
+           werden (siehe Build-Befehl weiter unten). Für diese Kalenderleiste bleibt eigenes CSS
+           trotzdem sinnvoll, da hier viele zusammenhängende Regeln (Grid, States, Responsive)
+           gebündelt werden.
+        */
+        /* Build-Befehl für ein Update von tailwind.css (Tailwind v4, class-basierter Dark Mode):
+             npm install tailwindcss@4 @tailwindcss/cli@4
+             echo '@import "tailwindcss";
+             @custom-variant dark (&:where(.dark, .dark *));' > input.css
+             npx @tailwindcss/cli -i input.css -o tailwind.css --minify
         */
         .atf-bar {
             display: flex;
@@ -201,15 +237,37 @@
             padding: 6px 10px;
             border-radius: .375rem;
             cursor: pointer;
-            transition: background-color .15s, color .15s;
+            transition: background-color .15s, color .15s, transform .12s ease;
         }
         .atf-mode-btn:hover { color: #e2e8f0; }
-        .atf-mode-btn-active, .atf-mode-btn-active:hover { background: #10b981; color: #fff; }
+        .atf-mode-btn-active, .atf-mode-btn-active:hover { background: var(--color-steel-500); color: #fff; }
 
         /* Klickbare, sortierbare Spaltenüberschriften der Ewigen Gesamttabelle */
-        .atf-sortable { cursor: pointer; user-select: none; }
+        .atf-sortable { cursor: pointer; user-select: none; transition: transform .12s ease; }
         .atf-sortable:hover { color: #e2e8f0; }
-        .atf-sort-arrow { display: inline-block; width: 10px; margin-left: 2px; color: #10b981; }
+        .atf-sort-arrow { display: inline-block; width: 10px; margin-left: 2px; color: var(--color-steel-400); }
+
+        /* Butterweiches Auf-/Zuklappen für Hall of Fame, Abend-Rekorde und Ewige Gesamttabelle
+           (statt hartem .hidden-Toggle, der das Layout schlagartig springen ließ). Klassischer
+           CSS-Grid-Trick: grid-template-rows animiert von 0fr auf 1fr, das innere Element mit
+           overflow:hidden verhindert, dass der Inhalt während der Animation sichtbar überläuft.
+           margin-top sitzt bewusst nur auf .is-open, nicht dauerhaft auf .accordion-wrap: der Wrap
+           bleibt (anders als bei display:none) immer im Layout - ein permanenter Abstand würde im
+           zugeklappten Zustand eine unnötige Lücke unter dem Button hinterlassen.
+        */
+        .accordion-wrap {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows .3s ease-out, margin-top .3s ease-out;
+        }
+        .accordion-wrap.is-open {
+            grid-template-rows: 1fr;
+            margin-top: .75rem;
+        }
+        .accordion-inner {
+            overflow: hidden;
+            min-height: 0;
+        }
 
         /* Restliche native <input type="date">-Felder der App (Abend-Datum, Mischmeister-Rekorddatum):
            der Browser rendert den leeren Platzhalter ("tt.mm.jjjj") standardmäßig kleingeschrieben,
@@ -217,25 +275,20 @@
            Browser gerenderten Platzhalter-Segmente, nicht nur auf eingegebene Ziffern. */
         input[type="date"] { text-transform: uppercase; }
 
-        /* Rekord-Archiv (manuelle Alt-Rekorde) oberhalb der Ewigen Gesamttabelle: eigenständiges CSS
-           aus demselben Grund wie bei .atf-bar oben – border-dashed, border-amber-800/40 und
-           bg-amber-950/20 (jeweils ohne dark:-Präfix) fehlen in der vorkompilierten tailwind.css und
-           wurden bisher stillschweigend ignoriert; der Rahmen fiel dadurch auf currentColor (Weiß)
-           zurück, statt den beabsichtigten Amber-Ton zu zeigen. */
-        .ra-toggle-btn {
-            background: rgba(69, 26, 3, .3);
-            border: 1px solid rgba(146, 64, 14, .4);
-            color: #fde68a;
+        /* Stat-Kacheln (Hall of Fame & Abend-Rekorde): statt der bisher komplett flachen
+           Fläche (bg-slate-800/40) ein ganz sanfter Verlauf von leicht heller oben nach dunkler
+           unten, plus ein hauchdünner, kaum wahrnehmbarer hellerer Rand ganz oben (per inset
+           box-shadow statt border-top, damit der bestehende umlaufende border nicht angetastet
+           werden muss) - gibt den Karten einen dezenten "Glas"-Charakter, ohne aufdringlich zu
+           wirken. Schatten (drop-shadow) bringen auf dem ohnehin dunklen Hintergrund kaum sichtbaren
+           Effekt, daher hier bewusst Verlauf + Innenlinie statt Schlagschatten.
+        */
+        .stat-card {
+            background: linear-gradient(180deg, rgba(30, 41, 59, .6), rgba(30, 41, 59, .2));
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
         }
-        .ra-toggle-btn:hover {
-            background: rgba(69, 26, 3, .5);
-            border-color: rgba(217, 119, 6, .6);
-        }
-        .ra-card {
-            background: rgba(69, 26, 3, .2);
-            border: 1px dashed rgba(146, 64, 14, .4);
-            border-radius: .75rem;
-            padding: 1rem;
+        .stat-card:hover {
+            background: linear-gradient(180deg, rgba(30, 41, 59, .75), rgba(30, 41, 59, .35));
         }
 
         /* SoG-Toggle ("Schmeißen ohne Grund"): kreisförmiger Orange-Ring-Chip statt der früheren
@@ -278,6 +331,26 @@
             cursor: not-allowed;
             background: #fff;
         }
+        /* Dark-Mode-Varianten: .sog-chip war bisher komplett hartcodiert hell (background: #fff),
+           ohne jede dark:-Berücksichtigung – im Dark Mode saß dadurch ein weißer Chip auf dunklem
+           Kartenhintergrund. */
+        .dark .sog-chip {
+            border-color: rgba(249, 115, 22, .5);
+            color: #fb923c;
+            background: rgba(255, 255, 255, .04);
+        }
+        .dark .sog-chip:hover { background: rgba(249, 115, 22, .12); }
+        .dark .sog-chip.sog-chip-on {
+            border-color: #f97316;
+            background: rgba(249, 115, 22, .18);
+        }
+        .dark .sog-chip.sog-chip-on:hover { background: rgba(249, 115, 22, .26); }
+        .dark .sog-chip.sog-chip-disabled {
+            border-color: #475569;
+            color: #64748b;
+            opacity: .5;
+            background: rgba(255, 255, 255, .02);
+        }
         /* Statische Variante für reine Info-Badges (Historie, Blitztabelle) ohne Interaktion. */
         .sog-chip.sog-chip-static { cursor: help; }
         /* Kleinere Variante für die Blitztabelle, mit etwas mehr Abstand zum Spielernamen. */
@@ -285,6 +358,30 @@
             font-size: 8px;
             padding: 2px 7px;
             margin-left: 10px;
+        }
+
+        /* Einheitliches, dezentes Press-Feedback für alle interaktiven Elemente (Buttons,
+           klickbare Kacheln, Mode-Toggles, sortierbare Tabellenköpfe) - ein leichtes Scale-Down
+           beim Antippen/Klicken, fühlt sich gerade auf Mobile griffiger/hochwertiger an. Zentral
+           über :active statt an den ~90 einzelnen Button-/Karten-Definitionen im Skript ergänzt.
+           Die meisten dieser Elemente tragen bereits Tailwinds "transition"-Utility-Klasse, die
+           "transform" standardmäßig mit einschließt - dort reicht die reine :active-Regel für
+           eine saubere Animation. Elemente ohne diese Utility-Klasse bekommen über
+           :not(.transition) zusätzlich eine eigene, kurze Transform-Transition, ohne die
+           Transition-Eigenschaften der anderen (Hover-Farbwechsel etc.) zu überschreiben.
+           Bewusst ausgenommen: alles, was eine Checkbox umschließt oder per for/id damit
+           verknüpft ist (Spielerauswahl, Blitztabelle-Toggle, "Historisch"-Häkchen) sowie die
+           SoG-Chips, die technisch ebenfalls nur Checkboxen sind - ein Scale-Effekt beim
+           Ankreuzen wirkt dort unpassend/aufdringlich, das native Checkbox-Feedback reicht.
+        */
+        .cursor-pointer:not(.transition),
+        .atf-sortable {
+            transition: transform .12s ease;
+        }
+        .cursor-pointer:active:not(:has(input[type="checkbox"])):not([for="newSeasonIsHistorical"]),
+        .atf-mode-btn:active,
+        .atf-sortable:active {
+            transform: scale(0.96);
         }
     </style>
     
@@ -345,7 +442,7 @@
          Reload-Button, da die installierte PWA im Standalone-Modus keinen Browser-Reload-Button
          hat. -->
     <div id="swUpdateBanner" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4">
-        <div class="pointer-events-auto bg-emerald-600 text-white text-sm font-semibold rounded-xl shadow-2xl px-4 py-3 flex items-center gap-3">
+        <div class="pointer-events-auto bg-steel-600 text-white text-sm font-semibold rounded-xl shadow-2xl px-4 py-3 flex items-center gap-3">
             <span class="shrink-0">✨</span>
             <span class="leading-snug flex-1">Neue Version verfügbar</span>
             <button onclick="location.reload()" class="shrink-0 bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-bold cursor-pointer transition">Neu laden</button>
@@ -365,7 +462,7 @@
 
     <div id="playerDetailsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closePlayerModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
-            <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
+            <h2 id="playerModalName" class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
             <div id="playerModalContent" class="space-y-4 overflow-y-auto flex-1 min-h-0 pr-1"></div>
             <button onclick="closePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
         </div>
@@ -377,7 +474,7 @@
          inkl. Chart.js-Instanz benötigt werden. -->
     <div id="allTimePlayerModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeAllTimePlayerModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
-            <h2 id="allTimePlayerModalName" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
+            <h2 id="allTimePlayerModalName" class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 shrink-0">Spieler Name</h2>
             <div id="allTimePlayerModalContent" class="space-y-4 overflow-y-auto flex-1 min-h-0 pr-1"></div>
             <button onclick="closeAllTimePlayerModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
         </div>
@@ -386,7 +483,7 @@
     <!-- All-Time stats Detail Modal -->
     <div id="allTimeStatsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) closeAllTimeModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative flex flex-col max-h-[90vh] my-auto" onclick="event.stopPropagation()">
-            <h2 id="allTimeModalTitle" class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 shrink-0">Kachel Titel</h2>
+            <h2 id="allTimeModalTitle" class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 shrink-0">Kachel Titel</h2>
             <div class="overflow-y-auto flex-1 min-h-0 pr-1" id="allTimeModalContent"></div>
             <button onclick="closeAllTimeModal()" class="w-full mt-6 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition shrink-0">Schließen</button>
         </div>
@@ -395,13 +492,48 @@
     <!-- What's New Modal -->
     <div id="whatsNewModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeWhatsNewModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-6 relative" onclick="event.stopPropagation()">
-            <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
+            <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.15 -->
-                <div class="border-l-2 border-emerald-500 pl-3 py-1">
+                <!-- Version 2.3 -->
+                <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.15</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.09.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Neues Gestaltungskonzept:</strong> Farbschema angepasst. Hauptakzentfarbe von Grün (Emerald) auf Stahlblau umgestellt. Grün und Rot sind jetzt ausschließlich funktionalen Elementen vorbehalten (z. B. Plus-/Minuspunkte). Schriftart Sora implementiert.</li>
+                        <li><strong>Einheitliche Zifferndarstellung:</strong> Zahlen in Tabellen, Kacheln und Charts haben jetzt überall gleich breite Ziffern.</li>
+                        <li><strong>Deutsches Zahlenformat:</strong> Zahlenformatierung nun durchgängig nach deutschem System (Kommazahlen mit Komma statt Punkt).</li>
+                        <li><strong>Hall of Fame & Abend-Rekorde:</strong> „Ewige Bestenliste" und „Allzeit-Rekorde" umbenannt und zusammen mit der Ewigen Gesamttabelle jetzt einheitlich auf-/zuklappbar. Hall of Fame ist standardmäßig geöffnet, die anderen beiden Bereiche eingeklappt.</li>
+                        <li><strong>Neu: Press-Feedback</strong> – Buttons und klickbare Karten schrumpfen beim Antippen dezent ein.</li>
+                        <li><strong>Tabellen-Feinschliff:</strong> Erste Spalte der Ewigen Gesamttabelle nicht mehr farblich hervorgehoben, Punkteschnitt in der normalen Tabelle nicht mehr größer als die übrigen Spalten, Spielernamen in der Ewigen Gesamttabelle jetzt als klickbar erkennbar.</li>
+                        <li><strong>Bugfix Blitztabelle:</strong> Trendpfeile zeigten teils fälschlich Auf-/Abstiege.</li>
+                        <li><strong>Performance:</strong> Spielerauswahl in der Abendeingabe reagiert jetzt spürbar schneller.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.2 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.2</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">11.09.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Neu: Notizfunktion</strong> im Menü – gemeinsame, automatisch speichernde Notizfläche für Regeländerungsvorschläge zur nächsten Saison. Wird beim Datenbank-Export/-Import mit übertragen.</li>
+                        <li><strong>Neu:</strong> Grüner Pfeil neben der Platzzahl in der Tabelle bei Verbesserung, roter Pfeil bei Verschlechterung.</li>
+                        <li><strong>Abend-Verlauf-Chart</strong> lässt sich jetzt per Klick animiert auf Vollbild vergrößern.</li>
+                        <li><strong>Rekord-Archiv in die Ewige Bestenliste integriert:</strong> Spielstand am Ende des Abends, Spielstand überhaupt, Gesamtumsatz, Gesamtdifferenz und Siegquote am Abend werden jetzt automatisch aus den erfassten Spieltagen berechnet. Punkte auf der Hand wird wie der Mischmeister manuell gepflegt – beide unterstützen jetzt mehrere gleichzeitige Rekordhalter. Alte Archiv-Rekorde bleiben als „Altrekord" sichtbar, bis sie überboten werden.</li>
+                        <li><strong>Ewige Bestenliste zweigeteilt:</strong> „Ewige Bestenliste" (Spieler-Ranglisten) und „Allzeit-Rekorde" (Einzelabend-Rekorde) als eigene Abschnitte.</li>
+                        <li><strong>Klickbare Rekord-Kacheln</strong> zeigen jetzt ein kleines Pfeil-Symbol als Hinweis auf die dahinterliegende Liste.</li>
+                        <li><strong>Kleinere Korrekturen:</strong> überflüssiges Leerzeichen bei Solo+Ansage-Kombination behoben, Dark-Mode-Darstellung des SoG-Chips korrigiert.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.1.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.1.5</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -455,10 +587,10 @@
                     </div>
                 </div>
 
-                <!-- Version 1.89 -->
+                <!-- Version 1.8.9 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.89</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.8.9</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">14.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -467,10 +599,10 @@
                     </ul>
                 </div>
 
-                <!-- Version 1.88 -->
+                <!-- Version 1.8.8 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.88</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.8.8</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -479,10 +611,10 @@
                     </ul>
                 </div>
 
-                <!-- Version 1.87 -->
+                <!-- Version 1.8.7 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.87</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.8.7</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">11.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -492,10 +624,10 @@
                     </ul>
                 </div>
 
-                <!-- Version 1.85 -->
+                <!-- Version 1.8.5 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.85</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.8.5</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">10.08.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -562,10 +694,10 @@
                     </ul>
                 </div>
 
-                <!-- Version 1.55 -->
+                <!-- Version 1.5.5 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1 mt-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.55</span>
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 1.5.5</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">30.07.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-500 dark:text-slate-400 space-y-1.5 mt-2">
@@ -676,12 +808,12 @@
     <!-- Regeln Modal -->
     <div id="regelnModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeRegelnModal()">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative" onclick="event.stopPropagation()">
-            <h2 class="text-2xl font-bold mb-4 text-emerald-800 dark:text-emerald-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">📜 Offizielle Hausregeln & Wertung</h2>
+            <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">📜 Offizielle Hausregeln & Wertung</h2>
             <div class="space-y-6 text-xs text-slate-600 dark:text-slate-300 max-h-[65vh] overflow-y-auto pr-2 text-left">
                 
                 <!-- 1. Vorbehalte & Solos -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">1. Vorbehalte & Solos</h3>
+                    <h3 class="text-sm font-bold text-steel-800 dark:text-steel-400 border-b border-steel-100 dark:border-steel-900 pb-1">1. Vorbehalte & Solos</h3>
                     
                     <div class="pl-2 space-y-3">
                         <div>
@@ -725,7 +857,7 @@
 
                 <!-- 2. Sonderregeln & Spielweise -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">2. Sonderregeln & Spielweise</h3>
+                    <h3 class="text-sm font-bold text-steel-800 dark:text-steel-400 border-b border-steel-100 dark:border-steel-900 pb-1">2. Sonderregeln & Spielweise</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Gelegte Karten:</strong> Eine gespielte Karte gilt als gelegt (auch wenn sie verdeckt landet und ungesehen bleibt) und darf nicht zurückgenommen werden.</li>
                         <li><strong>Herz-Zehn (Dullen):</strong> Die zweite Herz-Zehn schlägt im selben Stich die erste Herz-Zehn.</li>
@@ -741,7 +873,7 @@
 
                 <!-- 3. Sonderpunkte & Pflichtausrufe -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">3. Sonderpunkte & Pflichtausrufe</h3>
+                    <h3 class="text-sm font-bold text-steel-800 dark:text-steel-400 border-b border-steel-100 dark:border-steel-900 pb-1">3. Sonderpunkte & Pflichtausrufe</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Sonderpunkte:</strong> Vergeben für Doppelkopf, Fuchs gefangen, Karlchen (letzter Stich mit dem Kreuz-Buben) und Karlchen gefangen.</li>
                         <li><strong>Doppelkopf-Ausrufepflicht:</strong> Spieler, die einen Stich mit mindestens 40 Punkten gewinnen, sind verpflichtet, mit möglichst hoher Stimme das Wort „Doppelkopf“ auszurufen. Diese Pflicht gilt nicht bei Solospielen.</li>
@@ -750,7 +882,7 @@
 
                 <!-- 4. Pflichtsolos & Ausnahmen -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">4. Pflichtsolos & Ausnahmen</h3>
+                    <h3 class="text-sm font-bold text-steel-800 dark:text-steel-400 border-b border-steel-100 dark:border-steel-900 pb-1">4. Pflichtsolos & Ausnahmen</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Pflichtsolo pro Abend:</strong> Jeder aktive Spieler muss im Laufe des Abends genau ein Pflichtsolo spielen.</li>
                         <li><strong>Spaßspieler:</strong> Personen, die sich zu Beginn des Abends als Spaßspieler deklarieren, spielen außerhalb der Wertung. Sie dürfen kein Pflichtsolo spielen und maximal 3 Runden mitspielen.</li>
@@ -780,7 +912,7 @@
 
                 <!-- 6. Organisatorisches & Spielbetrieb -->
                 <div class="space-y-2">
-                    <h3 class="text-sm font-bold text-emerald-800 dark:text-emerald-400 border-b border-emerald-100 dark:border-emerald-900 pb-1">6. Organisatorisches & Spielbetrieb</h3>
+                    <h3 class="text-sm font-bold text-steel-800 dark:text-steel-400 border-b border-steel-100 dark:border-steel-900 pb-1">6. Organisatorisches & Spielbetrieb</h3>
                     <ul class="list-disc list-inside pl-2 space-y-1.5">
                         <li><strong>Wertungsquoten:</strong>
                             <ul class="list-disc list-inside pl-4 space-y-0.5 mt-1 text-slate-600 dark:text-slate-400">
@@ -804,6 +936,36 @@
         </div>
     </div>
 
+    <!-- Giftschrank: gemeinsame Notizfläche für Regeländerungsvorschläge zur nächsten Saison.
+         Automatisches Speichern (kein Speichern-Button) plus EditLock nach demselben Muster wie
+         der Eingabebereich (editLock/mySessionId), damit nicht zwei Spieler gleichzeitig
+         hineinschreiben und sich gegenseitig überschreiben. -->
+    <div id="giftschrankModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeGiftschrankModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-1 border-b dark:border-slate-700 pb-2">
+                <h2 class="text-2xl font-bold text-steel-800 dark:text-steel-400 flex items-center gap-2">🧪 Giftschrank</h2>
+                <button onclick="closeGiftschrankModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 mb-3">Regeländerungsvorschläge & Ideen für die nächste Saison. Wird automatisch gespeichert, sobald du tippst.</p>
+
+            <div id="giftschrankLockBanner" class="hidden mb-3 text-xs px-3 py-2 rounded-lg bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800"></div>
+
+            <textarea id="giftschrankTextarea" oninput="handleGiftschrankInput()" rows="14" placeholder="Vorschläge, Ideen, Beschwerden ..." class="w-full text-sm p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-steel-500 resize-none"></textarea>
+
+            <div class="flex items-center justify-between mt-2 min-h-[16px]">
+                <span id="giftschrankSaveStatus" class="text-[11px] text-slate-400 dark:text-slate-500"></span>
+                <span id="giftschrankLockedBySelf" class="hidden text-[11px] text-steel-600 dark:text-steel-400 font-semibold">🔓 Du bearbeitest gerade</span>
+            </div>
+
+            <button onclick="closeGiftschrankModal()" class="w-full mt-4 bg-slate-800 hover:bg-slate-900 text-white py-2 rounded-xl font-bold cursor-pointer transition">Schließen</button>
+        </div>
+    </div>
+
+    <!-- Backdrop für die Vollbild-Ansicht der Abend-Verlauf-Charts (Live-Ansicht & abgeschlossene
+         Spieltage). Bleibt bewusst außerhalb jedes per innerHTML neu gerenderten Containers, damit
+         ein Live-Update während geöffnetem Vollbild diesen Knoten nicht mit zerstört. -->
+    <div id="chartFullscreenBackdrop" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm opacity-0 transition-opacity duration-300" style="z-index: 190;"></div>
+
     <div id="adminModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300" onclick="if(event.target === this) toggleAdminModal(false)">
         <div id="adminDrawer" class="fixed top-0 right-0 w-full max-w-md h-full bg-slate-50 dark:bg-slate-900 dark:border-l dark:border-slate-800 shadow-2xl p-6 overflow-y-auto transform translate-x-full transition-transform duration-300 flex flex-col space-y-6">
             
@@ -813,7 +975,7 @@
             </div>
 
             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-emerald-800 dark:text-emerald-400" id="formTitle">Abend eintragen</h2>
+                <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-steel-800 dark:text-steel-400" id="formTitle">Abend eintragen</h2>
                 <div id="inputForm" class="space-y-3">
                     <div id="modernFormFields" class="space-y-3">
                         <div class="bg-gray-50 dark:bg-slate-900 p-3 rounded border border-gray-200 dark:border-slate-700 space-y-3">
@@ -847,7 +1009,7 @@
 
                     <div class="flex gap-2 mt-4">
                         <button id="cancelMatchBtn" type="button" onclick="cancelMatchEntry()" class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2 rounded-lg font-bold shadow transition cursor-pointer">✖ Abbrechen</button>
-                        <button id="saveMatchBtn" onclick="saveMatch()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded-lg font-bold shadow transition cursor-pointer">Abend speichern</button>
+                        <button id="saveMatchBtn" onclick="saveMatch()" class="flex-1 bg-steel-600 hover:bg-steel-700 text-white py-2 rounded-lg font-bold shadow transition cursor-pointer">Abend speichern</button>
                     </div>
                 </div>
             </div>
@@ -855,7 +1017,7 @@
             <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Spieler dieser Saison</h2>
                 <div class="flex gap-2 mb-4">
-                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-emerald-500 outline-none">
+                    <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-steel-500 outline-none">
                     <button onclick="addPlayer()" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer">＋</button>
                 </div>
                 <div id="playerList" class="flex flex-wrap gap-2"></div>
@@ -900,7 +1062,7 @@
                         <input id="newSeasonMinQuota" type="number" value="40" min="0" max="100" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1 text-xs text-center">
                     </div>
                     <div class="flex items-center gap-2 pt-1">
-                        <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-emerald-600">
+                        <input type="checkbox" id="newSeasonIsHistorical" class="rounded text-steel-600">
                         <label for="newSeasonIsHistorical" class="text-[11px] text-amber-700 dark:text-amber-500 font-semibold cursor-pointer">Historisch (nur Endergebnis)</label>
                     </div>
                     <button onclick="createNewSeason()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1.5 text-xs rounded font-bold shadow transition mt-1 cursor-pointer">Saison anlegen</button>
@@ -914,25 +1076,42 @@
     <!-- Mischmeister-Rekord bearbeiten: manuell gepflegter Wert (häufigste Geben-Serie in Folge),
          nicht aus Spieldaten berechenbar, daher eigenes kleines Editier-Modal. -->
     <div id="mischmeisterModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeMischmeisterModal()">
-        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative space-y-4" onclick="event.stopPropagation()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative space-y-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
                 <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">🔀 Mischmeister bearbeiten</h2>
                 <button onclick="closeMischmeisterModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
-            <p class="text-xs text-gray-500 dark:text-slate-400">Wer musste am häufigsten hintereinander geben? Dieser Rekord wird manuell gepflegt.</p>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Spieler:</label>
-                <select id="mischmeisterPlayerSelect" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm font-medium"></select>
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Neuer Bestwert (Anzahl Geben in Folge):</label>
-                <input id="mischmeisterValueInput" type="number" min="1" step="1" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm text-center font-semibold">
-            </div>
-            <div>
-                <label class="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Datum, an dem der Rekord erreicht wurde:</label>
-                <input id="mischmeisterDateInput" type="date" class="w-full bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-sm text-center font-semibold">
-            </div>
+            <p class="text-xs text-gray-500 dark:text-slate-400">Wer musste am häufigsten hintereinander geben? Bei Gleichstand können mehrere Rekordhalter gleichzeitig erfasst werden.</p>
+            <div id="mischmeisterRows" class="space-y-1.5"></div>
+            <button type="button" onclick="addMultiEntryRow('mischmeisterRows')" class="w-full border border-dashed border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 py-1.5 text-xs rounded-lg transition cursor-pointer">➕ Weiteren Rekordhalter hinzufügen</button>
             <button onclick="saveMischmeisterRecord()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-sm rounded-xl font-bold shadow transition cursor-pointer">Speichern</button>
+        </div>
+    </div>
+
+    <!-- Punkte auf der Hand bearbeiten: wie Mischmeister manuell gepflegt, da dieser Wert in der
+         Detail-Eingabemaske nicht erfasst wird. Zwei unabhängige Extremwerte (Meiste/Wenigste),
+         jeweils mit beliebig vielen gleichzeitigen Rekordhaltern (Gleichstand). -->
+    <div id="handPointsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" onclick="if(event.target === this) closeHandPointsModal()">
+        <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 relative space-y-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center border-b dark:border-slate-700 pb-2">
+                <h2 class="text-lg font-semibold text-slate-800 dark:text-slate-200">✋ Punkte auf der Hand bearbeiten</h2>
+                <button onclick="closeHandPointsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-slate-400">Wer hatte die meisten bzw. wenigsten Punkte auf der Hand? Bei Gleichstand können mehrere Rekordhalter gleichzeitig erfasst werden.</p>
+
+            <div class="space-y-2 border border-gray-200 dark:border-slate-700 rounded-xl p-3">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Meiste Punkte auf der Hand</p>
+                <div id="handPointsMaxRows" class="space-y-1.5"></div>
+                <button type="button" onclick="addMultiEntryRow('handPointsMaxRows')" class="w-full border border-dashed border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 py-1.5 text-xs rounded-lg transition cursor-pointer">➕ Weiteren Rekordhalter hinzufügen</button>
+            </div>
+
+            <div class="space-y-2 border border-gray-200 dark:border-slate-700 rounded-xl p-3">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-300">Wenigste Punkte auf der Hand</p>
+                <div id="handPointsMinRows" class="space-y-1.5"></div>
+                <button type="button" onclick="addMultiEntryRow('handPointsMinRows')" class="w-full border border-dashed border-gray-300 dark:border-slate-600 text-gray-500 dark:text-slate-400 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 py-1.5 text-xs rounded-lg transition cursor-pointer">➕ Weiteren Rekordhalter hinzufügen</button>
+            </div>
+
+            <button onclick="saveHandPointsRecord()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 text-sm rounded-xl font-bold shadow transition cursor-pointer">Speichern</button>
         </div>
     </div>
 
@@ -948,7 +1127,7 @@
                 <text x="5" y="32" font-family="system-ui, sans-serif" font-size="14" fill="#e11d48">♥</text>
                 <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
             </svg>
-            <svg class="animate-spin h-6 w-6 text-emerald-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg class="animate-spin h-6 w-6 text-steel-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
             </svg>
@@ -958,22 +1137,22 @@
     <!-- Login-Fenster -->
     <div id="loginScreen" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 dark:border dark:border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6 md:p-8">
-            <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-emerald-800 dark:text-emerald-400">Doko-Saisonverwaltung</h1>
+            <h1 class="text-xl md:text-2xl font-extrabold text-center mb-1 text-steel-800 dark:text-steel-400">Doko-Saisonverwaltung</h1>
             <p class="text-center text-sm text-slate-500 dark:text-slate-400 mb-6">Bitte melde dich an, um fortzufahren.</p>
             <form id="loginForm" class="space-y-4" onsubmit="handleLogin(event)">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1" for="loginUsername">Benutzername</label>
                     <input type="text" id="loginUsername" autocomplete="username" required
-                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-steel-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1" for="loginPassword">Passwort</label>
                     <input type="password" id="loginPassword" autocomplete="current-password" required
-                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        class="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-steel-500">
                 </div>
                 <div id="loginError" class="hidden text-sm text-red-600 dark:text-red-400 font-semibold text-center"></div>
                 <button type="submit" id="loginSubmitBtn"
-                    class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-xl font-bold cursor-pointer transition">
+                    class="w-full bg-steel-700 hover:bg-steel-800 text-white py-2.5 rounded-xl font-bold cursor-pointer transition">
                     Anmelden
                 </button>
             </form>
@@ -999,10 +1178,13 @@
                         🛠️ Saison-Einstellungen
                     </button>
                     <button onclick="exportToJson(); closeHeaderMenu();" id="jsonExportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
-                        💾 Datenbank exportieren
+                        💾 Datenbank-Export
                     </button>
                     <button onclick="triggerJsonImport(); closeHeaderMenu();" id="jsonImportBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
-                        📥 Datenbank importieren
+                        📥 Datenbank-Import
+                    </button>
+                    <button onclick="openGiftschrankModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
+                        🧪 Giftschrank
                     </button>
                     <button onclick="openRegelnModal(); closeHeaderMenu();" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         📜 Regeln
@@ -1025,7 +1207,7 @@
                     <text x="30" y="60" font-family="system-ui, sans-serif" font-size="30" fill="#e11d48" text-anchor="middle">♥</text>
                 </svg>
                 <div class="min-w-0 leading-tight">
-                    <p class="text-lg font-extrabold tracking-wide text-emerald-700 dark:text-emerald-400 truncate">DOPPELKOPF</p>
+                    <p class="text-lg font-extrabold tracking-wide text-steel-700 dark:text-steel-400 truncate">DOPPELKOPF</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Saisonverwaltung &amp; Statistik</p>
                 </div>
             </div>
@@ -1080,7 +1262,7 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b dark:border-slate-700 pb-3 gap-3">
                     <div class="flex items-center gap-2 flex-wrap">
                         <h2 id="tableTitle" class="text-xl font-bold text-slate-900 dark:text-white">🏆 Live Saison-Tabelle</h2>
-                        <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 dark:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl p-1.5 text-sm font-semibold focus:ring-2 focus:ring-emerald-500 outline-none"></select>
+                        <select id="mainSeasonSelect" onchange="changeSeasonView('mainSeasonSelect')" class="bg-slate-50 dark:bg-slate-700 dark:text-slate-100 border border-slate-200 dark:border-slate-600 rounded-xl p-1.5 text-sm font-semibold focus:ring-2 focus:ring-steel-500 outline-none"></select>
                     </div>
                     <div class="flex gap-2 items-center flex-wrap w-full sm:w-auto justify-between sm:justify-end">
                         <label id="blitztabelleToggleContainer" class="hidden items-center gap-1.5 cursor-pointer bg-amber-100 dark:bg-amber-950 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-900 dark:text-amber-200 text-xs font-bold py-1.5 px-3 rounded-lg border border-amber-300 dark:border-amber-800 shadow-sm transition">
@@ -1129,115 +1311,28 @@
             </div>
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
-                <h2 class="text-xl font-bold mb-4 border-b border-slate-700/60 pb-3 tracking-wide">👑 Ewige Bestenliste</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="allTimeRecordsContainer"></div>
-
-                <button onclick="toggleRecordArchiv()" id="recordArchivToggleBtn" class="ra-toggle-btn w-full mt-4 flex items-center justify-between gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition cursor-pointer">
-                    <span>📜 Rekord-Archiv</span>
-                    <span id="recordArchivToggleIcon" class="transition-transform">▼</span>
+                <button onclick="toggleAllTimeRecords()" id="allTimeRecordsToggleBtn" class="w-full flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                    <span>👑 Hall of Fame</span>
+                    <span id="allTimeRecordsToggleIcon" class="transition-transform" style="transform: rotate(180deg);">▼</span>
                 </button>
-                <div id="recordArchivContainer" class="hidden mt-3">
-                    <p class="text-[11px] text-slate-400 mb-3">Manuell hinterlegte Rekorde aus der Zeit vor Einführung dieser App – nicht aus den erfassten Spieltagen berechnet.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🎯 Spielstand am Ende des Abends</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Höchster</span>
-                                <span class="text-sm font-black text-white">+117</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.11.2016</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Niedrigster</span>
-                                <span class="text-sm font-black text-white">−113</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">Wiebke · 21.11.2015</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🌍 Spielstand überhaupt</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Höchster</span>
-                                <span class="text-sm font-black text-white">+126</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.11.2016</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Niedrigster</span>
-                                <span class="text-sm font-black text-white">−113</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">Seppl · 01.09.2015, Wiebke · 21.11.2015</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🔥 Serien</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Meiste Siege in Folge</span>
-                                <span class="text-sm font-black text-white">12</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 07.10.2017, Sonja · 11.12.2021</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Meiste Niederlagen in Folge</span>
-                                <span class="text-sm font-black text-white">18</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">David · 04.05.2023, Seppl · 16.04.2026</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">✋ Punkte auf der Hand</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Meiste</span>
-                                <span class="text-sm font-black text-white">104</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">Seppl · 02.06.2016, Lutz · 09.06.2022, Alex · 19.10.2025</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Wenigste</span>
-                                <span class="text-sm font-black text-white">27</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">David · 16.08.2018, Lutz · 02.11.2016</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">💰 Gesamtumsatz des Abends</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Größter</span>
-                                <span class="text-sm font-black text-white">148</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">02.11.2016</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Kleinster</span>
-                                <span class="text-sm font-black text-white">8</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">15.01.2022</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">📊 Gesamtdifferenz des Abends</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Größte</span>
-                                <span class="text-sm font-black text-white">182</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">30.05.2023</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Kleinste</span>
-                                <span class="text-sm font-black text-white">14</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">02.12.2020</p>
-                        </div>
-                        <div class="ra-card">
-                            <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider mb-2">🏆 Siegquote am Abend</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Höchste</span>
-                                <span class="text-sm font-black text-white">82,76 %</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500 mb-2">David · 06.09.2019</p>
-                            <div class="flex justify-between items-baseline gap-2">
-                                <span class="text-[11px] text-slate-400">Niedrigste</span>
-                                <span class="text-sm font-black text-white">12,50 %</span>
-                            </div>
-                            <p class="text-[10px] text-slate-500">Seppl · 16.04.2026</p>
-                        </div>
-                    </div>
+                <div id="allTimeRecordsContainerWrap" class="accordion-wrap is-open">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 accordion-inner" id="allTimeRecordsContainer"></div>
+                </div>
+
+                <button onclick="toggleAllTimeSingleRecords()" id="allTimeSingleRecordsToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                    <span>🏆 Abend-Rekorde</span>
+                    <span id="allTimeSingleRecordsToggleIcon" class="transition-transform">▼</span>
+                </button>
+                <div id="allTimeSingleRecordsContainerWrap" class="accordion-wrap">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 accordion-inner" id="allTimeSingleRecordsContainer"></div>
                 </div>
 
                 <button onclick="toggleAllTimeTable()" id="allTimeTableToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
                     <span>📋 Ewige Gesamttabelle</span>
                     <span id="allTimeTableToggleIcon" class="transition-transform">▼</span>
                 </button>
-                <div id="allTimeTableContainer" class="hidden mt-3">
+                <div id="allTimeTableContainer" class="accordion-wrap">
+                    <div class="accordion-inner">
                     <div class="atf-mode-toggle" role="group">
                         <button type="button" id="allTimeTableModeBtnPunkte" class="atf-mode-btn atf-mode-btn-active" onclick="setAllTimeTableMode('punkte')">Punkteschnitt</button>
                         <button type="button" id="allTimeTableModeBtnLeistung" class="atf-mode-btn" onclick="setAllTimeTableMode('leistung')">Leistungswert</button>
@@ -1278,6 +1373,7 @@
                             </thead>
                             <tbody id="allTimeTableBody" class="divide-y divide-slate-800 text-sm"></tbody>
                         </table>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -1432,11 +1528,58 @@
         const db = firebase.database();
         const auth = firebase.auth();
 
+        // Reagiert sofort auf einen Netzwerkverlust/-wiederaufbau (z.B. U-Bahn-Tunnel,
+        // Kneipenkeller), statt auf Firebases eigene, oft träge oder ganz ausbleibende Erkennung
+        // zu warten: Ein echter Netzwerkabriss killt die offene WebSocket-Verbindung nicht immer
+        // sauber - Firebase merkt intern u.U. gar nicht, dass neu verbunden werden müsste, und
+        // bliebe dann auf "Verbinde..." hängen, auch wenn die Internetverbindung längst wieder da
+        // ist. db.goOffline()/db.goOnline() zwingen die SDK aktiv zum Verbindungsabbau bzw.
+        // -neuaufbau (offizieller Firebase-Weg für genau diesen Fall), statt nur passiv auf den
+        // onValue()-Handler weiter unten zu hoffen.
+        function setOfflineStatus() {
+            const dot = document.getElementById('statusDot');
+            if (dot) {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-500 inline-block";
+                dot.title = "Offline (kein Internet)";
+            }
+            const status = document.getElementById('connectionStatus');
+            if (status) {
+                status.textContent = "Offline";
+                status.className = "text-[10px] tracking-wide uppercase text-slate-500 font-bold";
+            }
+        }
+
+        window.addEventListener('offline', () => {
+            setOfflineStatus();
+            db.goOffline();
+            showToast("📴 Du bist offline. Eingaben werden lokal gesichert und automatisch synchronisiert, sobald wieder eine Verbindung besteht.", 'info');
+        });
+
+        window.addEventListener('online', () => {
+            const dot = document.getElementById('statusDot');
+            if (dot) {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-yellow-500 animate-pulse inline-block";
+                dot.title = "Verbinde...";
+            }
+            db.goOnline();
+            // db.goOnline() erzwingt den Verbindungsneuaufbau; der onValue-Handler für seasonsRef
+            // weiter unten übernimmt danach automatisch den Wechsel auf Grün (bzw. Rot bei
+            // Fehler), sobald die Verbindung tatsächlich wieder steht.
+        });
+
+        // Deckt den Fall ab, dass die App bereits offline GEÖFFNET wird: dann feuert kein
+        // online/offline-Event (kein Zustandswechsel), der Punkt bliebe sonst auf dem statischen
+        // Start-Gelb hängen, bis Firebase irgendwann in den Fehler-Timeout läuft.
+        window.addEventListener('load', () => {
+            if (!navigator.onLine) setOfflineStatus();
+        });
+
         let state = { seasons: {}, currentSeasonKey: "", manualRecords: {} };
         let courseChartInstance = null;
         let isBlitztabelleActive = false;
+        let isAllTimeRecordsExpanded = true; // Hall of Fame, standardmäßig aufgeklappt
+        let isAllTimeSingleRecordsExpanded = false; // Abend-Rekorde, standardmäßig eingeklappt
         let isAllTimeTableExpanded = false; // Ewige Gesamttabelle unter der Ewigen Bestenliste, standardmäßig eingeklappt
-        let isRecordArchivExpanded = false; // Rekord-Archiv (manuell erfasste Alt-Rekorde) über der Ewigen Gesamttabelle, standardmäßig eingeklappt
         let allTimeTableFilterFrom = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         let allTimeTableFilterTo = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         // Mindestteilnahmen für eine Wertung in der Ewigen Gesamttabelle. Standard 10, vom Nutzer über
@@ -1577,11 +1720,19 @@
                 activeConfirmCancel();
                 return;
             }
+            // Vollbild-Chart liegt immer über allem anderen (auch über offenen Modals, unter denen
+            // die Statistiken eingeblendet sein können) und wird daher zuerst geprüft.
+            if (fullscreenChartKey) {
+                closeChartFullscreen();
+                return;
+            }
             const modalCloseMap = [
                 ['whatsNewModal', closeWhatsNewModal],
                 ['regelnModal', closeRegelnModal],
+                ['giftschrankModal', closeGiftschrankModal],
                 ['seasonSettingsModal', closeSeasonSettingsModal],
                 ['mischmeisterModal', closeMischmeisterModal],
+                ['handPointsModal', closeHandPointsModal],
                 ['allTimeStatsModal', closeAllTimeModal],
                 ['playerDetailsModal', closePlayerModal],
                 ['allTimePlayerModal', closeAllTimePlayerModal],
@@ -1706,6 +1857,11 @@
         let expandedMatchStats = {};
         let expandedMatches = {};
 
+        // Vollbild-Ansicht für Abend-Verlauf-Charts (Live-Ansicht & abgeschlossene Spieltage).
+        // fullscreenChartKey === null bedeutet: kein Chart aktuell im Vollbild.
+        let fullscreenChartKey = null;
+        let fullscreenAnimating = false;
+
         const SOLO_TYPES = ['Damen', 'Buben', 'Kreuz', 'Pik', 'Herz', 'Karo', 'Fleischlos', 'stille Hochzeit', 'hängen gelassen'];
         const SOLO_KINDS = ['pflicht', 'lust'];
 
@@ -1721,9 +1877,13 @@
             // nicht mehr befüllt, könnte aber aus älteren Firebase-Datensätzen (früheres Feature)
             // noch Freitext enthalten, der über extras.join(...) direkt ins HTML fließt.
             const t = escapeHtml(type || '');
-            if (label === 'Lust') return `Lustsolo ${t}`;
-            if (label === 'Pflicht') return `Pflichtsolo ${t}`;
-            return `Solo ${t}`;
+            // .trim() entfernt das überflüssige Leerzeichen, das sonst bei leerem soloType (der
+            // Normalfall seit der aktuellen Eingabemaske) hinter "Lustsolo"/"Pflichtsolo"/"Solo"
+            // stehen bliebe - sichtbar z.B. als "Lustsolo , Ansage" statt "Lustsolo, Ansage", wenn
+            // extras.join(', ') diesen Wert mit einem weiteren Eintrag kombiniert.
+            if (label === 'Lust') return `Lustsolo ${t}`.trim();
+            if (label === 'Pflicht') return `Pflichtsolo ${t}`.trim();
+            return `Solo ${t}`.trim();
         }
 
         // Steuerung Changelog Modal
@@ -1768,20 +1928,105 @@
 
         // Mischmeister: manuell gepflegter Rekord (häufigste Geben-Serie in Folge), da dies aus
         // den erfassten Spieldaten nicht automatisch ermittelbar ist.
-        function openMischmeisterModal() {
-            const select = document.getElementById('mischmeisterPlayerSelect');
+        // ==============================
+        // Generische Mehrfach-Eintrags-Verwaltung für manuell gepflegte Rekorde mit
+        // potenziell mehreren gleichzeitigen Rekordhaltern (Gleichstand) – aktuell genutzt von
+        // Mischmeister sowie Punkte auf der Hand (Meiste/Wenigste).
+        // ==============================
+        let multiEntryPlayerOptionsMap = {}; // { containerId: '<option>...</option>' }, gesetzt beim Öffnen des jeweiligen Modals
+
+        function buildPlayerOptionsHtml() {
             const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
             const seasonPlayers = season ? (season.players || []) : [];
-            const current = (state.manualRecords && state.manualRecords.mischmeister) || { player: 'Morten', value: 6, date: '15.07.2024' };
-            select.innerHTML = seasonPlayers.map(name =>
-                `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-            ).join('');
-            // Bereits hinterlegten Spieler vorauswählen, falls er in der aktiven Saison mitspielt.
-            if (current.player && seasonPlayers.includes(current.player)) {
-                select.value = current.player;
+            return seasonPlayers.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('');
+        }
+
+        // Robustheit gegenüber dem alten Speicherformat: Mischmeister/Punkte-auf-der-Hand wurden
+        // vor Einführung der Mehrfach-Rekordhalter als einzelnes Objekt {player, value, date}
+        // gespeichert, nicht als Array. Ein bereits in Firebase liegender Alt-Datensatz würde ohne
+        // diese Normalisierung beim ersten .map()-Aufruf die komplette render()-Funktion zum
+        // Absturz bringen (und damit u.a. auch den danach aufgerufenen Saisonverlauf verhindern).
+        // Wird der Rekord über das Modal neu gespeichert, liegt er danach dauerhaft im Array-Format vor.
+        function normalizeToEntryArray(value, fallbackArray) {
+            if (Array.isArray(value)) return value;
+            if (value && typeof value === 'object') return [value];
+            return fallbackArray;
+        }
+
+        // entries: [{ player, value, dateYMD }] - dateYMD bereits im Format für <input type="date">
+        function renderMultiEntryRows(containerId, entries) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            if (entries.length === 0) {
+                container.innerHTML = `<p class="text-[11px] text-slate-400 dark:text-slate-500 italic py-1">Noch kein Rekordhalter erfasst.</p>`;
+                return;
             }
-            document.getElementById('mischmeisterValueInput').value = current.value || '';
-            document.getElementById('mischmeisterDateInput').value = parseGermanDateToYMD(current.date) || '2024-07-15';
+            const optionsHtml = multiEntryPlayerOptionsMap[containerId] || '';
+            container.innerHTML = entries.map((entry, idx) => `
+                <div class="flex items-center gap-1.5" data-row-idx="${idx}">
+                    <select class="me-player flex-1 min-w-0 bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs font-medium">${optionsHtml}</select>
+                    <input type="number" min="0" step="1" placeholder="Wert" class="me-value w-14 bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" value="${entry.value ?? ''}">
+                    <input type="date" class="me-date w-[8.5rem] bg-white dark:bg-slate-800 dark:text-slate-100 border border-gray-300 dark:border-slate-700 rounded p-1.5 text-xs text-center font-semibold" value="${entry.dateYMD || ''}">
+                    <button type="button" onclick="removeMultiEntryRow('${containerId}', ${idx})" class="text-red-500 hover:text-red-700 text-sm px-1 cursor-pointer shrink-0" title="Entfernen">✕</button>
+                </div>
+            `).join('');
+            // Vorbelegten Spieler je Zeile setzen (per <option selected> ginge nicht, da alle Zeilen
+            // dieselbe optionsHtml-Vorlage teilen).
+            entries.forEach((entry, idx) => {
+                const row = container.querySelector(`[data-row-idx="${idx}"]`);
+                if (row && entry.player) row.querySelector('.me-player').value = entry.player;
+            });
+        }
+
+        function readMultiEntryRows(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return [];
+            return Array.from(container.querySelectorAll('[data-row-idx]')).map(row => ({
+                player: row.querySelector('.me-player').value,
+                value: row.querySelector('.me-value').value,
+                dateYMD: row.querySelector('.me-date').value
+            }));
+        }
+
+        function addMultiEntryRow(containerId) {
+            const current = readMultiEntryRows(containerId);
+            current.push({ player: '', value: '', dateYMD: '' });
+            renderMultiEntryRows(containerId, current);
+        }
+
+        function removeMultiEntryRow(containerId, idx) {
+            const current = readMultiEntryRows(containerId);
+            current.splice(idx, 1);
+            renderMultiEntryRows(containerId, current);
+        }
+
+        // new Date("YYYY-MM-DD") parst als UTC-Mitternacht, siehe Kommentar in saveMatch() –
+        // UTC-Getter verwenden, damit das Datum nicht durch Zeitzonen-Umrechnung verrutscht.
+        function toGermanDateFromYMD(rawDate) {
+            const dateObj = new Date(rawDate);
+            const d = String(dateObj.getUTCDate()).padStart(2, '0');
+            const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+            const y = dateObj.getUTCFullYear();
+            return `${d}.${m}.${y}`;
+        }
+
+        // Liest und validiert die Zeilen eines Mehrfach-Eintrags-Containers. Wirft bei ungültigen
+        // Eingaben eine Exception mit einer für showToast() geeigneten Nachricht.
+        function collectMultiEntryRows(containerId, minValue) {
+            const rows = readMultiEntryRows(containerId);
+            return rows.map(row => {
+                if (!row.player) throw new Error("Bitte für jede Zeile einen Spieler auswählen (oder die Zeile entfernen).");
+                const value = parseInt(row.value);
+                if (isNaN(value) || value < minValue) throw new Error(`Bitte für jede Zeile einen gültigen Bestwert (mindestens ${minValue}) eingeben.`);
+                if (!row.dateYMD) throw new Error("Bitte für jede Zeile ein Datum auswählen.");
+                return { player: row.player, value, date: toGermanDateFromYMD(row.dateYMD) };
+            });
+        }
+
+        function openMischmeisterModal() {
+            multiEntryPlayerOptionsMap['mischmeisterRows'] = buildPlayerOptionsHtml();
+            const currentEntries = normalizeToEntryArray(state.manualRecords && state.manualRecords.mischmeister, [{ player: 'Morten', value: 6, date: '15.07.2024' }]);
+            renderMultiEntryRows('mischmeisterRows', currentEntries.map(e => ({ player: e.player, value: e.value, dateYMD: parseGermanDateToYMD(e.date) })));
             document.getElementById('mischmeisterModal').classList.remove('hidden');
             lockBodyScroll();
             registerModalOpen();
@@ -1792,31 +2037,67 @@
             registerModalClose();
         }
         function saveMischmeisterRecord() {
-            const select = document.getElementById('mischmeisterPlayerSelect');
-            const player = select.value;
-            const valueInput = document.getElementById('mischmeisterValueInput');
-            const value = parseInt(valueInput.value);
-            const rawDate = document.getElementById('mischmeisterDateInput').value;
-
-            if (!player) return showToast("Bitte einen Spieler auswählen.", 'error');
-            if (!value || value < 1) return showToast("Bitte einen gültigen Bestwert (mindestens 1) eingeben.", 'error');
-            if (!rawDate) return showToast("Bitte ein Datum auswählen.", 'error');
-
-            // new Date("YYYY-MM-DD") parst als UTC-Mitternacht, siehe Kommentar in saveMatch() –
-            // UTC-Getter verwenden, damit das Datum nicht durch Zeitzonen-Umrechnung verrutscht.
-            const dateObj = new Date(rawDate);
-            const d = String(dateObj.getUTCDate()).padStart(2, '0');
-            const m = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
-            const y = dateObj.getUTCFullYear();
-            const date = `${d}.${m}.${y}`;
+            let entries;
+            try {
+                entries = collectMultiEntryRows('mischmeisterRows', 1);
+            } catch (e) {
+                return showToast(e.message, 'error');
+            }
+            if (entries.length === 0) return showToast("Bitte mindestens einen Rekordhalter erfassen.", 'error');
 
             if (!state.manualRecords) state.manualRecords = {};
-            state.manualRecords.mischmeister = { player, value, date };
+            state.manualRecords.mischmeister = entries;
 
             closeMischmeisterModal();
             render();
             saveToCloud().then(() => {
                 showToast("Mischmeister-Rekord gespeichert!", 'success');
+            }).catch((err) => {
+                if (err === 'locked') return; // Eigener Warn-Toast kommt bereits aus saveToCloud()
+                showToast("Speichern fehlgeschlagen – bitte Internetverbindung prüfen.", 'error');
+            });
+        }
+
+        // Punkte auf der Hand: wie Mischmeister manuell gepflegter Rekord, da dieser Wert in der
+        // Detail-Eingabemaske nicht erfasst wird - hier aber mit zwei unabhängigen Extremwerten
+        // (Meiste/Wenigste), jeweils mit beliebig vielen gleichzeitigen Rekordhaltern.
+        function openHandPointsModal() {
+            const optionsHtml = buildPlayerOptionsHtml();
+            multiEntryPlayerOptionsMap['handPointsMaxRows'] = optionsHtml;
+            multiEntryPlayerOptionsMap['handPointsMinRows'] = optionsHtml;
+
+            const currentMax = normalizeToEntryArray(state.manualRecords && state.manualRecords.handPointsMax, ARCHIVE_SEED.handPointsMax);
+            const currentMin = normalizeToEntryArray(state.manualRecords && state.manualRecords.handPointsMin, ARCHIVE_SEED.handPointsMin);
+
+            renderMultiEntryRows('handPointsMaxRows', currentMax.map(e => ({ player: e.player, value: e.value, dateYMD: parseGermanDateToYMD(e.date) })));
+            renderMultiEntryRows('handPointsMinRows', currentMin.map(e => ({ player: e.player, value: e.value, dateYMD: parseGermanDateToYMD(e.date) })));
+
+            document.getElementById('handPointsModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
+        }
+        function closeHandPointsModal() {
+            document.getElementById('handPointsModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
+        }
+        function saveHandPointsRecord() {
+            let maxEntries, minEntries;
+            try {
+                maxEntries = collectMultiEntryRows('handPointsMaxRows', 0);
+                minEntries = collectMultiEntryRows('handPointsMinRows', 0);
+            } catch (e) {
+                return showToast(e.message, 'error');
+            }
+
+            if (!state.manualRecords) state.manualRecords = {};
+            state.manualRecords.handPointsMax = maxEntries; // leeres Array = bewusst "kein Rekord erfasst"
+            state.manualRecords.handPointsMin = minEntries;
+
+            closeHandPointsModal();
+            render();
+            saveToCloud().then(() => {
+                showToast("Punkte auf der Hand gespeichert!", 'success');
             }).catch((err) => {
                 if (err === 'locked') return; // Eigener Warn-Toast kommt bereits aus saveToCloud()
                 showToast("Speichern fehlgeschlagen – bitte Internetverbindung prüfen.", 'error');
@@ -1837,7 +2118,7 @@
                         const gamesPlayed = records.globalGamesPlayed[player] || 0;
                         const gamesPerSolo = stats.played > 0 ? gamesPlayed / stats.played : Infinity;
                         const winQuote = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
-                        return { player, value: gamesPerSolo, quote: stats.played, count: stats.played, detail: `${stats.played} Solos in ${gamesPlayed} Spielen (${winQuote} % gewonnen)` };
+                        return { player, value: gamesPerSolo, quote: stats.played, count: stats.played, detail: `${stats.played} Solos in ${gamesPlayed} erfassten Spielen (${winQuote} % gewonnen)` };
                     })
                     .filter(item => item.count > 0)
                     .sort((a, b) => a.value - b.value || b.count - a.count);
@@ -1891,7 +2172,7 @@
                             value: avg, 
                             pts,
                             matchCount,
-                            detail: `${pts > 0 ? '+' : ''}${pts} Pkt. gesamt (aus ${matchCount} Abenden)` 
+                            detail: `${pts > 0 ? '+' : ''}${formatDE(pts)} Pkt. gesamt (aus ${matchCount} Abenden mit Spieltagspunkten)` 
                         };
                     })
                     .filter(item => item.matchCount >= 10)
@@ -1907,7 +2188,7 @@
                         const won = records.globalAnsagenWon[player] || 0;
                         const winQuote = decided > 0 ? Math.round((won / decided) * 100) : null;
                         const winQuoteStr = winQuote !== null ? ` (${winQuote} % gewonnen)` : '';
-                        return { player, value: gamesPerAnsage, quote: count, count, detail: `${count} Ansagen in ${gamesPlayed} Spielen${winQuoteStr}` };
+                        return { player, value: gamesPerAnsage, quote: count, count, detail: `${count} Ansagen in ${gamesPlayed} erfassten Spielen${winQuoteStr}` };
                     })
                     .filter(item => item.count > 0)
                     .sort((a, b) => a.value - b.value || b.count - a.count);
@@ -1970,21 +2251,21 @@
                         ${sortedList.map((item, index) => {
                             let valStr = '';
                             if (metricType === 'host') {
-                                valStr = item.noRank ? '–' : `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt.`;
+                                valStr = item.noRank ? '–' : `${item.value > 0 ? '+' : ''}${formatDE(item.value, 1)} Pkt.`;
                             } else if (metricType === 'totalPoints') {
-                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(1)} Pkt. / Abend`;
+                                valStr = `${item.value > 0 ? '+' : ''}${formatDE(item.value, 1)} Pkt. / Abend`;
                             } else if (metricType === 'solo') {
-                                valStr = `1 Solo / ${item.value.toFixed(1)} Spiele`;
+                                valStr = `1 Solo / ${formatDE(item.value, 1)} Spiele`;
                             } else if (metricType === 'tagessiege') {
-                                valStr = `${item.value.toFixed(1)} % Siegquote`;
+                                valStr = `${formatDE(item.value, 1)} % Siegquote`;
                             } else if (metricType === 'ansagen') {
-                                valStr = `1 Ansage / ${item.value.toFixed(1)} Spiele`;
+                                valStr = `1 Ansage / ${formatDE(item.value, 1)} Spiele`;
                             } else if (metricType === 'streak') {
-                                valStr = `${item.value} Siege`;
+                                valStr = `${formatDE(item.value)} Siege`;
                             } else if (metricType === 'lossstreak') {
-                                valStr = `${item.value} Niederlagen`;
+                                valStr = `${formatDE(item.value)} Niederlagen`;
                             } else if (metricType === 'dreamteam') {
-                                valStr = `${item.value > 0 ? '+' : ''}${item.value.toFixed(2)} Pkt.`;
+                                valStr = `${item.value > 0 ? '+' : ''}${formatDE(item.value, 2)} Pkt.`;
                             }
 
                             const rank = ranks[index];
@@ -2341,7 +2622,7 @@
                                             const avg = cell.sum / cell.count;
                                             const colorCls = avg > 0 ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : (avg < 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-500');
                                             const sign = avg > 0 ? '+' : '';
-                                            return `<td class="p-2 text-center border-r border-slate-200/60 dark:border-slate-700 ${colorCls}">${sign}${avg.toFixed(1)} <span class="text-[8px] text-gray-400 dark:text-slate-500 font-normal">(${cell.count})</span></td>`;
+                                            return `<td class="p-2 text-center border-r border-slate-200/60 dark:border-slate-700 ${colorCls}">${sign}${formatDE(avg, 1)} <span class="text-[8px] text-gray-400 dark:text-slate-500 font-normal">(${cell.count})</span></td>`;
                                         }).join('')}
                                     </tr>
                                 `).join('')}
@@ -2387,7 +2668,7 @@
                                     const stat = soloStats[p];
                                     const quote = stat.played > 0 ? Math.round((stat.won / stat.played) * 100) : null;
                                     const quoteStr = quote !== null ? `${quote} %` : '-';
-                                    const quoteCls = quote !== null ? (quote >= 50 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-500 font-semibold') : 'text-gray-400 dark:text-slate-600';
+                                    const quoteCls = quote === null ? 'text-gray-400 dark:text-slate-600' : quote === 100 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : quote === 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-amber-600 dark:text-amber-500 font-semibold';
                                     return `
                                         <tr class="border-b border-slate-100 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800/40">
                                             <td class="p-2 font-bold text-slate-700 dark:text-slate-300 border-r border-slate-200/60 dark:border-slate-700">${escapeHtml(p)}</td>
@@ -2406,7 +2687,8 @@
             let chartHtml = `
                 <div class="space-y-1.5">
                     <p class="text-xs font-bold text-slate-700 dark:text-slate-300">📈 Verlauf des Abends (Kumulierte Gesamtpunkte)</p>
-                    <div class="relative w-full border border-slate-200/60 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-2" style="height: 220px;">
+                    <div id="chart-wrapper-${chartKey}" class="chart-fullscreen-wrapper relative w-full border border-slate-200/60 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 p-2" style="height: 220px;">
+                        <button type="button" onclick="event.stopPropagation(); toggleChartFullscreen('${chartKey}');" title="Vergrößern" class="chart-fullscreen-btn absolute top-1.5 right-1.5 z-10 w-6 h-6 flex items-center justify-center rounded-md text-slate-400 hover:text-steel-600 dark:hover:text-steel-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer text-xs">⛶</button>
                         <canvas id="${canvasId}"></canvas>
                     </div>
                 </div>
@@ -2493,10 +2775,225 @@
                     },
                     plugins: {
                         legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 10 }, color: textColor } },
-                        tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.raw > 0 ? '+' : ''}${context.raw} Pkt.` } }
+                        tooltip: { callbacks: { label: context => `${context.dataset.label}: ${context.raw > 0 ? '+' : ''}${formatDE(context.raw)} Pkt.` } }
                     }
                 }
             });
+
+            // Live-Updates (neue Spiele während geöffneter Statistik) rendern diese Komponente per
+            // container.innerHTML komplett neu und ersetzen damit auch den Chart-Wrapper-Knoten.
+            // War genau dieser Chart gerade im Vollbild, würde er sonst unbemerkt auf Kartengröße
+            // zurückspringen – stattdessen hier den Vollbild-Zustand am neuen Knoten sofort (ohne
+            // erneute Animation) wiederherstellen.
+            if (fullscreenChartKey === chartKey) {
+                reapplyChartFullscreenInstant(chartKey);
+            }
+        }
+
+        // ==============================
+        // Vollbild-Ansicht für Abend-Verlauf-Charts
+        // ==============================
+        // Technik: FLIP (First-Last-Invert-Play). Der Chart-Wrapper wird NICHT im DOM verschoben
+        // (das würde die an sein <canvas> gebundene Chart.js-Instanz und spätere Live-Re-Renders
+        // durcheinanderbringen) – stattdessen bekommt er sofort position:fixed + volle
+        // Bildschirmgröße (damit Chart.js' ResizeObserver den Canvas direkt in voller Auflösung
+        // zeichnet) und wird per CSS-transform (scale + translate) optisch auf seine ursprüngliche
+        // Größe/Position zurückgestaucht. Das Entfernen dieses Transforms animiert dann den
+        // "Aufwachs"-Effekt. Ein unsichtbarer Platzhalter hält währenddessen die Lücke im normalen
+        // Layout offen.
+        function toggleChartFullscreen(chartKey) {
+            if (fullscreenAnimating) return;
+            if (fullscreenChartKey === chartKey) {
+                closeChartFullscreen();
+            } else {
+                if (fullscreenChartKey) closeChartFullscreenInstant();
+                openChartFullscreen(chartKey);
+            }
+        }
+
+        function getChartFullscreenEls(chartKey) {
+            return {
+                wrapper: document.getElementById(`chart-wrapper-${chartKey}`),
+                btn: document.querySelector(`#chart-wrapper-${chartKey} .chart-fullscreen-btn`)
+            };
+        }
+
+        function openChartFullscreen(chartKey) {
+            const { wrapper, btn } = getChartFullscreenEls(chartKey);
+            if (!wrapper) return;
+            const backdrop = document.getElementById('chartFullscreenBackdrop');
+            const rect = wrapper.getBoundingClientRect();
+
+            fullscreenChartKey = chartKey;
+            fullscreenAnimating = true;
+
+            // Platzhalter mit identischer Höhe, damit umliegende Inhalte nicht springen, solange
+            // der eigentliche Wrapper per position:fixed aus dem Fluss genommen ist.
+            const placeholder = document.createElement('div');
+            placeholder.id = `chart-placeholder-${chartKey}`;
+            placeholder.style.height = rect.height + 'px';
+            wrapper.parentNode.insertBefore(placeholder, wrapper);
+
+            wrapper.classList.add('chart-fullscreen-active');
+            wrapper.style.position = 'fixed';
+            wrapper.style.margin = '0';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.width = '100vw';
+            wrapper.style.height = '100vh';
+            wrapper.style.zIndex = '200';
+            wrapper.style.borderRadius = '0';
+
+            // Sofort (ohne Transition) optisch auf die alte Größe/Position zurückstauchen ...
+            const scaleX = rect.width / window.innerWidth;
+            const scaleY = rect.height / window.innerHeight;
+            wrapper.style.transition = 'none';
+            wrapper.style.transformOrigin = 'top left';
+            wrapper.style.transform = `translate(${rect.left}px, ${rect.top}px) scale(${scaleX}, ${scaleY})`;
+
+            backdrop.classList.remove('hidden');
+            if (btn) { btn.textContent = '✕'; btn.title = 'Schließen'; }
+
+            // ... und im nächsten Frame die Transition aktivieren und zur "Normalgröße" (= voller
+            // Bildschirm) zurückkehren -> das ist der eigentliche "Aufwachs"-Effekt. Ein leichtes
+            // Überschwingen (back-easing) sorgt für den verspielten, "coolen" Charakter.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    wrapper.style.transition = 'transform .42s cubic-bezier(.34, 1.32, .4, 1)';
+                    wrapper.style.transform = 'translate(0px, 0px) scale(1, 1)';
+                    backdrop.style.opacity = '1';
+                });
+            });
+
+            lockBodyScroll();
+            registerModalOpen();
+            document.addEventListener('keydown', handleChartFullscreenEscape);
+
+            const onEnd = (e) => {
+                if (e.target !== wrapper || e.propertyName !== 'transform') return;
+                wrapper.removeEventListener('transitionend', onEnd);
+                fullscreenAnimating = false;
+                if (eveningCharts[chartKey]) eveningCharts[chartKey].resize();
+            };
+            wrapper.addEventListener('transitionend', onEnd);
+        }
+
+        function closeChartFullscreen() {
+            const chartKey = fullscreenChartKey;
+            if (!chartKey) return;
+            const { wrapper, btn } = getChartFullscreenEls(chartKey);
+            const backdrop = document.getElementById('chartFullscreenBackdrop');
+            const placeholder = document.getElementById(`chart-placeholder-${chartKey}`);
+
+            // Analog zu toggleAdminModal(false): History-Eintrag/Scroll-Sperre sofort auflösen,
+            // wenn das Schließen ausgelöst wird - nicht erst nachdem die (async) Animation
+            // abgelaufen ist.
+            document.removeEventListener('keydown', handleChartFullscreenEscape);
+            unlockBodyScroll();
+            registerModalClose();
+
+            if (!wrapper || !placeholder) {
+                finishCloseChartFullscreen(chartKey);
+                return;
+            }
+
+            fullscreenAnimating = true;
+
+            // Zielposition am AKTUELLEN Platzhalter neu ermitteln statt die ursprüngliche Position
+            // von ganz zu Beginn wiederzuverwenden - falls sich das Layout währenddessen verändert
+            // hat (z.B. durch ein neu eingetragenes Spiel), landet die Animation trotzdem exakt an
+            // der richtigen Stelle.
+            const targetRect = placeholder.getBoundingClientRect();
+            const scaleX = targetRect.width / window.innerWidth;
+            const scaleY = targetRect.height / window.innerHeight;
+
+            // Bewusst eine ANDERE, unterscheidbare Animation als beim Öffnen: statt des reinen
+            // Hineinwachsens hier ein leichtes Zusammenschrumpfen samt Drehung und Ausblenden -
+            // ein "Wegschnipp"-Effekt, der sich klar vom Öffnen absetzt.
+            backdrop.style.opacity = '0';
+            wrapper.style.transition = 'transform .32s cubic-bezier(.5, 0, .75, 0), opacity .32s ease-in';
+            wrapper.style.transform = `translate(${targetRect.left}px, ${targetRect.top}px) scale(${scaleX}, ${scaleY}) rotate(-4deg)`;
+            wrapper.style.opacity = '0.25';
+
+            const onEnd = (e) => {
+                if (e.target !== wrapper || e.propertyName !== 'transform') return;
+                wrapper.removeEventListener('transitionend', onEnd);
+                finishCloseChartFullscreen(chartKey);
+            };
+            wrapper.addEventListener('transitionend', onEnd);
+        }
+
+        // Räumt DOM/Styles auf, nachdem die Schließen-Animation abgelaufen ist (oder sofort, wenn
+        // gar nicht animiert werden kann/soll). unlockBodyScroll()/registerModalClose() sind hier
+        // bewusst NICHT enthalten - die laufen in closeChartFullscreen()/closeChartFullscreenInstant()
+        // bereits sofort beim Auslösen des Schließens, nicht erst nach der Animation.
+        function finishCloseChartFullscreen(chartKey) {
+            const { wrapper, btn } = getChartFullscreenEls(chartKey);
+            const backdrop = document.getElementById('chartFullscreenBackdrop');
+            const placeholder = document.getElementById(`chart-placeholder-${chartKey}`);
+            backdrop.classList.add('hidden');
+            if (placeholder) placeholder.remove();
+            if (wrapper) {
+                wrapper.classList.remove('chart-fullscreen-active');
+                // 'height' bewusst NICHT einfach leeren: Die Höhe von 220px kommt ausschließlich
+                // aus dem Inline-Style des Templates (keine Tailwind-Klasse dafür vorhanden) - ein
+                // leerer Wert würde die Höhe auf "auto" zurückfallen lassen, was bei einem
+                // Canvas mit maintainAspectRatio:false zu einer sehr großen, unkontrollierten Höhe
+                // führt. 'width' dagegen darf geleert werden, da dafür die Tailwind-Klasse "w-full"
+                // greift.
+                ['position', 'margin', 'top', 'left', 'width', 'zIndex', 'borderRadius',
+                 'transition', 'transformOrigin', 'transform', 'opacity'].forEach(prop => {
+                    wrapper.style[prop] = '';
+                });
+                wrapper.style.height = '220px';
+            }
+            if (btn) { btn.textContent = '⛶'; btn.title = 'Vergrößern'; }
+            if (fullscreenChartKey === chartKey) fullscreenChartKey = null;
+            fullscreenAnimating = false;
+            if (eveningCharts[chartKey]) eveningCharts[chartKey].resize();
+        }
+
+        // Sofortiger Abbruch ohne Animation - z.B. wenn ein anderer Chart in den Vollbild-Modus
+        // wechseln soll, während dieser hier noch offen ist.
+        function closeChartFullscreenInstant() {
+            if (!fullscreenChartKey) return;
+            const chartKey = fullscreenChartKey;
+            document.removeEventListener('keydown', handleChartFullscreenEscape);
+            unlockBodyScroll();
+            registerModalClose();
+            finishCloseChartFullscreen(chartKey);
+        }
+
+        // Wird von renderEveningStatsComponent() aufgerufen, wenn ein Live-Update den Chart-Wrapper
+        // gerade neu erzeugt hat, während dieser Chart im Vollbild angezeigt wird - setzt den
+        // Vollbild-Zustand am neuen Knoten sofort (ohne erneute Animation) wieder.
+        function reapplyChartFullscreenInstant(chartKey) {
+            const { wrapper, btn } = getChartFullscreenEls(chartKey);
+            if (!wrapper) return;
+            wrapper.classList.add('chart-fullscreen-active');
+            wrapper.style.transition = 'none';
+            wrapper.style.margin = '0';
+            wrapper.style.position = 'fixed';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.width = '100vw';
+            wrapper.style.height = '100vh';
+            wrapper.style.zIndex = '200';
+            wrapper.style.borderRadius = '0';
+            wrapper.style.transform = 'translate(0px, 0px) scale(1, 1)';
+            if (btn) { btn.textContent = '✕'; btn.title = 'Schließen'; }
+            if (!document.getElementById(`chart-placeholder-${chartKey}`)) {
+                const placeholder = document.createElement('div');
+                placeholder.id = `chart-placeholder-${chartKey}`;
+                placeholder.style.height = '220px';
+                wrapper.parentNode.insertBefore(placeholder, wrapper);
+            }
+            document.getElementById('chartFullscreenBackdrop').classList.remove('hidden');
+            document.getElementById('chartFullscreenBackdrop').style.opacity = '1';
+        }
+
+        function handleChartFullscreenEscape(e) {
+            if (e.key === 'Escape') closeChartFullscreen();
         }
 
         function toggleLiveStats() {
@@ -2793,7 +3290,7 @@
             const totalBtn = document.getElementById('chartModeTotalBtn');
             if (!rankingBtn || !totalBtn) return;
 
-            const activeCls = ['bg-emerald-600', 'text-white', 'shadow'];
+            const activeCls = ['bg-steel-600', 'text-white', 'shadow'];
             const inactiveCls = ['bg-transparent', 'text-gray-500', 'dark:text-slate-400'];
             rankingBtn.classList.remove(...activeCls, ...inactiveCls);
             totalBtn.classList.remove(...activeCls, ...inactiveCls);
@@ -3005,7 +3502,7 @@
                 const worst = history[history.length - 1];
                 const totalPoints = history.reduce((sum, m) => sum + m.score, 0);
                 const pointsSign = totalPoints > 0 ? '+' : '';
-                const avg = (history.reduce((sum, m) => sum + m.score, 0) / history.length).toFixed(1);
+                const avg = formatDE(history.reduce((sum, m) => sum + m.score, 0) / history.length, 1);
                 
                 const bestSign = best.score > 0 ? '+' : '';
                 const worstSign = worst.score > 0 ? '+' : '';
@@ -3026,18 +3523,18 @@
                             </div>
                             <div class="flex justify-between items-center text-sm font-semibold mt-1">
                                 <span class="text-gray-600 dark:text-slate-400">Spieltagspunkte:</span>
-                                <span class="text-lg font-bold ${totalPoints > 0 ? 'text-emerald-600 dark:text-emerald-400' : totalPoints < 0 ? 'text-red-600' : ''}">${pointsSign}${totalPoints}</span>
+                                <span class="text-lg font-bold ${totalPoints > 0 ? 'text-emerald-600 dark:text-emerald-400' : totalPoints < 0 ? 'text-red-600' : ''}">${pointsSign}${formatDE(totalPoints)}</span>
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div class="bg-emerald-50 dark:bg-emerald-950/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-900/60 text-emerald-900 dark:text-emerald-400">
                                 <p class="text-[10px] uppercase font-bold">Bester</p>
-                                <p class="font-bold">${bestSign}${best.score}</p>
+                                <p class="font-bold">${bestSign}${formatDE(best.score)}</p>
                                 <p class="text-[10px] text-emerald-600 dark:text-emerald-500">${padDateString(best.date)}</p>
                             </div>
                             <div class="bg-red-50 dark:bg-red-950/20 p-3 rounded-lg border border-red-200 dark:border-red-900/60 text-red-900 dark:text-red-400">
                                 <p class="text-[10px] uppercase font-bold">Schlechtester</p>
-                                <p class="font-bold">${worstSign}${worst.score}</p>
+                                <p class="font-bold">${worstSign}${formatDE(worst.score)}</p>
                                 <p class="text-[10px] text-red-600 dark:text-red-400">${padDateString(worst.date)}</p>
                             </div>
                         </div>
@@ -3175,6 +3672,18 @@
             }
         }
 
+        // Formatiert eine Zahl im deutschen Format: Komma als Dezimaltrennzeichen, Punkt als
+        // Tausendertrennzeichen (z.B. 1063.5 -> "1.063,5", 1063 -> "1.063", 3.63 -> "3,63"). Nutzt
+        // die native toLocaleString()-Lokalisierung statt manueller String-Ersetzung, damit auch
+        // mehrstellige Tausender korrekt gruppiert werden (was ein simples .replace('.', ',') nicht
+        // leisten würde). decimals = feste Anzahl Nachkommastellen (Standard: 0, also ganzzahlig).
+        // Das Vorzeichen "-" bei negativen Werten kommt automatisch mit; ein optionales "+" bei
+        // positiven Werten bleibt wie bisher Aufgabe des jeweiligen Aufrufers.
+        function formatDE(num, decimals = 0) {
+            if (num === null || num === undefined || isNaN(num)) return '-';
+            return num.toLocaleString('de-DE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+
         function padDateString(dateStr) {
             if (!dateStr || typeof dateStr !== 'string') return '-';
             if (dateStr.includes('Alter Abend')) return dateStr;
@@ -3206,20 +3715,28 @@
             render();
         }
 
+        function toggleAllTimeRecords() {
+            isAllTimeRecordsExpanded = !isAllTimeRecordsExpanded;
+            const wrap = document.getElementById('allTimeRecordsContainerWrap');
+            const icon = document.getElementById('allTimeRecordsToggleIcon');
+            if (wrap) wrap.classList.toggle('is-open', isAllTimeRecordsExpanded);
+            if (icon) icon.style.transform = isAllTimeRecordsExpanded ? 'rotate(180deg)' : '';
+        }
+
+        function toggleAllTimeSingleRecords() {
+            isAllTimeSingleRecordsExpanded = !isAllTimeSingleRecordsExpanded;
+            const wrap = document.getElementById('allTimeSingleRecordsContainerWrap');
+            const icon = document.getElementById('allTimeSingleRecordsToggleIcon');
+            if (wrap) wrap.classList.toggle('is-open', isAllTimeSingleRecordsExpanded);
+            if (icon) icon.style.transform = isAllTimeSingleRecordsExpanded ? 'rotate(180deg)' : '';
+        }
+
         function toggleAllTimeTable() {
             isAllTimeTableExpanded = !isAllTimeTableExpanded;
             const container = document.getElementById('allTimeTableContainer');
             const icon = document.getElementById('allTimeTableToggleIcon');
-            if (container) container.classList.toggle('hidden', !isAllTimeTableExpanded);
+            if (container) container.classList.toggle('is-open', isAllTimeTableExpanded);
             if (icon) icon.style.transform = isAllTimeTableExpanded ? 'rotate(180deg)' : '';
-        }
-
-        function toggleRecordArchiv() {
-            isRecordArchivExpanded = !isRecordArchivExpanded;
-            const container = document.getElementById('recordArchivContainer');
-            const icon = document.getElementById('recordArchivToggleIcon');
-            if (container) container.classList.toggle('hidden', !isRecordArchivExpanded);
-            if (icon) icon.style.transform = isRecordArchivExpanded ? 'rotate(180deg)' : '';
         }
 
         function formatYMDToGerman(ymd) {
@@ -3473,7 +3990,7 @@
                                             <span class="truncate">${escapeHtml(sp.label)}</span>
                                             ${sp.isActive ? '<span class="shrink-0 text-[9px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/40 px-1.5 py-0.5 rounded">läuft</span>' : ''}
                                         </span>
-                                        <span class="shrink-0 font-bold ${sp.rank !== null ? '' : 'text-slate-400 dark:text-slate-500 font-normal italic text-xs'}" ${sp.rank !== null ? `style="color: ${getRankGradientColor(sp.rank, sp.totalRanked)}"` : ''}>${sp.rank !== null ? sp.rank + '/' + sp.totalRanked : 'außerhalb der Wertung'}</span>
+                                        <span class="shrink-0 font-bold ${sp.rank !== null ? '' : 'text-slate-400 dark:text-slate-500 font-normal italic text-xs'}" ${sp.rank !== null ? `style="color: ${getRankGradientColor(sp.rank, sp.totalRanked)}"` : ''}>${sp.rank !== null ? sp.rank + '/' + sp.totalRanked : 'keine Wertung'}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -3591,16 +4108,16 @@
             let atUnqualified = allTimePlayerData.filter(p => !p.inRating).sort(compareAllTimeRows);
 
             const mapAllTimeRow = (p, isQ) => {
-                const avgDisplay = isLeistung ? `${p.avg.toFixed(1)} %` : p.avg.toFixed(2);
-                const nameBtn = `<button onclick="openAllTimePlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="hover:underline cursor-pointer text-left">${escapeHtml(p.name)}</button>`;
+                const avgDisplay = isLeistung ? `${formatDE(p.avg, 1)} %` : formatDE(p.avg, 2);
+                const nameBtn = `<button onclick="openAllTimePlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="hover:text-steel-400 underline decoration-slate-600 decoration-2 underline-offset-2 cursor-pointer text-left">${escapeHtml(p.name)}</button>`;
                 if (isQ) {
                     return `
                     <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
-                        <td class="p-2 text-emerald-400 font-bold">${p.rank}.</td>
+                        <td class="p-2 text-slate-100 font-bold">${p.rank}.</td>
                         <td class="p-2 font-semibold text-slate-100">${nameBtn}</td>
-                        <td class="p-2 text-right font-bold text-emerald-400">${avgDisplay}</td>
+                        <td class="p-2 text-right font-bold text-steel-400">${avgDisplay}</td>
                         <td class="p-2 text-right text-slate-300">${p.played}/${totalMatchdays}</td>
-                        <td class="p-2 text-right text-slate-400">${p.pts} Pkt.</td>
+                        <td class="p-2 text-right text-slate-400">${formatDE(p.pts)} Pkt.</td>
                     </tr>
                     `;
                 } else {
@@ -3610,7 +4127,7 @@
                         <td class="p-2 font-semibold">${nameBtn}</td>
                         <td class="p-2 text-right font-semibold">${avgDisplay}</td>
                         <td class="p-2 text-right text-amber-500">${p.played}/${totalMatchdays}</td>
-                        <td class="p-2 text-right">${p.pts} Pkt.</td>
+                        <td class="p-2 text-right">${formatDE(p.pts)} Pkt.</td>
                     </tr>
                     `;
                 }
@@ -4414,6 +4931,166 @@
             releaseEditLockRaw();
         }
 
+        // ==============================
+        // Giftschrank: gemeinsame Notizfläche für Regeländerungsvorschläge zur nächsten Saison.
+        // Eigener Cloud-Knoten ('giftschrank') + eigene, unabhängige Sperre ('giftschrankLock'),
+        // damit das Bearbeiten der Notizen NICHT mit dem Eingabebereich-EditLock (Spieltage
+        // erfassen) kollidiert – beides kann parallel unabhängig voneinander laufen.
+        // ==============================
+        let giftschrankListenerAttached = false;
+        let giftschrankLockInfo = null;   // { session, ts } aus der Cloud (null = frei)
+        let hasGiftschrankLock = false;   // true, wenn DIESE Sitzung die Sperre hält
+        let giftschrankLockUiRefreshInterval = null;
+        let isGiftschrankModalOpen = false;
+        let giftschrankRemoteText = '';   // zuletzt aus der Cloud empfangener Text
+        let giftschrankSaveDebounceTimeout = null;
+        let giftschrankLockWarningShownAt = 0;
+
+        // Etwas kürzer als EDIT_LOCK_TIMEOUT_MS: Der Giftschrank ist eine reine Notizfläche ohne
+        // Datenverlustrisiko wie bei einem laufenden Spielabend, daher darf eine verwaiste Sperre
+        // (Tab vergessen zu schließen) schneller wieder freigegeben werden.
+        const GIFTSCHRANK_LOCK_TIMEOUT_MS = 10 * 60 * 1000;
+
+        function startGiftschrankListener() {
+            if (giftschrankListenerAttached) return;
+            giftschrankListenerAttached = true;
+
+            db.ref('giftschrank').on('value', (snapshot) => {
+                const data = snapshot.val();
+                giftschrankRemoteText = (data && data.text) || '';
+                // Läuft diese Sitzung gerade selbst die Sperre und tippt aktiv, darf ein
+                // eintreffendes Cloud-Echo den Cursor/die Eingabe nicht unterbrechen – der
+                // Textarea-Inhalt bleibt dann unangetastet (er ist ohnehin die Quelle der
+                // Wahrheit für den eigenen Schreibvorgang).
+                const textarea = document.getElementById('giftschrankTextarea');
+                if (textarea && isGiftschrankModalOpen && !hasGiftschrankLock) {
+                    if (document.activeElement !== textarea) {
+                        textarea.value = giftschrankRemoteText;
+                    }
+                }
+            });
+
+            db.ref('giftschrankLock').on('value', (snapshot) => {
+                giftschrankLockInfo = snapshot.val();
+                hasGiftschrankLock = !!(giftschrankLockInfo && giftschrankLockInfo.session === mySessionId);
+                updateGiftschrankLockUI();
+            });
+
+            if (!giftschrankLockUiRefreshInterval) {
+                giftschrankLockUiRefreshInterval = setInterval(updateGiftschrankLockUI, 15000);
+            }
+        }
+
+        function stopGiftschrankListener() {
+            db.ref('giftschrank').off();
+            db.ref('giftschrankLock').off();
+            giftschrankListenerAttached = false;
+            giftschrankLockInfo = null;
+            hasGiftschrankLock = false;
+            if (giftschrankLockUiRefreshInterval) {
+                clearInterval(giftschrankLockUiRefreshInterval);
+                giftschrankLockUiRefreshInterval = null;
+            }
+        }
+
+        function updateGiftschrankLockUI() {
+            if (!isGiftschrankModalOpen) return;
+            const textarea = document.getElementById('giftschrankTextarea');
+            const banner = document.getElementById('giftschrankLockBanner');
+            const selfBadge = document.getElementById('giftschrankLockedBySelf');
+            if (!textarea || !banner || !selfBadge) return;
+
+            const lockAgeMs = giftschrankLockInfo ? (Date.now() + serverTimeOffset) - (giftschrankLockInfo.ts || 0) : Infinity;
+            const lockIsActive = !!(giftschrankLockInfo && !hasGiftschrankLock && lockAgeMs < GIFTSCHRANK_LOCK_TIMEOUT_MS);
+
+            if (lockIsActive) {
+                textarea.readOnly = true;
+                textarea.classList.add('opacity-60', 'cursor-not-allowed');
+                banner.textContent = '🔒 Wird gerade von einem anderen Gerät bearbeitet – nur Lesezugriff.';
+                banner.classList.remove('hidden');
+                selfBadge.classList.add('hidden');
+            } else if (hasGiftschrankLock) {
+                textarea.readOnly = false;
+                textarea.classList.remove('opacity-60', 'cursor-not-allowed');
+                banner.classList.add('hidden');
+                selfBadge.classList.remove('hidden');
+            } else {
+                // Sperre ist frei oder verwaist: automatisch übernehmen, ohne Rückfrage (anders
+                // als beim Eingabebereich gibt es hier kein "laufendes Spiel", das verloren gehen
+                // könnte – ein reiner Notiztext lässt sich gefahrlos sofort übernehmen).
+                textarea.readOnly = false;
+                textarea.classList.remove('opacity-60', 'cursor-not-allowed');
+                banner.classList.add('hidden');
+                acquireGiftschrankLock();
+            }
+        }
+
+        function acquireGiftschrankLock() {
+            db.ref('giftschrankLock').set({
+                session: mySessionId,
+                ts: firebase.database.ServerValue.TIMESTAMP
+            });
+        }
+
+        function releaseGiftschrankLock() {
+            if (!hasGiftschrankLock) return;
+            db.ref('giftschrankLock').remove();
+        }
+
+        function openGiftschrankModal() {
+            isGiftschrankModalOpen = true;
+            document.getElementById('giftschrankTextarea').value = giftschrankRemoteText;
+            document.getElementById('giftschrankSaveStatus').textContent = '';
+            document.getElementById('giftschrankModal').classList.remove('hidden');
+            lockBodyScroll();
+            registerModalOpen();
+            updateGiftschrankLockUI();
+        }
+
+        function closeGiftschrankModal() {
+            isGiftschrankModalOpen = false;
+            clearTimeout(giftschrankSaveDebounceTimeout);
+            releaseGiftschrankLock();
+            document.getElementById('giftschrankModal').classList.add('hidden');
+            unlockBodyScroll();
+            registerModalClose();
+        }
+
+        // Automatisches Speichern statt Speichern-Button: jede Eingabe wird debounced (600ms
+        // Tippspause) in die Cloud geschrieben, analog zu saveLiveDraftToCloud() beim
+        // Eingabebereich.
+        function handleGiftschrankInput() {
+            const status = document.getElementById('giftschrankSaveStatus');
+            if (status) status.textContent = 'Tippen ...';
+            clearTimeout(giftschrankSaveDebounceTimeout);
+            giftschrankSaveDebounceTimeout = setTimeout(saveGiftschrankToCloud, 600);
+        }
+
+        function saveGiftschrankToCloud() {
+            if (!hasGiftschrankLock) {
+                const now = Date.now();
+                if (now - giftschrankLockWarningShownAt > 5000) {
+                    giftschrankLockWarningShownAt = now;
+                    showToast('Achtung: Deine Änderung wurde NICHT gespeichert – der Giftschrank ist gerade durch jemand anderen gesperrt.', 'error');
+                }
+                return;
+            }
+            const textarea = document.getElementById('giftschrankTextarea');
+            if (!textarea) return;
+            const text = textarea.value;
+            const status = document.getElementById('giftschrankSaveStatus');
+            trackPendingWrite(db.ref('giftschrank').set({
+                text,
+                ts: firebase.database.ServerValue.TIMESTAMP
+            })).then(() => {
+                if (status && isGiftschrankModalOpen) status.textContent = 'Gespeichert ✓';
+            }).catch((err) => {
+                console.error('Fehler beim Speichern des Giftschranks:', err);
+                if (status) status.textContent = '';
+                showToast('Speichern fehlgeschlagen – bitte Internetverbindung prüfen.', 'error');
+            });
+        }
+
         function handleLogin(event) {
             event.preventDefault();
             const usernameInput = document.getElementById('loginUsername');
@@ -4475,7 +5152,7 @@
                 }
                 // Kurz auf den bestätigten Auth-Token warten, damit die Datenbank-Regeln
                 // beim ersten Verbindungsaufbau bereits den angemeldeten Zustand sehen.
-                user.getIdToken().then(() => { startDatabaseListener(); startEditLockListener(); }).catch(() => { startDatabaseListener(); startEditLockListener(); });
+                user.getIdToken().then(() => { startDatabaseListener(); startEditLockListener(); startGiftschrankListener(); }).catch(() => { startDatabaseListener(); startEditLockListener(); startGiftschrankListener(); });
             } else {
                 // Nicht angemeldet: App verstecken, Login-Fenster zeigen
                 if (appContent) appContent.classList.add('hidden');
@@ -4490,6 +5167,7 @@
                 db.ref('.info/serverTimeOffset').off();
                 dbListenerAttached = false;
                 stopEditLockListener();
+                stopGiftschrankListener();
             }
         });
 
@@ -4853,7 +5531,16 @@
             return placementScores;
         }
 
-        function calculateSeasonStats(seasonKey) {
+        // excludeMatchId: optional - lässt einen einzelnen (bereits gespeicherten) Spieltag bei der
+        // Berechnung außen vor. Wird für die "klassischen" Trendpfeile genutzt, um den Stand VOR
+        // dem zuletzt gespeicherten Abend zu ermitteln (siehe computePreviousSeasonRanks()).
+        // includeLiveDraft: ob die gerade laufende, noch ungespeicherte Blitzrunde mit eingerechnet
+        // wird. Standardmäßig an (das ist überall sonst im Skript das gewünschte Verhalten für den
+        // "aktuellen" Stand). computePreviousSeasonRanks() schaltet das für die Blitztabelle gezielt
+        // aus, um einen sauberen "Stand vor der Live-Runde" (unabhängig vom letzten gespeicherten
+        // Spieltag) zu bekommen - siehe dort für Details, warum beide Parameter unabhängig
+        // voneinander gebraucht werden.
+        function calculateSeasonStats(seasonKey, excludeMatchId = null, includeLiveDraft = true) {
             let totalSeasonPoints = {};
             let matchCounts = {};
             let maxWin = { score: -999, player: "-", date: "-", season: "" };
@@ -4872,6 +5559,7 @@
             if (!season || !season.matches) return { totalSeasonPoints, matchCounts, totalMatchesCount: 0, maxWin, maxLoss, hostStats };
 
             let matchesEntries = Object.entries(season.matches);
+            if (excludeMatchId) matchesEntries = matchesEntries.filter(([id]) => id !== excludeMatchId);
             let totalMatchesCount = matchesEntries.length;
 
             matchesEntries.forEach(([id, match]) => {
@@ -4908,7 +5596,11 @@
                 }
             });
 
-            if (isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0 && !season.isHistorical) {
+            // Die live laufende Blitzrunde wird nur eingerechnet, wenn includeLiveDraft es erlaubt
+            // (siehe Kommentar am Funktionskopf). computePreviousSeasonRanks() ruft diese Funktion
+            // für die Blitztabelle gezielt mit includeLiveDraft: false auf, um einen sauberen
+            // "Stand vor der Live-Runde" zu bekommen, unabhängig vom zuletzt gespeicherten Spieltag.
+            if (includeLiveDraft && isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0 && !season.isHistorical) {
                 let currentTotals = computeDetailedTotals();
                 let tempMatch = {
                     mode: 'detailed',
@@ -4929,12 +5621,159 @@
             return { totalSeasonPoints, matchCounts, totalMatchesCount, maxWin, maxLoss, hostStats };
         }
 
+        // Ermittelt das Ranking (Name -> Platz) der aktiven Saison, wie es VOR dem relevanten
+        // Vergleichszeitpunkt aussah - Basis für die Trendpfeile in der Saison-Tabelle. Nutzt exakt
+        // dieselbe Qualifikations-/Sortier-/Gleichstand-Logik wie das aktuelle Ranking.
+        //
+        // Zwei Fälle, je nachdem ob gerade eine Blitzrunde läuft:
+        // - Blitztabelle aktiv: Vergleichszeitpunkt ist "vor der gerade laufenden Live-Runde", also
+        //   der komplette bereits gespeicherte Saisonverlauf OHNE die Live-Runde (excludeMatchId
+        //   bleibt leer, includeLiveDraft wird explizit ausgeschaltet). So zeigen die Pfeile in der
+        //   Blitztabelle NUR den Effekt der Live-Runde selbst, nicht zusätzlich den bereits an
+        //   anderer Stelle gezeigten Effekt des zuletzt gespeicherten Spieltags.
+        // - Sonst (normale Tabelle, keine Blitzrunde): Vergleichszeitpunkt ist "vor dem zuletzt
+        //   gespeicherten Spieltag" (excludeMatchId = dessen ID, includeLiveDraft bleibt beim
+        //   Default true, spielt hier aber ohnehin keine Rolle, da keine Live-Runde läuft).
+        // Gibt ein leeres Objekt zurück, wenn es keinen "vorherigen" Stand gibt (Saison hat noch
+        // keinen bzw. bei der klassischen Variante nur einen Spieltag) oder die Saison historisch ist.
+        function computePreviousSeasonRanks(seasonKey, minQuotaRatio) {
+            const season = state.seasons[seasonKey];
+            if (!season || !season.matches || season.isHistorical) return {};
+
+            const matchCount = Object.keys(season.matches).length;
+            const liveRoundActive = isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0;
+
+            let totalSeasonPoints, matchCounts, totalMatchesCount;
+            if (liveRoundActive) {
+                if (matchCount < 1) return {}; // keine gespeicherte Referenz vor der Live-Runde vorhanden
+                ({ totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(seasonKey, null, false));
+            } else {
+                if (matchCount < 2) return {}; // kein "vorheriger" Stand ohne mind. 2 Abende
+                const sortedMatchEntries = Object.entries(season.matches)
+                    .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
+                const lastMatchId = sortedMatchEntries[sortedMatchEntries.length - 1][0];
+                ({ totalSeasonPoints, matchCounts, totalMatchesCount } = calculateSeasonStats(seasonKey, lastMatchId, true));
+            }
+
+            const seasonPlayers = season.players || [];
+
+            const previousData = seasonPlayers.map(name => {
+                const played = matchCounts[name] || 0;
+                const pts = totalSeasonPoints[name] || 0;
+                const ratio = totalMatchesCount > 0 ? (played / totalMatchesCount) : 0;
+                return { name, played, avg: played > 0 ? (pts / played) : 0, inRating: ratio >= minQuotaRatio };
+            });
+
+            const previousQualified = previousData
+                .filter(p => p.inRating && p.played > 0)
+                .sort((a, b) => b.avg - a.avg);
+
+            const ranks = {};
+            let lastAvg = null, lastRank = 0;
+            previousQualified.forEach((p, i) => {
+                if (lastAvg === null || Math.abs(p.avg - lastAvg) > 0.0001) {
+                    lastRank = i + 1;
+                    lastAvg = p.avg;
+                }
+                ranks[p.name] = lastRank;
+            });
+            return ranks;
+        }
+
         // Findet alle Spieler, die einen gegebenen Höchstwert erreichen (für Gleichstände in der
         // Ewigen Bestenliste), statt nur den ersten gefundenen Namen zu behalten.
         function namesAtMax(valuesObj, maxValue, epsilon) {
             epsilon = epsilon || 0.0001;
             if (maxValue === -Infinity || maxValue <= 0) return [];
             return Object.keys(valuesObj).filter(p => Math.abs(valuesObj[p] - maxValue) < epsilon);
+        }
+
+        // ============================================================
+        // Frühere Alt-Rekorde aus dem ehemaligen "Rekord-Archiv" (📜). Diese Werte fließen NICHT
+        // mehr in die Live-Berechnung der Ewigen Bestenliste ein (der aus echten Spieltagen
+        // berechnete Wert bleibt immer maßgeblich) – sie werden beim Rendern lediglich zusätzlich,
+        // separat auf derselben Kachel angezeigt und blenden sich automatisch aus, sobald der
+        // Live-Wert sie tatsächlich übertrifft (siehe archiveNoteLine()).
+        //
+        // "Punkte auf der Hand" wird komplett manuell gepflegt (siehe openHandPointsModal) und
+        // unterstützt – wie jetzt auch der Mischmeister – beliebig viele gleichzeitige
+        // Rekordhalter; diese beiden Listen dienen dort nur als Erstbefüllung, bis zum ersten Mal
+        // manuell gespeichert wird.
+        const ARCHIVE_SEED = {
+            eveningScoreMax: { value: 117, entries: [{ player: 'Seppl', date: '02.11.2016' }] },
+            eveningScoreMin: { value: -113, entries: [{ player: 'Wiebke', date: '21.11.2015' }] },
+            peakScoreMax: { value: 126, entries: [{ player: 'Seppl', date: '02.11.2016' }] },
+            peakScoreMin: { value: -113, entries: [{ player: 'Seppl', date: '01.09.2015' }, { player: 'Wiebke', date: '21.11.2015' }] },
+            turnoverMax: { value: 148, entries: [{ date: '02.11.2016' }] },
+            turnoverMin: { value: 8, entries: [{ date: '15.01.2022' }] },
+            spreadMax: { value: 182, entries: [{ date: '30.05.2023' }] },
+            spreadMin: { value: 14, entries: [{ date: '02.12.2020' }] },
+            eveningWinQuoteMax: { value: 82.76, entries: [{ player: 'David', date: '06.09.2019' }] },
+            eveningWinQuoteMin: { value: 12.50, entries: [{ player: 'Seppl', date: '16.04.2026' }] },
+            winStreak: { value: 12, entries: [{ player: 'Seppl', date: '07.10.2017' }, { player: 'Sonja', date: '11.12.2021' }] },
+            lossStreak: { value: 18, entries: [{ player: 'David', date: '04.05.2023' }, { player: 'Seppl', date: '16.04.2026' }] },
+            handPointsMax: [
+                { player: 'Seppl', value: 104, date: '02.06.2016' },
+                { player: 'Lutz', value: 104, date: '09.06.2022' },
+                { player: 'Alex', value: 104, date: '19.10.2025' }
+            ],
+            handPointsMin: [
+                { player: 'David', value: 27, date: '16.08.2018' },
+                { player: 'Lutz', value: 27, date: '02.11.2016' }
+            ]
+        };
+
+        // Aktualisiert einen Extremwert-Tracker ({value, entries}) mit einem neuen Kandidaten.
+        // mode: 'max' oder 'min'. Bei einem NEUEN Bestwert wird die entries-Liste ersetzt, bei
+        // exaktem Gleichstand (±0.0001, wegen Prozentwerten wie der Siegquote) wird der Eintrag
+        // ergänzt – Duplikate (identischer player+date) werden dabei übersprungen.
+        function updateExtremeTracker(tracker, mode, value, entry) {
+            const isBetter = mode === 'max' ? value > tracker.value + 0.0001 : value < tracker.value - 0.0001;
+            const isTie = Math.abs(value - tracker.value) < 0.0001;
+            if (isBetter) {
+                tracker.value = value;
+                tracker.entries = [entry];
+            } else if (isTie) {
+                const key = `${entry.player || ''}|${entry.date || ''}`;
+                const alreadyPresent = tracker.entries.some(e => `${e.player || ''}|${e.date || ''}` === key);
+                if (!alreadyPresent) tracker.entries.push(entry);
+            }
+        }
+
+        // Baut das kleine klickbare "Altrekord"-Label für eine Kachel, ABER NUR, solange der
+        // Live-Wert den Archiv-Wert noch nicht tatsächlich übertroffen hat (mode: 'max'/'min').
+        // Zeigt standardmäßig nur das Wort "Altrekord" (Übersichtlichkeit); der eigentliche Wert
+        // (Zahl + Spieler/Datum) erscheint erst nach Klick als Toast, siehe showArchiveNote().
+        // formatValue formatiert nur die Zahl (z.B. mit +/- oder "%"). Gibt einen leeren String
+        // zurück, sobald der Live-Wert besser ist.
+        function archiveNoteLine(liveValue, archiveSeed, mode, formatValue) {
+            const archiveStillStands = mode === 'max'
+                ? liveValue < archiveSeed.value - 0.0001
+                : liveValue > archiveSeed.value + 0.0001;
+            if (!archiveStillStands) return '';
+            const entriesText = archiveSeed.entries
+                .map(e => e.player ? `${escapeHtml(e.player)} · ${padDateString(e.date)}` : padDateString(e.date))
+                .join(', ');
+            const noteText = `Altrekord: ${formatValue(archiveSeed.value)} (${entriesText})`;
+            return `<button type="button" onclick="event.stopPropagation(); showArchiveNote(this)" data-note="${escapeHtml(noteText)}" class="text-[9px] text-slate-500 hover:text-slate-300 underline decoration-dotted underline-offset-2 mt-0.5 cursor-pointer self-start text-left">Altrekord</button>`;
+        }
+
+        // Zeigt den im data-note-Attribut hinterlegten Altrekord-Text als Toast an – erst nach
+        // Klick auf das "Altrekord"-Label, damit die Kachel im Ruhezustand übersichtlich bleibt.
+        function showArchiveNote(el) {
+            const text = el.getAttribute('data-note');
+            if (!text) return;
+            // Verhindert einen Toast-Stapel bei mehrfachem schnellen Klick auf "Altrekord": ist
+            // bereits ein Toast mit exakt diesem Text sichtbar, wird kein weiterer erzeugt (die
+            // generische showToast()-Funktion selbst dedupliziert nicht, da an anderer Stelle in
+            // der App durchaus mehrere unterschiedliche Toasts gleichzeitig sinnvoll sind).
+            const container = document.getElementById('toastContainer');
+            if (container) {
+                const alreadyShowing = Array.from(container.querySelectorAll('.leading-snug'))
+                    .some(span => span.textContent === text);
+                if (alreadyShowing) return;
+            }
+            showToast(text, 'info');
         }
 
         function calculateAllTimeRecords() {
@@ -4953,6 +5792,22 @@
             let globalAnsagenDecided = {}; // { player: 0 } - Ansagen in NICHT-Nullspielen (Basis für die Gewinnquote)
             let globalGamesPlayed = {}; // { player: 0 } - Anzahl tatsächlich gespielter Einzelspiele (nicht ausgesetzt), Basis für Solo-/Ansage-Quote
             let allUniquePlayers = new Set();
+
+            // Einzelabend-Rekorde (früher "Rekord-Archiv"): AUSSCHLIESSLICH aus echten erfassten
+            // Spieltagen berechnet, bewusst OHNE Archiv-Startwert. Die Alt-Rekorde aus ARCHIVE_SEED
+            // werden beim Rendern separat daneben angezeigt und verschwinden dort automatisch,
+            // sobald der Live-Wert sie übertrifft – sie fließen aber nie in diese Live-Berechnung
+            // selbst ein, damit der App-Wert immer der tatsächlich maßgebliche bleibt.
+            let eveningScoreMax = { value: -Infinity, entries: [] };
+            let eveningScoreMin = { value: Infinity, entries: [] };
+            let peakScoreMax = { value: -Infinity, entries: [] };
+            let peakScoreMin = { value: Infinity, entries: [] };
+            let turnoverMax = { value: -Infinity, entries: [] };
+            let turnoverMin = { value: Infinity, entries: [] };
+            let spreadMax = { value: -Infinity, entries: [] };
+            let spreadMin = { value: Infinity, entries: [] };
+            let eveningWinQuoteMax = { value: -Infinity, entries: [] };
+            let eveningWinQuoteMin = { value: Infinity, entries: [] };
 
             Object.values(state.seasons).forEach(s => {
                 if (s.players) s.players.forEach(p => allUniquePlayers.add(p));
@@ -5022,7 +5877,37 @@
                                 globalHostStats[name].totalScore += score;
                                 globalHostStats[name].count++;
                             }
+                            // Spielstand am Ende des Abends (früher Archiv-Kategorie "🎯"): nur
+                            // Spieler, die nicht disqualifiziert sind (= i.d.R. bis zum Ende
+                            // mitgespielt haben), dürfen den Rekord halten.
+                            updateExtremeTracker(eveningScoreMax, 'max', score, { player: name, date: match.date });
+                            updateExtremeTracker(eveningScoreMin, 'min', score, { player: name, date: match.date });
+                            // Spielstand überhaupt (früher Archiv-Kategorie "🌍"): der Endstand
+                            // zählt ebenfalls als ein Zeitpunkt des Abends dazu – zusätzlich zu den
+                            // Zwischenständen aus den einzelnen Spielen weiter unten (bei "Spiel für
+                            // Spiel" erfassten Abenden). Bei Abenden ohne Einzelspiel-Erfassung ist
+                            // der Endstand der einzige bekannte Zeitpunkt.
+                            updateExtremeTracker(peakScoreMax, 'max', score, { player: name, date: match.date });
+                            updateExtremeTracker(peakScoreMin, 'min', score, { player: name, date: match.date });
                         });
+
+                        // Gesamtumsatz des Abends (früher Archiv-Kategorie "💰"): Summe aller
+                        // positiven Spieltagspunkte am Ende – entspricht mathematisch immer der
+                        // (positiv gerechneten) Summe aller negativen, da sich die Punkte pro
+                        // Einzelspiel zwischen Gewinnern und Verlierern stets ausgleichen. Bewusst
+                        // OHNE Disqualifikations-Filter, da dies eine Eigenschaft des gesamten
+                        // Abends ist, nicht einer einzelnen Spielerleistung.
+                        const eveningTurnover = Object.values(match.scores).reduce((sum, s) => sum + (s > 0 ? s : 0), 0);
+                        updateExtremeTracker(turnoverMax, 'max', eveningTurnover, { date: match.date });
+                        updateExtremeTracker(turnoverMin, 'min', eveningTurnover, { date: match.date });
+
+                        // Gesamtdifferenz des Abends (früher Archiv-Kategorie "📊"): Abstand
+                        // zwischen bestem und schlechtestem Spieler des Abends, ebenfalls ohne
+                        // Disqualifikations-Filter (Eigenschaft des Abends als Ganzes).
+                        const eveningValues = Object.values(match.scores);
+                        const eveningSpread = Math.max(...eveningValues) - Math.min(...eveningValues);
+                        updateExtremeTracker(spreadMax, 'max', eveningSpread, { date: match.date });
+                        updateExtremeTracker(spreadMin, 'min', eveningSpread, { date: match.date });
                     }
 
                     // 2b. Platzierungspunkte für die Ewige Gesamttabelle (analog zu
@@ -5046,6 +5931,20 @@
 
                     // Solos (detailed games) & Ansagen
                     if (match.mode === 'detailed' && match.games) {
+                        // Laufende Zwischenstände dieses EINEN Abends – ergänzen den bereits oben
+                        // erfassten Endstand um alle Zwischenzeitpunkte für "Spielstand überhaupt"
+                        // (der höchste/niedrigste Punktestand, den ein Spieler irgendwann im Laufe
+                        // des Abends erreicht hat) sowie Sieg-/Spielanzahl dieses Abends (Basis für
+                        // "Siegquote am Abend").
+                        const eveningRunningSum = {};
+                        const eveningGamesPlayed = {};
+                        const eveningGamesWon = {};
+                        allUniquePlayers.forEach(p => {
+                            eveningRunningSum[p] = 0;
+                            eveningGamesPlayed[p] = 0;
+                            eveningGamesWon[p] = 0;
+                        });
+
                         match.games.forEach(g => {
                             if (!g || g.isRoundMarker) return;
                             const gm = normalizeGame(g);
@@ -5058,6 +5957,11 @@
                                 // (nicht ausgesetzt) – Basis für die Solo-/Ansage-Häufigkeitsquote.
                                 if (gm.points && gm.points[p] !== undefined) {
                                     globalGamesPlayed[p]++;
+                                    eveningGamesPlayed[p]++;
+                                    if (gm.points[p] > 0) eveningGamesWon[p]++;
+                                    eveningRunningSum[p] += gm.points[p];
+                                    updateExtremeTracker(peakScoreMax, 'max', eveningRunningSum[p], { player: p, date: match.date });
+                                    updateExtremeTracker(peakScoreMin, 'min', eveningRunningSum[p], { player: p, date: match.date });
                                 }
                                 if (gm.solo && gm.solo[p] === true) {
                                     globalSoloStats[p].played++;
@@ -5081,6 +5985,18 @@
                                     }
                                 }
                             });
+                        });
+
+                        // Siegquote am Abend (früher Archiv-Kategorie "🏆"): Sieganteil EINES
+                        // Spielers an EINEM Abend (nicht über die ganze Historie gemittelt wie beim
+                        // Tagessieg-König).
+                        allUniquePlayers.forEach(p => {
+                            if (isPlayerDisqualifiedInMatch(match, p)) return;
+                            const played = eveningGamesPlayed[p] || 0;
+                            if (played === 0) return;
+                            const quote = (eveningGamesWon[p] / played) * 100;
+                            updateExtremeTracker(eveningWinQuoteMax, 'max', quote, { player: p, date: match.date });
+                            updateExtremeTracker(eveningWinQuoteMin, 'min', quote, { player: p, date: match.date });
                         });
                     }
                 });
@@ -5416,7 +6332,17 @@
                 bestLossStreakPlayers,
                 globalPairStats,
                 bestDreamteamAvg,
-                bestDreamteamPairs
+                bestDreamteamPairs,
+                eveningScoreMax,
+                eveningScoreMin,
+                peakScoreMax,
+                peakScoreMin,
+                turnoverMax,
+                turnoverMin,
+                spreadMax,
+                spreadMin,
+                eveningWinQuoteMax,
+                eveningWinQuoteMin
             };
         }
 
@@ -5441,7 +6367,7 @@
             const dragHint = document.getElementById('dragHint');
             if (!simpleBtn || !detailedBtn || !section) return;
 
-            const activeCls = ['bg-emerald-600', 'text-white', 'shadow'];
+            const activeCls = ['bg-steel-600', 'text-white', 'shadow'];
             const inactiveCls = ['bg-transparent', 'text-gray-500', 'dark:text-slate-400'];
             simpleBtn.classList.remove(...activeCls, ...inactiveCls);
             detailedBtn.classList.remove(...activeCls, ...inactiveCls);
@@ -5514,9 +6440,19 @@
                 }
             }
 
-            rebuildDetailedOrder();
-            updateLiveDraft();
-            render();
+            // Visuelles Feedback (Häkchen sowie Punkte-Input/Joker-Checkbox de-/aktivieren) ist
+            // oben bereits synchron passiert. Die eigentlich teure Arbeit - Order neu aufbauen,
+            // Live-Entwurf lokal + in die Cloud sichern, und vor allem das komplette render()
+            // (rendert praktisch die ganze Seite neu) - wird bewusst erst im nächsten Makrotask
+            // ausgeführt: Solange dieser Handler synchron läuft, verzögert der Browser den
+            // fälligen Repaint des gerade gesetzten Häkchens, bis der Task fertig ist. Bei einem
+            // so aufwendigen render() fühlte sich das Ankreuzen dadurch spürbar verzögert an.
+            // setTimeout(..., 0) lässt den Browser dazwischen erst malen, bevor die Berechnung läuft.
+            setTimeout(() => {
+                rebuildDetailedOrder();
+                updateLiveDraft();
+                render();
+            }, 0);
         }
 
         function rebuildDetailedOrder() {
@@ -5777,7 +6713,7 @@
             let gameSum = 0;
             Object.values(points).forEach(v => gameSum += v);
             if (gameSum !== 0) {
-                return showToast(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${gameSum}`, 'error');
+                return showToast(`Die Summe der Punkte für dieses Spiel muss 0 ergeben! Aktuelle Summe: ${gameSum > 0 ? '+' : ''}${formatDE(gameSum)}`, 'error');
             }
 
             const gameData = {
@@ -5794,7 +6730,7 @@
                 editingGameIndex = null;
                 showToast('Spiel aktualisiert.', 'success');
             } else {
-                const info = autoFilledInfo ? ` (${autoFilledInfo.name}: ${autoFilledInfo.value > 0 ? '+' : ''}${autoFilledInfo.value} automatisch ergänzt)` : '';
+                const info = autoFilledInfo ? ` (${autoFilledInfo.name}: ${autoFilledInfo.value > 0 ? '+' : ''}${formatDE(autoFilledInfo.value)} automatisch ergänzt)` : '';
                 showToast(`Spiel gespeichert${info}.`, 'success');
                 detailedGames.push(gameData);
             }
@@ -5940,7 +6876,7 @@
                                 }
                                 const extraText = extras.length ? ` | ${extras.join(', ')}` : '';
                                 
-                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${escapeHtml(name)} ${val > 0 ? '+' : ''}${val}${extraText}</span>`;
+                                return `<span class="px-1.5 py-0.5 rounded border ${cls} font-mono">${escapeHtml(name)} ${val > 0 ? '+' : ''}${formatDE(val)}${extraText}</span>`;
                             }).join('')}
                         </div>
                     </div>
@@ -5954,7 +6890,7 @@
                 return `
                     <div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 rounded px-2 py-1 border border-gray-200 dark:border-slate-700">
                         <span class="text-xs font-semibold text-gray-700 dark:text-slate-300">${escapeHtml(name)}</span>
-                        <span class="text-xs font-mono font-bold ${cls}">${val > 0 ? '+' : ''}${val}</span>
+                        <span class="text-xs font-mono font-bold ${cls}">${val > 0 ? '+' : ''}${formatDE(val)}</span>
                     </div>
                 `;
             }).join('');
@@ -6014,10 +6950,10 @@
                                     </span>
                                     <div id="gamesolowrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
                                         <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
-                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'pflicht')" class="rounded text-emerald-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
+                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'pflicht')" class="rounded text-steel-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'lust')" class="rounded text-emerald-600 w-3 h-3"> Lustsolo
+                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'lust')" class="rounded text-steel-600 w-3 h-3"> Lustsolo
                                         </label>
                                         <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
                                             <input type="checkbox" id="gameansage-${escapeHtml(name)}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
@@ -6546,7 +7482,7 @@
                 };
 
             const tooltipLabel = chartViewMode === 'total'
-                ? context => `${context.dataset.label}: Ø ${context.raw} Pkt.`
+                ? context => `${context.dataset.label}: Ø ${formatDE(context.raw)} Pkt.`
                 : context => `${context.dataset.label}: Platz ${context.raw} an diesem Abend`;
 
             courseChartInstance = new Chart(ctx, {
@@ -6604,7 +7540,12 @@
                     doko_v2_data: {
                         manualRecords: state.manualRecords || {},
                         seasons: state.seasons || {}
-                    }
+                    },
+                    // Giftschrank wird als eigener Top-Level-Knoten mitexportiert (er liegt in der
+                    // Cloud unter 'giftschrank', nicht unter 'doko_v2_data'). giftschrankRemoteText
+                    // ist der zuletzt per Listener empfangene Cloud-Stand und damit auch dann
+                    // aktuell, wenn das Giftschrank-Modal gerade gar nicht geöffnet ist.
+                    giftschrank: { text: giftschrankRemoteText || '' }
                 };
 
                 const jsonString = JSON.stringify(payload, null, 2);
@@ -6653,9 +7594,27 @@
                     throw new Error("Der Schlüssel 'seasons' fehlt oder ist ungültig.");
                 }
 
+                // Giftschrank-Text ist optional (ältere Backups kennen den Schlüssel noch nicht) –
+                // in dem Fall bleibt der aktuelle Cloud-Stand beim Import unangetastet, statt ihn
+                // stillschweigend zu leeren.
+                const importedGiftschrankText = (importedData.giftschrank && typeof importedData.giftschrank.text === 'string')
+                    ? importedData.giftschrank.text
+                    : null;
+
                 if (editLockInfo && !hasEditLock) {
                     showToast('Der Eingabebereich wird aktuell von jemand anderem bearbeitet. Import ist gerade nicht möglich.', 'error');
                     return;
+                }
+
+                // Analog zur editLock-Prüfung: Ist der Giftschrank gerade aktiv (nicht verwaist)
+                // von einem anderen Gerät gesperrt, würde ein Zurückschreiben hier dessen laufende
+                // Eingabe überschreiben – Import in diesem Fall lieber ganz abbrechen.
+                if (importedGiftschrankText !== null && giftschrankLockInfo && !hasGiftschrankLock) {
+                    const giftschrankLockAgeMs = (Date.now() + serverTimeOffset) - (giftschrankLockInfo.ts || 0);
+                    if (giftschrankLockAgeMs < GIFTSCHRANK_LOCK_TIMEOUT_MS) {
+                        showToast('Der Giftschrank wird aktuell von jemand anderem bearbeitet. Import ist gerade nicht möglich.', 'error');
+                        return;
+                    }
                 }
 
                 const confirmed = await showConfirm(
@@ -6681,6 +7640,25 @@
 
                 render();
 
+                // Schreibt den importierten Giftschrank-Text (falls vorhanden) in die Cloud und
+                // hält dabei lokal alles synchron: die Sperre wird nur kurz belegt, falls diese
+                // Sitzung sie nicht ohnehin schon hält (Modal gerade nicht geöffnet), und danach
+                // wieder freigegeben, damit der Import kein dauerhaftes "wird bearbeitet" hinterlässt.
+                function applyImportedGiftschrank() {
+                    if (importedGiftschrankText === null) return Promise.resolve();
+                    const alreadyHadLock = hasGiftschrankLock;
+                    if (!alreadyHadLock) acquireGiftschrankLock();
+                    return db.ref('giftschrank').set({
+                        text: importedGiftschrankText,
+                        ts: firebase.database.ServerValue.TIMESTAMP
+                    }).then(() => {
+                        const textarea = document.getElementById('giftschrankTextarea');
+                        if (textarea && isGiftschrankModalOpen) textarea.value = importedGiftschrankText;
+                    }).finally(() => {
+                        if (!alreadyHadLock) releaseGiftschrankLock();
+                    });
+                }
+
                 const handleFailure = (err) => {
                     console.error("Fehler beim Cloud-Schreiben des JSON-Imports:", err);
                     state.seasons = backupSeasons;
@@ -6691,13 +7669,13 @@
                 };
 
                 if (hasEditLock) {
-                    saveToCloud().then(() => {
+                    saveToCloud().then(applyImportedGiftschrank).then(() => {
                         showToast("JSON-Backup erfolgreich importiert!", 'success');
                     }).catch(handleFailure);
                 } else {
                     // Sperre kurz belegen, damit der Voll-Überschreib-Import sicher hochgeladen werden darf.
                     acquireEditLock();
-                    writeSeasonsToCloudRaw().then(() => {
+                    writeSeasonsToCloudRaw().then(applyImportedGiftschrank).then(() => {
                         showToast("JSON-Backup erfolgreich importiert!", 'success');
                     }).catch(handleFailure).finally(() => {
                         releaseEditLockRaw();
@@ -6766,11 +7744,11 @@
                     }
 
                     historicalPointTypeContainer.innerHTML = `
-                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'spieltag' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'spieltag' ? 'bg-steel-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
                             <input type="radio" name="matchPointType" value="spieltag" ${currentPointType === 'spieltag' ? 'checked' : ''} onchange="changeMatchPointType('spieltag')" class="hidden">
                             🪙 Spieltagspkt.
                         </label>
-                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'platzierung' ? 'bg-emerald-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
+                        <label class="flex items-center justify-center gap-1 text-xs font-bold p-1.5 cursor-pointer select-none rounded-md transition ${currentPointType === 'platzierung' ? 'bg-steel-600 text-white shadow' : 'text-gray-500 dark:text-slate-400'}">
                             <input type="radio" name="matchPointType" value="platzierung" ${currentPointType === 'platzierung' ? 'checked' : ''} onchange="changeMatchPointType('platzierung')" class="hidden">
                             🏆 Platzierungspkt.
                         </label>
@@ -6787,9 +7765,9 @@
             }
 
             document.getElementById('playerList').innerHTML = seasonPlayers.map(name => `
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 text-sm font-medium">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-steel-50 dark:bg-steel-950/30 text-steel-800 dark:text-steel-300 border border-steel-200 dark:border-steel-900 text-sm font-medium">
                     ${escapeHtml(name)}
-                    <button onclick="removePlayer('${escapeHtml(escapeJsString(name))}')" class="text-emerald-600 dark:text-emerald-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
+                    <button onclick="removePlayer('${escapeHtml(escapeJsString(name))}')" class="text-steel-600 dark:text-steel-400 hover:text-red-700 font-bold ml-1 cursor-pointer transition">×</button>
                 </span>
             `).join('');
 
@@ -6833,10 +7811,10 @@
                 statusContainer.innerHTML = `
                     <div class="flex flex-col">
                         <span class="text-[10px] text-gray-400 font-bold">STATUS:</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded ${settingsSeason.status === 'aktiv' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${settingsSeason.status.toUpperCase()}</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded ${settingsSeason.status === 'aktiv' ? 'bg-steel-100 text-steel-800 dark:bg-steel-950 dark:text-steel-300' : 'bg-gray-100 text-gray-800 dark:bg-slate-800 dark:text-slate-400'} mt-0.5">${settingsSeason.status.toUpperCase()}</span>
                     </div>
                     <div class="flex gap-1.5">
-                        <button onclick="toggleSeasonStatus()" class="${settingsSeason.status === 'aktiv' ? 'bg-gray-600' : 'bg-emerald-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${settingsSeason.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
+                        <button onclick="toggleSeasonStatus()" class="${settingsSeason.status === 'aktiv' ? 'bg-gray-600' : 'bg-steel-600'} text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">${settingsSeason.status === 'aktiv' ? 'Abschließen' : 'Aktivieren'}</button>
                         <button onclick="deleteCurrentSeason()" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 text-xs font-bold rounded shadow-sm cursor-pointer">Löschen</button>
                     </div>
                 `;
@@ -6947,7 +7925,7 @@
                             <div class="flex items-center gap-2 flex-grow truncate">
                                 <span class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-500 select-none px-1 text-sm" title="Ziehen zum Sortieren">⠿</span>
                                 <label class="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-800 dark:text-slate-200 flex-grow truncate">
-                                    <input type="checkbox" id="check-${escapeHtml(name)}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${escapeHtml(escapeJsString(name))}', this.checked)" class="rounded text-emerald-600">
+                                    <input type="checkbox" id="check-${escapeHtml(name)}" ${isChecked ? 'checked' : ''} onchange="togglePlayerSelected('${escapeHtml(escapeJsString(name))}', this.checked)" class="rounded text-steel-600">
                                     ${escapeHtml(name)}
                                 </label>
                             </div>
@@ -7018,7 +7996,7 @@
 
                     tableRowsHtml += `
                         <td class="p-3 text-center border-r border-amber-200 dark:border-amber-900/60 align-top">
-                            <span class="font-mono text-sm ${cls}">${sign}${score}</span>
+                            <span class="font-mono text-sm ${cls}">${sign}${formatDE(score)}</span>
                         </td>`;
                 });
                 tableRowsHtml += `</tr>`;
@@ -7068,7 +8046,7 @@
 
                             tableRowsHtml += `
                                 <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
-                                    <span class="font-mono ${cls}">${sign}${val}</span>
+                                    <span class="font-mono ${cls}">${sign}${formatDE(val)}</span>
                                     ${extraText}
                                 </td>`;
                         }
@@ -7126,27 +8104,48 @@
                 let qualified = playerData.filter(p => p.inRating && p.played > 0).sort((a, b) => b.avg - a.avg);
                 let unqualified = playerData.filter(p => !p.inRating || p.played === 0).sort((a, b) => b.avg - a.avg || b.played - a.played);
 
+                // Trendpfeile (nur aktive, nicht-historische Saison - siehe computePreviousSeasonRanks):
+                // vergleicht den aktuellen Tabellenplatz mit dem Stand VOR dem zuletzt eingetragenen
+                // Spieltag.
+                const previousRanks = computePreviousSeasonRanks(state.currentSeasonKey, minQuotaRatio);
+
                 let lastAvg = null, lastRank = 0;
 
                 const mapRow = (p, isQ) => {
                     const hasUsedJoker = !isHist && seasonJokers[p.name];
                     const jokerBadge = hasUsedJoker ? ` <span class="sog-chip sog-chip-on sog-chip-static sog-chip-table" title="Schmeißen ohne Grund genutzt">SoG</span>` : '';
 
+                    // Bewusst neutral (statt wie zuvor durchgängig Emerald) - Rang, Name, Schnitt und
+                    // Quote sind reine Information, kein Signal. Farbe bleibt in dieser Zeile allein
+                    // dem Trend-Pfeil (▲/▼) vorbehalten, der als einziges Element hier tatsächlich
+                    // "gut"/"schlecht" bedeutet. Vorher waren fast alle Spalten in leicht
+                    // unterschiedlichen Grüntönen eingefärbt (teils sogar identisch), was eher nach
+                    // Versehen aussah als nach Gestaltung.
                     const playerNameContent = hasSpieltagspunkte
-                        ? `<button onclick="openPlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer text-left font-bold underline decoration-emerald-200 dark:decoration-emerald-800 decoration-2 underline-offset-2">${escapeHtml(p.name)}</button>`
-                        : `<span class="text-emerald-700 dark:text-emerald-400 font-bold">${escapeHtml(p.name)}</span>`;
+                        ? `<button onclick="openPlayerDetails('${escapeHtml(escapeJsString(p.name))}')" class="text-slate-800 dark:text-slate-100 hover:text-steel-700 dark:hover:text-steel-400 hover:underline cursor-pointer text-left font-bold underline decoration-slate-300 dark:decoration-slate-600 decoration-2 underline-offset-2">${escapeHtml(p.name)}</button>`
+                        : `<span class="text-slate-800 dark:text-slate-100 font-bold">${escapeHtml(p.name)}</span>`;
 
                     if (isQ) {
+                        // Trend ggü. dem Stand vor dem letzten Spieltag: grüner Pfeil = aufgestiegen
+                        // (Platzzahl kleiner geworden), roter Pfeil = abgestiegen. Kein Pfeil, wenn
+                        // unverändert oder kein Vorher-Wert existiert (z.B. erster Spieltag des Spielers).
+                        const prevRank = previousRanks[p.name];
+                        let trendHtml = '';
+                        if (prevRank !== undefined && prevRank !== lastRank) {
+                            trendHtml = lastRank < prevRank
+                                ? ` <span class="text-emerald-500 dark:text-emerald-400" title="Vorheriger Abend: Platz ${prevRank}">▲</span>`
+                                : ` <span class="text-red-500 dark:text-red-400" title="Vorheriger Abend: Platz ${prevRank}">▼</span>`;
+                        }
                         return `
                         <tr class="hover:bg-gray-50/80 dark:hover:bg-slate-700/50 font-medium transition duration-150">
-                            <td class="p-3 text-emerald-700 dark:text-emerald-400 font-bold">${lastRank}.</td>
+                            <td class="p-3 text-slate-800 dark:text-slate-100 font-bold whitespace-nowrap">${lastRank}.${trendHtml}</td>
                             <td class="p-3 font-semibold flex items-center">
                                 ${playerNameContent}
                                 ${jokerBadge}
                             </td>
-                            <td class="p-3 text-right font-bold text-emerald-700 dark:text-emerald-400 text-base">${p.avg.toFixed(2)}</td>
+                            <td class="p-3 text-right font-bold text-slate-900 dark:text-white">${formatDE(p.avg, 2)}</td>
                             <td class="p-3 text-right text-emerald-600 dark:text-emerald-400 font-bold">${Math.round(p.ratio * 100)} % <span class="text-gray-500 dark:text-slate-400 font-normal">(${p.played}/${totalMatchesCount})</span></td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-400">${p.pts} Pkt.</td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-400">${formatDE(p.pts)} Pkt.</td>
                         </tr>
                         `;
                     } else {
@@ -7161,9 +8160,9 @@
                                 ${playerNameContentUnqual}
                                 ${jokerBadge}
                             </td>
-                            <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? p.avg.toFixed(2) : "0.00"}</td>
+                            <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? formatDE(p.avg, 2) : "0,00"}</td>
                             <td class="p-3 text-right text-amber-600 dark:text-amber-500 font-semibold">${Math.round(p.ratio * 100)} % <span class="text-gray-400 dark:text-slate-500 font-normal">(${p.played}/${totalMatchesCount})</span></td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-500">${p.pts} Pkt.</td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-500">${formatDE(p.pts)} Pkt.</td>
                         </tr>
                         `;
                     }
@@ -7207,10 +8206,27 @@
                 globalTotalPointsMatchCount,
                 globalPlacementPoints,
                 globalPlacementPointsMatchCount,
-                globalTotalMatchdaysEver
+                globalTotalMatchdaysEver,
+                eveningScoreMax,
+                eveningScoreMin,
+                peakScoreMax,
+                peakScoreMin,
+                turnoverMax,
+                turnoverMin,
+                spreadMax,
+                spreadMin,
+                eveningWinQuoteMax,
+                eveningWinQuoteMin
             } = calculateAllTimeRecords();
 
             const joinNames = (arr) => arr && arr.length > 0 ? arr.map(escapeHtml).join(', ') : '-';
+            // Formatiert die entries[]-Liste eines Extremwert-Trackers für die neuen
+            // Einzelabend-Rekord-Kacheln: "Seppl · 12.03.2026" (mit Spielername) bzw. nur das
+            // Datum, falls kein Spieler zugeordnet ist (Gesamtumsatz/Gesamtdifferenz). Mehrere
+            // Einträge (Gleichstand) werden mit Komma getrennt.
+            const formatRecordEntries = (entries) => (entries && entries.length > 0)
+                ? entries.map(e => e.player ? `${escapeHtml(e.player)} · ${padDateString(e.date)}` : padDateString(e.date)).join(', ')
+                : '-';
 
             // Ewige Gesamttabelle: alle Spieler, die jemals teilgenommen haben, nach Punkteschnitt
             // pro Abend sortiert (analog zur normalen Saisontabelle), optional auf einen selbst
@@ -7221,56 +8237,172 @@
 
             // Mischmeister: manuell gepflegter Rekord (siehe openMischmeisterModal/saveMischmeisterRecord),
             // da die häufigste Geben-Serie in Folge nicht aus den erfassten Spieldaten ableitbar ist.
-            // Ausgangswert, bis jemand den Rekord über den Bearbeiten-Button erstmals selbst setzt.
-            const mischmeisterRecord = (state.manualRecords && state.manualRecords.mischmeister) || { player: 'Morten', value: 6, date: '15.07.2024' };
+            // Unterstützt – wie Punkte auf der Hand – beliebig viele gleichzeitige Rekordhalter
+            // (Gleichstände). Ausgangswert, bis jemand den Rekord über den Bearbeiten-Button erstmals
+            // selbst pflegt.
+            const mischmeisterEntries = normalizeToEntryArray(state.manualRecords && state.manualRecords.mischmeister, [{ player: 'Morten', value: 6, date: '15.07.2024' }]);
+            const mischmeisterMaxValue = mischmeisterEntries.length ? Math.max(...mischmeisterEntries.map(e => e.value)) : 0;
+
+            // Punkte auf der Hand: wie Mischmeister manuell gepflegt (siehe
+            // openHandPointsModal/saveHandPointsRecord), da diese Werte in der Detail-Eingabemaske
+            // nicht erfasst werden. Ausgangswert bis zur ersten eigenen Pflege: die Archiv-Alt-Rekorde
+            // (dort teils mit mehreren gleichzeitigen Rekordhaltern).
+            const handPointsMaxEntries = normalizeToEntryArray(state.manualRecords && state.manualRecords.handPointsMax, ARCHIVE_SEED.handPointsMax);
+            const handPointsMinEntries = normalizeToEntryArray(state.manualRecords && state.manualRecords.handPointsMin, ARCHIVE_SEED.handPointsMin);
+            const handPointsMaxValue = handPointsMaxEntries.length ? Math.max(...handPointsMaxEntries.map(e => e.value)) : 0;
+            const handPointsMinValue = handPointsMinEntries.length ? Math.min(...handPointsMinEntries.map(e => e.value)) : 0;
 
             document.getElementById('allTimeRecordsContainer').innerHTML = `
-                <div onclick="showAllTimeDetail('solo')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-emerald-400 font-semibold uppercase tracking-wider">🃏 Solo-Champion</p>
-                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `1 Solo / ${bestSoloGamesPerSolo.toFixed(1)} Spiele` : '-'}</p>
+                <div onclick="showAllTimeDetail('solo')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🃏 Solo-Champion</p>
+                    <p class="text-xl font-black text-white mt-1">${bestSoloCount > 0 ? `1 Solo / ${formatDE(bestSoloGamesPerSolo, 1)} Spiele` : '-'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestSoloPlayers)}</b>${bestSoloCount > 0 ? ` (${bestSoloCount} Solos in ${bestSoloGamesPlayed} Spielen)` : ''}</p>
                 </div>
-                <div onclick="showAllTimeDetail('host')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-amber-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
-                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${bestAllTimeHostAvg.toFixed(1)}` : '0.0'} Pkt.</p>
+                <div onclick="showAllTimeDetail('host')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${formatDE(bestAllTimeHostAvg, 1)}` : '0,0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Bester Heim-Schnitt: <b>${joinNames(bestAllTimeHostNames)}</b></p>
                 </div>
-                <div onclick="showAllTimeDetail('tagessiege')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-blue-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
-                    <p class="text-xl font-black text-white mt-1">${bestTagessiegCount > 0 ? `${bestTagessiegQuote.toFixed(1)} % Siegquote` : '0 %'}</p>
+                <div onclick="showAllTimeDetail('tagessiege')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">👑 Tagessieg-König</p>
+                    <p class="text-xl font-black text-white mt-1">${bestTagessiegCount > 0 ? `${formatDE(bestTagessiegQuote, 1)} % Siegquote` : '0 %'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestTagessiegPlayers)}</b>${bestTagessiegCount > 0 ? ` (${bestTagessiegCount} Tagessiege)` : ''}</p>
                     <p class="text-[9px] text-slate-500 mt-1">Mind. 10 Teilnahmen erforderlich</p>
                 </div>
-                <div onclick="showAllTimeDetail('totalPoints')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
-                    <p class="text-xl font-black text-white mt-1">${bestPointsAvg > -Infinity ? `${bestPointsAvg > 0 ? '+' : ''}${bestPointsAvg.toFixed(1)}` : '0.0'} Pkt. / Abend</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestPointsPlayers)}</b>${bestPointsAvg > -Infinity ? ` (${bestPointsTotal > 0 ? '+' : ''}${bestPointsTotal} Pkt. gesamt)` : ''}</p>
+                <div onclick="showAllTimeDetail('totalPoints')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">⚡ Punktegott</p>
+                    <p class="text-xl font-black text-white mt-1">${bestPointsAvg > -Infinity ? `${bestPointsAvg > 0 ? '+' : ''}${formatDE(bestPointsAvg, 1)}` : '0,0'} Pkt. / Abend</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestPointsPlayers)}</b>${bestPointsAvg > -Infinity ? ` (${bestPointsTotal > 0 ? '+' : ''}${formatDE(bestPointsTotal)} Pkt. gesamt)` : ''}</p>
                     <p class="text-[9px] text-slate-500 mt-1">Mind. 10 Teilnahmen erforderlich</p>
                 </div>
-                <div onclick="showAllTimeDetail('ansagen')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-sky-400 font-semibold uppercase tracking-wider">📢 Ansage-Guru</p>
-                    <p class="text-xl font-black text-white mt-1">${bestAllTimeAnsagenCount > 0 ? `1 Ansage / ${bestAllTimeAnsagenGamesPerAnsage.toFixed(1)} Spiele` : '-'}</p>
+                <div onclick="showAllTimeDetail('ansagen')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">📢 Ansage-Guru</p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeAnsagenCount > 0 ? `1 Ansage / ${formatDE(bestAllTimeAnsagenGamesPerAnsage, 1)} Spiele` : '-'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestAllTimeAnsagenPlayers)}</b>${bestAllTimeAnsagenCount > 0 ? ` (${bestAllTimeAnsagenCount} Ansagen in ${bestAllTimeAnsagenGamesPlayed} Spielen)` : ''}</p>
                 </div>
-                <div onclick="showAllTimeDetail('streak')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">🔥 Längste Siegesserie</p>
-                    <p class="text-xl font-black text-white mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Siege'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestStreakPlayers)}</b></p>
-                </div>
-                <div onclick="showAllTimeDetail('lossstreak')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-rose-400 font-semibold uppercase tracking-wider">🥶 Längste Niederlagenserie</p>
-                    <p class="text-xl font-black text-white mt-1">${maxLossStreakValue > 0 ? `${maxLossStreakValue} Niederlagen in Folge` : '0 Niederlagen'}</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestLossStreakPlayers)}</b></p>
-                </div>
-                <div onclick="showAllTimeDetail('dreamteam')" class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:bg-slate-800/60 hover:border-slate-500/80 transition flex flex-col justify-between">
-                    <p class="text-xs text-teal-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
-                    <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${bestDreamteamAvg.toFixed(2)}` : '0.00'} Pkt.</p>
+                <div onclick="showAllTimeDetail('dreamteam')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🤝 Dreamteam</p>
+                    <p class="text-xl font-black text-white mt-1">${bestDreamteamAvg > -Infinity ? `${bestDreamteamAvg > 0 ? '+' : ''}${formatDE(bestDreamteamAvg, 2)}` : '0,00'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Bestes Team: <b>${joinNames(bestDreamteamPairs)}</b></p>
                 </div>
-                <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-between">
-                    <p class="text-xs text-fuchsia-400 font-semibold uppercase tracking-wider flex items-center gap-1">🔀 Mischmeister<button onclick="openMischmeisterModal()" class="text-slate-500 hover:text-white transition cursor-pointer p-0.5 leading-none normal-case" title="Mischmeister-Rekord bearbeiten">✏️</button></p>
-                    <p class="text-xl font-black text-white mt-1">${mischmeisterRecord.value}x in Folge</p>
-                    <p class="text-xs text-slate-400 mt-0.5">Rekord: <b>${escapeHtml(mischmeisterRecord.player)}</b> (${padDateString(mischmeisterRecord.date)})</p>
+            `;
+
+            document.getElementById('allTimeSingleRecordsContainer').innerHTML = `
+                <div onclick="showAllTimeDetail('streak')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🔥 Längste Siegesserie</p>
+                    <p class="text-xl font-black text-white mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Siege'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestStreakPlayers)}</b></p>
+                    ${archiveNoteLine(maxStreakValue, ARCHIVE_SEED.winStreak, 'max', v => `${v} Siege in Folge`)}
+                </div>
+                <div onclick="showAllTimeDetail('lossstreak')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🥶 Längste Niederlagenserie</p>
+                    <p class="text-xl font-black text-white mt-1">${maxLossStreakValue > 0 ? `${maxLossStreakValue} Niederlagen in Folge` : '0 Niederlagen'}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestLossStreakPlayers)}</b></p>
+                    ${archiveNoteLine(maxLossStreakValue, ARCHIVE_SEED.lossStreak, 'max', v => `${v} Niederlagen in Folge`)}
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">🏆 Siegquote am Abend</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Höchste</p>
+                            <p class="text-xl font-black text-white">${eveningWinQuoteMax.value > -Infinity ? `${formatDE(eveningWinQuoteMax.value, 1)} %` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(eveningWinQuoteMax.entries)}</p>
+                            ${archiveNoteLine(eveningWinQuoteMax.value, ARCHIVE_SEED.eveningWinQuoteMax, 'max', v => `${formatDE(v, 1)} %`)}
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Niedrigste</p>
+                            <p class="text-xl font-black text-white">${eveningWinQuoteMin.value < Infinity ? `${formatDE(eveningWinQuoteMin.value, 1)} %` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(eveningWinQuoteMin.entries)}</p>
+                            ${archiveNoteLine(eveningWinQuoteMin.value, ARCHIVE_SEED.eveningWinQuoteMin, 'min', v => `${formatDE(v, 1)} %`)}
+                        </div>
+                    </div>
+                </div>                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">🎯 Spielstand am Ende des Abends</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Höchster</p>
+                            <p class="text-xl font-black text-white">${eveningScoreMax.value > -Infinity ? `${eveningScoreMax.value > 0 ? '+' : ''}${formatDE(eveningScoreMax.value)}` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(eveningScoreMax.entries)}</p>
+                            ${archiveNoteLine(eveningScoreMax.value, ARCHIVE_SEED.eveningScoreMax, 'max', v => `${v > 0 ? '+' : ''}${formatDE(v)}`)}
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Niedrigster</p>
+                            <p class="text-xl font-black text-white">${eveningScoreMin.value < Infinity ? `${eveningScoreMin.value > 0 ? '+' : ''}${formatDE(eveningScoreMin.value)}` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(eveningScoreMin.entries)}</p>
+                            ${archiveNoteLine(eveningScoreMin.value, ARCHIVE_SEED.eveningScoreMin, 'min', v => `${v > 0 ? '+' : ''}${formatDE(v)}`)}
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">🌍 Spielstand überhaupt</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Höchster</p>
+                            <p class="text-xl font-black text-white">${peakScoreMax.value > -Infinity ? `${peakScoreMax.value > 0 ? '+' : ''}${formatDE(peakScoreMax.value)}` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(peakScoreMax.entries)}</p>
+                            ${archiveNoteLine(peakScoreMax.value, ARCHIVE_SEED.peakScoreMax, 'max', v => `${v > 0 ? '+' : ''}${formatDE(v)}`)}
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Niedrigster</p>
+                            <p class="text-xl font-black text-white">${peakScoreMin.value < Infinity ? `${peakScoreMin.value > 0 ? '+' : ''}${formatDE(peakScoreMin.value)}` : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(peakScoreMin.entries)}</p>
+                            ${archiveNoteLine(peakScoreMin.value, ARCHIVE_SEED.peakScoreMin, 'min', v => `${v > 0 ? '+' : ''}${formatDE(v)}`)}
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">💰 Gesamtumsatz des Abends</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Größter</p>
+                            <p class="text-xl font-black text-white">${turnoverMax.value > -Infinity ? formatDE(turnoverMax.value) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(turnoverMax.entries)}</p>
+                            ${archiveNoteLine(turnoverMax.value, ARCHIVE_SEED.turnoverMax, 'max', v => `${formatDE(v)}`)}
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Kleinster</p>
+                            <p class="text-xl font-black text-white">${turnoverMin.value < Infinity ? formatDE(turnoverMin.value) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(turnoverMin.entries)}</p>
+                            ${archiveNoteLine(turnoverMin.value, ARCHIVE_SEED.turnoverMin, 'min', v => `${formatDE(v)}`)}
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">📊 Gesamtdifferenz des Abends</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Größte</p>
+                            <p class="text-xl font-black text-white">${spreadMax.value > -Infinity ? formatDE(spreadMax.value) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(spreadMax.entries)}</p>
+                            ${archiveNoteLine(spreadMax.value, ARCHIVE_SEED.spreadMax, 'max', v => `${formatDE(v)}`)}
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Kleinste</p>
+                            <p class="text-xl font-black text-white">${spreadMin.value < Infinity ? formatDE(spreadMin.value) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(spreadMin.entries)}</p>
+                            ${archiveNoteLine(spreadMin.value, ARCHIVE_SEED.spreadMin, 'min', v => `${formatDE(v)}`)}
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1">✋ Punkte auf der Hand<button onclick="openHandPointsModal()" class="text-slate-500 hover:text-white transition cursor-pointer p-0.5 leading-none normal-case" title="Punkte auf der Hand bearbeiten">✏️</button></p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-[11px] text-slate-400">Meiste</p>
+                            <p class="text-xl font-black text-white">${handPointsMaxEntries.length ? formatDE(handPointsMaxValue) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(handPointsMaxEntries)}</p>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400">Wenigste</p>
+                            <p class="text-xl font-black text-white">${handPointsMinEntries.length ? formatDE(handPointsMinValue) : '-'}</p>
+                            <p class="text-[10px] text-slate-500">${formatRecordEntries(handPointsMinEntries)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
+                    <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider flex items-center gap-1">🔀 Mischmeister<button onclick="openMischmeisterModal()" class="text-slate-500 hover:text-white transition cursor-pointer p-0.5 leading-none normal-case" title="Mischmeister-Rekord bearbeiten">✏️</button></p>
+                    <p class="text-xl font-black text-white mt-1">${formatDE(mischmeisterMaxValue)}x in Folge</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Rekord: <b>${formatRecordEntries(mischmeisterEntries.map(e => ({ player: e.player, date: e.date })))}</b></p>
                 </div>
             `;
 
@@ -7359,7 +8491,7 @@
                                                         }
                                                         return '';
                                                     })()}
-                                                    <span class="${scoreClass} font-bold text-xs whitespace-nowrap">${prefix}${score} ${pointsLabelText}</span>
+                                                    <span class="${scoreClass} font-bold text-xs whitespace-nowrap">${prefix}${formatDE(score)} ${pointsLabelText}</span>
                                                 </div>
                                             </div>
                                         `;
@@ -7375,7 +8507,13 @@
                                     ${(() => {
                                         let gameNum = 1;
                                         const order = match.order || Object.keys(match.scores || {});
-                                        const processedHistGames = processGamesList(order, match.games);
+                                        // isVirtualPlaceholder rausfiltern: processGamesList() hängt am Ende IMMER einen
+                                        // Platzhalter-Rundenmarker an, wenn der letzte Spieltag exakt auf einer
+                                        // Rundengrenze endete - sinnvoll für die laufende Live-Ansicht (zeigt schon
+                                        // "Runde X" bevor das erste Spiel eingetragen ist), aber hier im bereits
+                                        // gespeicherten, abgeschlossenen Spielverlauf überflüssig: gibt keine "nächste
+                                        // Runde" mehr, also auch keinen Marker dafür ohne folgende Spiele.
+                                        const processedHistGames = processGamesList(order, match.games).filter(g => !g.isVirtualPlaceholder);
                                         return processedHistGames.map((g, idx) => {
                                             if (g.isRoundMarker) {
                                                 return `
@@ -7402,7 +8540,7 @@
                                                                 extras.push('Ansage');
                                                             }
                                                             const extraText = extras.length ? ` <span class="text-slate-400 dark:text-slate-400">(${extras.join(', ')})</span>` : '';
-                                                            return `<span class="${v >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} font-mono">${escapeHtml(pName)} ${v > 0 ? '+' : ''}${v}${extraText}</span>`;
+                                                            return `<span class="${v >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'} font-mono">${escapeHtml(pName)} ${v > 0 ? '+' : ''}${formatDE(v)}${extraText}</span>`;
                                                         }).join(' · ')}
                                                     </div>
                                                     ${g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900 rounded px-1 shrink-0">Geber: ${escapeHtml(g._dealerName)}</span>` : ''}
