@@ -268,6 +268,15 @@
             overflow: hidden;
             min-height: 0;
         }
+        /* Spieltage-Akkordeon: der Header hier nutzt (anders als bei Hall of Fame & Co.) bereits
+           mb-4 border-b pb-3 - dasselbe Muster wie die übrigen Karten-Header oberhalb (Tabelle,
+           Saisonverlauf) -, damit die Trennlinie optisch exakt gleich aussieht. Der zusätzliche
+           margin-top aus .accordion-wrap.is-open (s.o.) würde daher zu einem doppelten Abstand
+           führen und wird hier gezielt wieder auf 0 gesetzt.
+        */
+        #historyContainerWrap.is-open {
+            margin-top: 0;
+        }
 
         /* Restliche native <input type="date">-Felder der App (Abend-Datum, Mischmeister-Rekorddatum):
            der Browser rendert den leeren Platzhalter ("tt.mm.jjjj") standardmäßig kleingeschrieben,
@@ -289,6 +298,23 @@
         }
         .stat-card:hover {
             background: linear-gradient(180deg, rgba(30, 41, 59, .75), rgba(30, 41, 59, .35));
+        }
+
+        /* Akkordeon-Header (Hall of Fame, Abend-Rekorde, Ewige Gesamttabelle): bisher optisch fast
+           identisch mit den darunterliegenden Rekord-Kacheln (.stat-card, s.o.), da beide denselben
+           slate-Ton nutzten - bei aufgeklappten Bereichen kaum noch zu unterscheiden. Deshalb hier
+           bewusst ein steelfarbener statt slate-farbener Ton (passend zur Akzentfarbe der App) plus
+           farbiger linker Akzentstreifen, damit die Header klar als Abschnitts-Überschriften statt
+           als weitere Kachel wahrgenommen werden.
+        */
+        .accordion-header {
+            background: linear-gradient(180deg, rgba(29, 81, 109, .38), rgba(18, 38, 48, .5));
+            border: 1px solid rgba(32, 106, 146, .55);
+            border-left: 3px solid #33a0db;
+        }
+        .accordion-header:hover {
+            background: linear-gradient(180deg, rgba(29, 81, 109, .55), rgba(18, 38, 48, .65));
+            border-color: rgba(51, 160, 219, .7);
         }
 
         /* SoG-Toggle ("Schmeißen ohne Grund"): kreisförmiger Orange-Ring-Chip statt der früheren
@@ -495,10 +521,24 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.3 -->
+                <!-- Version 2.3.2 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.2</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.09.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Rekord-Kacheln:</strong> Hinter „Altrekord" steht jetzt direkt die Zahl (z. B. „Altrekord: 18"), weiterhin anklickbar für Details.</li>
+                        <li><strong>Toast-Farbe angepasst:</strong> Der Hinweis-Toast beim Klick auf „Altrekord" nutzt jetzt die Hauptfarbe der App (Stahlblau).</li>
+                        <li><strong>Akkordeon-Header optisch abgesetzt:</strong> Header Hall of Fame, Abend-Rekorde und Ewige Gesamttabelle heben sich jetzt besser von den Rekord-Kacheln ab.</li>
+                        <li><strong>Spieltage-Liste standardmäßig eingeklappt:</strong> Lässt sich jetzt über einen „Anzeigen"/„Ausblenden"-Button auf-/zuklappen.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.3 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.3</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">13.09.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -512,6 +552,7 @@
                         <li><strong>Performance:</strong> Spielerauswahl in der Abendeingabe reagiert jetzt spürbar schneller.</li>
                     </ul>
                 </div>
+
 
                 <!-- Version 2.2 -->
                 <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
@@ -1306,12 +1347,22 @@
             </div>
 
             <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl shadow-md border border-slate-200/60 dark:border-slate-700">
-                <h2 class="text-xl font-bold mb-4 border-b dark:border-slate-700 pb-3 text-slate-900 dark:text-white">⏳ Spieltage</h2>
-                <div id="historyContainer" class="space-y-4 max-h-120 overflow-y-auto pr-1"></div>
+                <div id="spieltageHeader" class="flex items-center justify-between gap-2">
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">⏳ Spieltage<span id="spieltageCount"></span></h2>
+                    <button onclick="toggleSpieltage()" id="spieltageToggleBtn" class="flex items-center gap-1 text-xs font-bold text-white bg-steel-600 hover:bg-steel-700 px-2.5 py-1.5 rounded-lg shadow-sm transition cursor-pointer">
+                        <span id="spieltageToggleLabel">Anzeigen</span>
+                        <span id="spieltageToggleIcon" class="transition-transform">▼</span>
+                    </button>
+                </div>
+                <div id="historyContainerWrap" class="accordion-wrap">
+                    <div class="accordion-inner">
+                        <div id="historyContainer" class="space-y-4 max-h-120 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white p-5 md:p-6 rounded-2xl shadow-xl border border-slate-700/50">
-                <button onclick="toggleAllTimeRecords()" id="allTimeRecordsToggleBtn" class="w-full flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                <button onclick="toggleAllTimeRecords()" id="allTimeRecordsToggleBtn" class="w-full flex items-center justify-between gap-2 accordion-header rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-steel-400 transition cursor-pointer">
                     <span>👑 Hall of Fame</span>
                     <span id="allTimeRecordsToggleIcon" class="transition-transform" style="transform: rotate(180deg);">▼</span>
                 </button>
@@ -1319,7 +1370,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 accordion-inner" id="allTimeRecordsContainer"></div>
                 </div>
 
-                <button onclick="toggleAllTimeSingleRecords()" id="allTimeSingleRecordsToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                <button onclick="toggleAllTimeSingleRecords()" id="allTimeSingleRecordsToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 accordion-header rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-steel-400 transition cursor-pointer">
                     <span>🏆 Abend-Rekorde</span>
                     <span id="allTimeSingleRecordsToggleIcon" class="transition-transform">▼</span>
                 </button>
@@ -1327,7 +1378,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 accordion-inner" id="allTimeSingleRecordsContainer"></div>
                 </div>
 
-                <button onclick="toggleAllTimeTable()" id="allTimeTableToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 bg-slate-800/40 hover:bg-slate-800/60 border border-slate-700/60 hover:border-slate-500/80 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-200 transition cursor-pointer">
+                <button onclick="toggleAllTimeTable()" id="allTimeTableToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 accordion-header rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-steel-400 transition cursor-pointer">
                     <span>📋 Ewige Gesamttabelle</span>
                     <span id="allTimeTableToggleIcon" class="transition-transform">▼</span>
                 </button>
@@ -1580,6 +1631,7 @@
         let isAllTimeRecordsExpanded = true; // Hall of Fame, standardmäßig aufgeklappt
         let isAllTimeSingleRecordsExpanded = false; // Abend-Rekorde, standardmäßig eingeklappt
         let isAllTimeTableExpanded = false; // Ewige Gesamttabelle unter der Ewigen Bestenliste, standardmäßig eingeklappt
+        let isSpieltageExpanded = false; // Spieltage-Liste, standardmäßig eingeklappt
         let allTimeTableFilterFrom = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         let allTimeTableFilterTo = ''; // Zeitraum-Filter (YYYY-MM-DD) für die Ewige Gesamttabelle, leer = kein Filter
         // Mindestteilnahmen für eine Wertung in der Ewigen Gesamttabelle. Standard 10, vom Nutzer über
@@ -1792,7 +1844,8 @@
             const styles = {
                 success: { bg: 'bg-emerald-600', icon: '✅' },
                 error: { bg: 'bg-red-600', icon: '⚠️' },
-                info: { bg: 'bg-slate-800 dark:bg-slate-700', icon: 'ℹ️' }
+                info: { bg: 'bg-slate-800 dark:bg-slate-700', icon: 'ℹ️' },
+                steel: { bg: 'bg-steel-600', icon: 'ℹ️' }
             };
             const s = styles[type] || styles.info;
 
@@ -3737,6 +3790,23 @@
             const icon = document.getElementById('allTimeTableToggleIcon');
             if (container) container.classList.toggle('is-open', isAllTimeTableExpanded);
             if (icon) icon.style.transform = isAllTimeTableExpanded ? 'rotate(180deg)' : '';
+        }
+
+        function toggleSpieltage() {
+            isSpieltageExpanded = !isSpieltageExpanded;
+            const header = document.getElementById('spieltageHeader');
+            const wrap = document.getElementById('historyContainerWrap');
+            const icon = document.getElementById('spieltageToggleIcon');
+            const label = document.getElementById('spieltageToggleLabel');
+            // Die Trennlinie unter dem Header ergibt nur Sinn, wenn darunter auch etwas folgt -
+            // im eingeklappten Zustand wirkte sie sonst wie eine ins Leere laufende Linie.
+            if (header) header.classList.toggle('mb-4', isSpieltageExpanded);
+            if (header) header.classList.toggle('border-b', isSpieltageExpanded);
+            if (header) header.classList.toggle('dark:border-slate-700', isSpieltageExpanded);
+            if (header) header.classList.toggle('pb-3', isSpieltageExpanded);
+            if (wrap) wrap.classList.toggle('is-open', isSpieltageExpanded);
+            if (icon) icon.style.transform = isSpieltageExpanded ? 'rotate(180deg)' : '';
+            if (label) label.textContent = isSpieltageExpanded ? 'Ausblenden' : 'Anzeigen';
         }
 
         function formatYMDToGerman(ymd) {
@@ -5742,11 +5812,13 @@
 
         // Baut das kleine klickbare "Altrekord"-Label für eine Kachel, ABER NUR, solange der
         // Live-Wert den Archiv-Wert noch nicht tatsächlich übertroffen hat (mode: 'max'/'min').
-        // Zeigt standardmäßig nur das Wort "Altrekord" (Übersichtlichkeit); der eigentliche Wert
-        // (Zahl + Spieler/Datum) erscheint erst nach Klick als Toast, siehe showArchiveNote().
-        // formatValue formatiert nur die Zahl (z.B. mit +/- oder "%"). Gibt einen leeren String
-        // zurück, sobald der Live-Wert besser ist.
-        function archiveNoteLine(liveValue, archiveSeed, mode, formatValue) {
+        // Zeigt standardmäßig "Altrekord: <Zahl>" (Übersichtlichkeit); die vollständigen Details
+        // (Zahl + Spieler/Datum) erscheinen erst nach Klick als Toast, siehe showArchiveNote().
+        // formatValue formatiert die Zahl für den Toast (z.B. mit +/-, "%" oder Zusatztext wie
+        // "Siege in Folge"). labelFormatValue ist optional und formatiert NUR die kompakte
+        // Kachel-Beschriftung (z.B. reine Zahl ohne Zusatztext); fehlt er, wird formatValue auch
+        // dafür verwendet. Gibt einen leeren String zurück, sobald der Live-Wert besser ist.
+        function archiveNoteLine(liveValue, archiveSeed, mode, formatValue, labelFormatValue) {
             const archiveStillStands = mode === 'max'
                 ? liveValue < archiveSeed.value - 0.0001
                 : liveValue > archiveSeed.value + 0.0001;
@@ -5755,7 +5827,8 @@
                 .map(e => e.player ? `${escapeHtml(e.player)} · ${padDateString(e.date)}` : padDateString(e.date))
                 .join(', ');
             const noteText = `Altrekord: ${formatValue(archiveSeed.value)} (${entriesText})`;
-            return `<button type="button" onclick="event.stopPropagation(); showArchiveNote(this)" data-note="${escapeHtml(noteText)}" class="text-[9px] text-slate-500 hover:text-slate-300 underline decoration-dotted underline-offset-2 mt-0.5 cursor-pointer self-start text-left">Altrekord</button>`;
+            const labelText = `Altrekord: ${(labelFormatValue || formatValue)(archiveSeed.value)}`;
+            return `<button type="button" onclick="event.stopPropagation(); showArchiveNote(this)" data-note="${escapeHtml(noteText)}" class="text-[9px] text-slate-500 hover:text-slate-300 underline decoration-dotted underline-offset-2 mt-0.5 cursor-pointer self-start text-left">${escapeHtml(labelText)}</button>`;
         }
 
         // Zeigt den im data-note-Attribut hinterlegten Altrekord-Text als Toast an – erst nach
@@ -5773,7 +5846,7 @@
                     .some(span => span.textContent === text);
                 if (alreadyShowing) return;
             }
-            showToast(text, 'info');
+            showToast(text, 'steel');
         }
 
         function calculateAllTimeRecords() {
@@ -8292,13 +8365,13 @@
                     <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🔥 Längste Siegesserie</p>
                     <p class="text-xl font-black text-white mt-1">${maxStreakValue > 0 ? `${maxStreakValue} Siege in Folge` : '0 Siege'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestStreakPlayers)}</b></p>
-                    ${archiveNoteLine(maxStreakValue, ARCHIVE_SEED.winStreak, 'max', v => `${v} Siege in Folge`)}
+                    ${archiveNoteLine(maxStreakValue, ARCHIVE_SEED.winStreak, 'max', v => `${v} Siege in Folge`, v => `${v}`)}
                 </div>
                 <div onclick="showAllTimeDetail('lossstreak')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
                     <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🥶 Längste Niederlagenserie</p>
                     <p class="text-xl font-black text-white mt-1">${maxLossStreakValue > 0 ? `${maxLossStreakValue} Niederlagen in Folge` : '0 Niederlagen'}</p>
                     <p class="text-xs text-slate-400 mt-0.5">Vorne: <b>${joinNames(bestLossStreakPlayers)}</b></p>
-                    ${archiveNoteLine(maxLossStreakValue, ARCHIVE_SEED.lossStreak, 'max', v => `${v} Niederlagen in Folge`)}
+                    ${archiveNoteLine(maxLossStreakValue, ARCHIVE_SEED.lossStreak, 'max', v => `${v} Niederlagen in Folge`, v => `${v}`)}
                 </div>
                 <div class="stat-card p-4 rounded-xl border border-slate-700/60 transition flex flex-col justify-start">
                     <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider mb-2">🏆 Siegquote am Abend</p>
@@ -8407,8 +8480,10 @@
             `;
 
             const historyContainer = document.getElementById('historyContainer');
+            const spieltageCountEl = document.getElementById('spieltageCount');
             if (season && season.matches) {
                 const matchesEntries = Object.entries(season.matches);
+                if (spieltageCountEl) spieltageCountEl.textContent = matchesEntries.length > 0 ? ` (${matchesEntries.length})` : '';
                 historyContainer.innerHTML = matchesEntries.length === 0 ? '<p class="text-gray-400 text-sm italic">Keine Abende.</p>' : [...matchesEntries].sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0)).map(([id, match]) => {
                     let eveningJokers = !isHist && match.jokers ? Object.keys(match.jokers).filter(k => match.jokers[k]) : [];
                     let jokerInfo = eveningJokers.length > 0 ? ` <span class="sog-chip sog-chip-on sog-chip-static" title="Schmeißen ohne Grund">SoG: ${eveningJokers.map(escapeHtml).join(', ')}</span>` : '';
@@ -8573,6 +8648,7 @@
                     }
                 });
             } else {
+                if (spieltageCountEl) spieltageCountEl.textContent = '';
                 historyContainer.innerHTML = '<p class="text-gray-400 dark:text-slate-500 text-sm italic">Keine Abende.</p>';
             }
 
