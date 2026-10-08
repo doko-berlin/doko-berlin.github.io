@@ -49,6 +49,18 @@
              @custom-variant dark (&:where(.dark, .dark *));' > input.css
              npx @tailwindcss/cli -i input.css -o tailwind.css --minify
         */
+        /* Handy-Hochformat: Saison-Tabelle und Ewige Gesamttabelle zeigen nur Platz, Spieler und
+           Schnitt; Teilnahmen und Punkte erscheinen als kleine Zeile darunter (.mt-sub). Ab 640 px
+           bleibt die klassische Spaltenansicht mit Mindestbreite bestehen. */
+        .mt-sub { font-size: 11px; line-height: 1.25; margin-top: 1px; font-weight: 400; font-style: normal; }
+        @media (max-width: 639px) {
+            .mt-hide-sm { display: none; }
+        }
+        @media (min-width: 640px) {
+            .mt-sub { display: none; }
+            .mt-table-season { min-width: 550px; }
+            .mt-table-alltime { min-width: 500px; }
+        }
         .atf-bar {
             display: flex;
             flex-wrap: wrap;
@@ -317,6 +329,28 @@
             border-color: rgba(51, 160, 219, .7);
         }
 
+        /* Menü-Dropdown (☰): weiches Fade + Scale-in von oben statt hartem hidden-Toggle - fühlt sich
+           dadurch eher wie ein natives Kontextmenü an als wie ein hart erscheinendes Pop-up. Eigenes CSS
+           statt Tailwind-Scale-Utilities, da scale-95 & Co. nicht in der vorkompilierten tailwind.css
+           enthalten sind (kein Live-Compiler, siehe .atf-bar-Kommentar weiter oben). transform-origin:
+           top left, da das Menü unterhalb des linksbündigen Hamburger-Buttons nach rechts aufklappt.
+           Bewusst KEIN display:none mehr (das würde jede Transition sofort abwürgen) - stattdessen bleibt
+           das Element immer im DOM und wird im geschlossenen Zustand per opacity/pointer-events sowohl
+           unsichtbar als auch unklickbar gehalten.
+        */
+        #headerMenuDropdown {
+            transform-origin: top left;
+            opacity: 0;
+            transform: scale(0.95) translateY(-4px);
+            transition: opacity .15s ease, transform .15s ease;
+            pointer-events: none;
+        }
+        #headerMenuDropdown.header-menu-open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
         /* SoG-Toggle ("Schmeißen ohne Grund"): kreisförmiger Orange-Ring-Chip statt der früheren
            eckigen Checkbox-Badge. Eigenständiges CSS statt neuer Tailwind-Klassen, da orange-*
            Utilities generell nicht in der vorkompilierten tailwind.css enthalten sind (kein
@@ -521,10 +555,25 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.3.2 -->
+                <!-- Version 2.3.3 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.2</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.3</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">08.10.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Handy-Ansicht der Tabellen:</strong> Saison-Tabelle und Ewige Gesamttabelle passen jetzt ins Hochformat.</li>
+                        <li><strong>Ansage-Guru:</strong> Nullspiele zählen jetzt in der Gewinnquote als gespielt.</li>
+                        <li><strong>Bugfix Notizfunktion:</strong> Beim schnellen Schließen wird der zuletzt getippte Text jetzt noch gespeichert.</li>
+                        <li><strong>Bugfix Import:</strong> Der Notiztext aus einem JSON-Backup wird jetzt korrekt wiederhergestellt.</li>
+                        <li><strong>Bugfix Festung-Kachel:</strong> Ein negativer Bestschnitt wird nicht mehr mit vorangestelltem „+" angezeigt.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.3.2 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.3.2</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">20.09.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -1211,7 +1260,7 @@
                         <line x1="4" y1="18" x2="20" y2="18"></line>
                     </svg>
                 </button>
-                <div id="headerMenuDropdown" class="hidden absolute left-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
+                <div id="headerMenuDropdown" class="absolute left-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 z-50">
                     <button onclick="toggleDarkMode(); closeHeaderMenu();" id="darkModeToggleBtn" class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition cursor-pointer">
                         🌙 Nachtmodus
                     </button>
@@ -1316,14 +1365,14 @@
                     </div>
                 </div>
                 <div class="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
-                    <table class="w-full text-left border-collapse min-w-[550px]">
+                    <table class="w-full text-left border-collapse mt-table-season">
                         <thead>
                             <tr class="bg-gray-50 dark:bg-slate-700/40 text-gray-500 dark:text-slate-300 uppercase text-xs tracking-wider border-b border-gray-100 dark:border-slate-700">
                                 <th class="p-3 w-16">Platz</th>
                                 <th class="p-3">Spieler</th>
                                 <th class="p-3 text-right">Schnitt</th>
-                                <th class="p-3 text-right">Teilnahmen</th>
-                                <th class="p-3 text-right">Saison-Pkt</th>
+                                <th class="p-3 text-right mt-hide-sm">Teilnahmen</th>
+                                <th class="p-3 text-right mt-hide-sm">Saison-Pkt</th>
                             </tr>
                         </thead>
                         <tbody id="leaderboardBody" class="divide-y divide-gray-100 dark:divide-slate-700 text-sm"></tbody>
@@ -1412,14 +1461,14 @@
                         <span id="allTimeTableFilterInfo" class="atf-info"></span>
                     </div>
                     <div class="overflow-x-auto -mx-1 px-1">
-                        <table class="w-full text-left border-collapse min-w-[500px]">
+                        <table class="w-full text-left border-collapse mt-table-alltime">
                             <thead>
                                 <tr class="text-slate-400 uppercase text-xs tracking-wider border-b border-slate-700/60">
                                     <th class="p-2 w-14">Platz</th>
                                     <th class="p-2 atf-sortable" onclick="setAllTimeTableSort('name')">Spieler<span class="atf-sort-arrow" id="allTimeTableSortArrow-name"></span></th>
                                     <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('avg')"><span id="allTimeTableAvgHeader">Schnitt</span><span class="atf-sort-arrow" id="allTimeTableSortArrow-avg"></span></th>
-                                    <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('played')">Teilnahmen<span class="atf-sort-arrow" id="allTimeTableSortArrow-played"></span></th>
-                                    <th class="p-2 text-right atf-sortable" onclick="setAllTimeTableSort('pts')">Gesamt-Pkt.<span class="atf-sort-arrow" id="allTimeTableSortArrow-pts"></span></th>
+                                    <th class="p-2 text-right atf-sortable mt-hide-sm" onclick="setAllTimeTableSort('played')">Teilnahmen<span class="atf-sort-arrow" id="allTimeTableSortArrow-played"></span></th>
+                                    <th class="p-2 text-right atf-sortable mt-hide-sm" onclick="setAllTimeTableSort('pts')">Gesamt-Pkt.<span class="atf-sort-arrow" id="allTimeTableSortArrow-pts"></span></th>
                                 </tr>
                             </thead>
                             <tbody id="allTimeTableBody" class="divide-y divide-slate-800 text-sm"></tbody>
@@ -1458,22 +1507,22 @@
             const dropdown = document.getElementById('headerMenuDropdown');
             const btn = document.getElementById('headerMenuBtn');
             if (!dropdown || !btn) return;
-            const isHidden = dropdown.classList.contains('hidden');
-            dropdown.classList.toggle('hidden', !isHidden);
-            btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+            const isOpen = dropdown.classList.contains('header-menu-open');
+            dropdown.classList.toggle('header-menu-open', !isOpen);
+            btn.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
         }
 
         function closeHeaderMenu() {
             const dropdown = document.getElementById('headerMenuDropdown');
             const btn = document.getElementById('headerMenuBtn');
-            if (dropdown) dropdown.classList.add('hidden');
+            if (dropdown) dropdown.classList.remove('header-menu-open');
             if (btn) btn.setAttribute('aria-expanded', 'false');
         }
 
         document.addEventListener('click', (event) => {
             const dropdown = document.getElementById('headerMenuDropdown');
             const btn = document.getElementById('headerMenuBtn');
-            if (!dropdown || dropdown.classList.contains('hidden')) return;
+            if (!dropdown || !dropdown.classList.contains('header-menu-open')) return;
             if (!dropdown.contains(event.target) && !btn.contains(event.target)) {
                 closeHeaderMenu();
             }
@@ -4184,20 +4233,20 @@
                     return `
                     <tr class="hover:bg-slate-800/40 font-medium transition duration-150">
                         <td class="p-2 text-slate-100 font-bold">${p.rank}.</td>
-                        <td class="p-2 font-semibold text-slate-100">${nameBtn}</td>
-                        <td class="p-2 text-right font-bold text-steel-400">${avgDisplay}</td>
-                        <td class="p-2 text-right text-slate-300">${p.played}/${totalMatchdays}</td>
-                        <td class="p-2 text-right text-slate-400">${formatDE(p.pts)} Pkt.</td>
+                        <td class="p-2 font-semibold text-slate-100">${nameBtn}<div class="mt-sub text-slate-400">${p.played}/${totalMatchdays} Abende</div></td>
+                        <td class="p-2 text-right font-bold text-steel-400">${avgDisplay}<div class="mt-sub text-slate-400">${formatDE(p.pts)} Pkt.</div></td>
+                        <td class="p-2 text-right text-slate-300 mt-hide-sm">${p.played}/${totalMatchdays}</td>
+                        <td class="p-2 text-right text-slate-400 mt-hide-sm">${formatDE(p.pts)} Pkt.</td>
                     </tr>
                     `;
                 } else {
                     return `
                     <tr class="bg-slate-900/40 text-slate-500 italic">
                         <td class="p-2 text-center font-bold font-mono">-</td>
-                        <td class="p-2 font-semibold">${nameBtn}</td>
-                        <td class="p-2 text-right font-semibold">${avgDisplay}</td>
-                        <td class="p-2 text-right text-amber-500">${p.played}/${totalMatchdays}</td>
-                        <td class="p-2 text-right">${formatDE(p.pts)} Pkt.</td>
+                        <td class="p-2 font-semibold">${nameBtn}<div class="mt-sub text-amber-500">${p.played}/${totalMatchdays} Abende</div></td>
+                        <td class="p-2 text-right font-semibold">${avgDisplay}<div class="mt-sub">${formatDE(p.pts)} Pkt.</div></td>
+                        <td class="p-2 text-right text-amber-500 mt-hide-sm">${p.played}/${totalMatchdays}</td>
+                        <td class="p-2 text-right mt-hide-sm">${formatDE(p.pts)} Pkt.</td>
                     </tr>
                     `;
                 }
@@ -5118,6 +5167,12 @@
         }
 
         function closeGiftschrankModal() {
+            // Noch ausstehende Eingabe (letzte ≤600 ms Tippen) vor dem Schließen speichern, solange
+            // die Sperre noch gehalten wird – sonst ginge sie mit dem verworfenen Debounce verloren.
+            const gsTextarea = document.getElementById('giftschrankTextarea');
+            if (hasGiftschrankLock && gsTextarea && gsTextarea.value !== (giftschrankRemoteText || '')) {
+                saveGiftschrankToCloud();
+            }
             isGiftschrankModalOpen = false;
             clearTimeout(giftschrankSaveDebounceTimeout);
             releaseGiftschrankLock();
@@ -5861,8 +5916,8 @@
             let globalPlacementPointsMatchCount = {}; // { player: 0 }
             let globalTotalMatchdaysEver = 0; // Anzahl aller je gespielten (gewerteten) Abende, saisonübergreifend
             let globalAnsagen = {}; // { player: 0 }
-            let globalAnsagenWon = {}; // { player: 0 } - Ansagen in Spielen mit Punkten > 0 (Nullspiele zählen weder hier noch im Nenner)
-            let globalAnsagenDecided = {}; // { player: 0 } - Ansagen in NICHT-Nullspielen (Basis für die Gewinnquote)
+            let globalAnsagenWon = {}; // { player: 0 } - Ansagen in Spielen mit Punkten > 0 (Zähler der Gewinnquote)
+            let globalAnsagenDecided = {}; // { player: 0 } - Ansagen in allen gespielten Spielen inkl. Nullspielen (Nenner der Gewinnquote)
             let globalGamesPlayed = {}; // { player: 0 } - Anzahl tatsächlich gespielter Einzelspiele (nicht ausgesetzt), Basis für Solo-/Ansage-Quote
             let allUniquePlayers = new Set();
 
@@ -6046,9 +6101,9 @@
                                     if (globalAnsagen[p] !== undefined) {
                                         globalAnsagen[p]++;
                                     }
-                                    // Nullspiele (Punkte === 0) fließen weder in den Zähler (gewonnen)
-                                    // noch in den Nenner (Basis) der Ansage-Gewinnquote ein.
-                                    if (gm.points && gm.points[p] !== undefined && gm.points[p] !== 0) {
+                                    // Nullspiele (Punkte === 0) wurden gespielt und zählen daher im Nenner
+                                    // (Basis), aber nicht im Zähler (gewonnen) – analog zur Solo-Quote.
+                                    if (gm.points && gm.points[p] !== undefined) {
                                         if (globalAnsagenDecided[p] !== undefined) {
                                             globalAnsagenDecided[p]++;
                                         }
@@ -7670,8 +7725,11 @@
                 // Giftschrank-Text ist optional (ältere Backups kennen den Schlüssel noch nicht) –
                 // in dem Fall bleibt der aktuelle Cloud-Stand beim Import unangetastet, statt ihn
                 // stillschweigend zu leeren.
-                const importedGiftschrankText = (importedData.giftschrank && typeof importedData.giftschrank.text === 'string')
-                    ? importedData.giftschrank.text
+                // Export schreibt 'giftschrank' auf oberster Ebene neben 'doko_v2_data'; Fallback auf
+                // die alte Position innerhalb von 'doko_v2_data' bzw. des flachen Objekts.
+                const giftschrankSource = (parsed && parsed.giftschrank) || importedData.giftschrank;
+                const importedGiftschrankText = (giftschrankSource && typeof giftschrankSource.text === 'string')
+                    ? giftschrankSource.text
                     : null;
 
                 if (editLockInfo && !hasEditLock) {
@@ -8212,13 +8270,13 @@
                         return `
                         <tr class="hover:bg-gray-50/80 dark:hover:bg-slate-700/50 font-medium transition duration-150">
                             <td class="p-3 text-slate-800 dark:text-slate-100 font-bold whitespace-nowrap">${lastRank}.${trendHtml}</td>
-                            <td class="p-3 font-semibold flex items-center">
-                                ${playerNameContent}
-                                ${jokerBadge}
+                            <td class="p-3 font-semibold">
+                                <div class="flex items-center">${playerNameContent}${jokerBadge}</div>
+                                <div class="mt-sub text-gray-500 dark:text-slate-400">${p.played}/${totalMatchesCount} Abende · ${Math.round(p.ratio * 100)} %</div>
                             </td>
-                            <td class="p-3 text-right font-bold text-slate-900 dark:text-white">${formatDE(p.avg, 2)}</td>
-                            <td class="p-3 text-right text-emerald-600 dark:text-emerald-400 font-bold">${Math.round(p.ratio * 100)} % <span class="text-gray-500 dark:text-slate-400 font-normal">(${p.played}/${totalMatchesCount})</span></td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-400">${formatDE(p.pts)} Pkt.</td>
+                            <td class="p-3 text-right font-bold text-slate-900 dark:text-white">${formatDE(p.avg, 2)}<div class="mt-sub text-gray-500 dark:text-slate-400">${formatDE(p.pts)} Pkt.</div></td>
+                            <td class="p-3 text-right text-emerald-600 dark:text-emerald-400 font-bold mt-hide-sm">${Math.round(p.ratio * 100)} % <span class="text-gray-500 dark:text-slate-400 font-normal">(${p.played}/${totalMatchesCount})</span></td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-400 mt-hide-sm">${formatDE(p.pts)} Pkt.</td>
                         </tr>
                         `;
                     } else {
@@ -8229,13 +8287,13 @@
                         return `
                         <tr class="bg-gray-50/50 dark:bg-slate-800/40 text-gray-400 dark:text-slate-500 italic">
                             <td class="p-3 text-center font-bold font-mono">-</td>
-                            <td class="p-3 font-semibold flex items-center">
-                                ${playerNameContentUnqual}
-                                ${jokerBadge}
+                            <td class="p-3 font-semibold">
+                                <div class="flex items-center">${playerNameContentUnqual}${jokerBadge}</div>
+                                <div class="mt-sub text-amber-600 dark:text-amber-500">${p.played}/${totalMatchesCount} Abende · ${Math.round(p.ratio * 100)} %</div>
                             </td>
-                            <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? formatDE(p.avg, 2) : "0,00"}</td>
-                            <td class="p-3 text-right text-amber-600 dark:text-amber-500 font-semibold">${Math.round(p.ratio * 100)} % <span class="text-gray-400 dark:text-slate-500 font-normal">(${p.played}/${totalMatchesCount})</span></td>
-                            <td class="p-3 text-right text-gray-500 dark:text-slate-500">${formatDE(p.pts)} Pkt.</td>
+                            <td class="p-3 text-right font-semibold text-gray-500 dark:text-slate-400">${p.played > 0 ? formatDE(p.avg, 2) : "0,00"}<div class="mt-sub text-gray-400 dark:text-slate-500">${formatDE(p.pts)} Pkt.</div></td>
+                            <td class="p-3 text-right text-amber-600 dark:text-amber-500 font-semibold mt-hide-sm">${Math.round(p.ratio * 100)} % <span class="text-gray-400 dark:text-slate-500 font-normal">(${p.played}/${totalMatchesCount})</span></td>
+                            <td class="p-3 text-right text-gray-500 dark:text-slate-500 mt-hide-sm">${formatDE(p.pts)} Pkt.</td>
                         </tr>
                         `;
                     }
@@ -8333,7 +8391,7 @@
                 </div>
                 <div onclick="showAllTimeDetail('host')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
                     <p class="text-xs text-steel-400 font-semibold uppercase tracking-wider">🏰 Festung</p>
-                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `+${formatDE(bestAllTimeHostAvg, 1)}` : '0,0'} Pkt.</p>
+                    <p class="text-xl font-black text-white mt-1">${bestAllTimeHostAvg > -Infinity ? `${bestAllTimeHostAvg > 0 ? '+' : ''}${formatDE(bestAllTimeHostAvg, 1)}` : '0,0'} Pkt.</p>
                     <p class="text-xs text-slate-400 mt-0.5">Bester Heim-Schnitt: <b>${joinNames(bestAllTimeHostNames)}</b></p>
                 </div>
                 <div onclick="showAllTimeDetail('tagessiege')" class="stat-card p-4 rounded-xl border border-slate-700/60 cursor-pointer hover:border-slate-500/80 transition flex flex-col justify-between relative"><span class="absolute top-2 right-2 text-steel-400 text-[13px] leading-none pointer-events-none opacity-70">↗</span>
