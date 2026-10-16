@@ -52,6 +52,26 @@
         /* Handy-Hochformat: Saison-Tabelle und Ewige Gesamttabelle zeigen nur Platz, Spieler und
            Schnitt; Teilnahmen und Punkte erscheinen als kleine Zeile darunter (.mt-sub). Ab 640 px
            bleibt die klassische Spaltenansicht mit Mindestbreite bestehen. */
+        /* Live-Tabelle (laufender Abend), Handy-Hochformat: schmale, beim Wischen fixierte erste
+           Spalte ("# 1"), engere Zellen; der Geber ist als Feld in seiner Spalte dezent grau getönt. */
+        .lt-cell { padding: 0.625rem; }
+        .lt-th { padding: 0.75rem; }
+        .lt-first { position: sticky; left: 0; z-index: 1; box-shadow: inset -1px 0 0 rgba(251, 191, 36, .35); }
+        .lt-first-head { background: #fff9e3; }
+        .lt-first-total { background: #fef7d8; }
+        .lt-first-row { background: #ffffff; }
+        .dark .lt-first-head { background: #31211f; }
+        .dark .lt-first-total { background: #2d2325; }
+        .dark .lt-first-row { background: #1e293b; }
+        .lt-dealer { background-color: #eceff3 !important; }
+        .dark .lt-dealer { background-color: rgba(148, 163, 184, .16) !important; }
+        .lt-legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(148, 163, 184, .5); background-color: #eceff3; }
+        .dark .lt-legend-dot { background-color: rgba(148, 163, 184, .16); }
+        @media (max-width: 639px) {
+            .lt-cell { padding: 0.375rem 0.125rem; }
+            .lt-th { padding: 0.5rem 0.125rem; font-size: 10px; letter-spacing: 0.02em; }
+            .lt-first { padding-left: 0.375rem; padding-right: 0.375rem; }
+        }
         .mt-sub { font-size: 11px; line-height: 1.25; margin-top: 1px; font-weight: 400; font-style: normal; }
         @media (max-width: 639px) {
             .mt-hide-sm { display: none; }
@@ -555,18 +575,19 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.3.3 -->
+                <!-- Version 2.3.5 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.3</span>
-                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">08.10.2026</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">16.10.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Handy-Ansicht der Tabellen:</strong> Saison-Tabelle und Ewige Gesamttabelle passen jetzt ins Hochformat.</li>
+                        <li><strong>Handy-Ansicht der Tabellen:</strong> Saison-Tabelle, Live-Tabelle und Ewige Gesamttabelle passen jetzt ins Hochformat.</li>
                         <li><strong>Ansage-Guru:</strong> Nullspiele zählen jetzt in der Gewinnquote als gespielt.</li>
                         <li><strong>Bugfix Notizfunktion:</strong> Beim schnellen Schließen wird der zuletzt getippte Text jetzt noch gespeichert.</li>
                         <li><strong>Bugfix Import:</strong> Der Notiztext aus einem JSON-Backup wird jetzt korrekt wiederhergestellt.</li>
                         <li><strong>Bugfix Festung-Kachel:</strong> Ein negativer Bestschnitt wird nicht mehr mit vorangestelltem „+" angezeigt.</li>
+                        <li><strong>Bugfix Live-Ansicht:</strong> Nach „Abbrechen" verschwindet der Live-Stand jetzt auch bei anderen Geräten.</li>
                     </ul>
                 </div>
 
@@ -1328,7 +1349,7 @@
                 </div>
                 
                 <div class="overflow-x-auto border border-amber-200 dark:border-amber-900/60 rounded-xl bg-white dark:bg-slate-800 shadow-sm">
-                    <table class="w-full text-left border-collapse text-sm min-w-[600px]">
+                    <table id="liveTable" class="w-full text-left border-collapse text-sm">
                         <thead>
                             <tr class="bg-amber-100/50 dark:bg-amber-950/50 text-amber-950 dark:text-amber-100 border-b border-amber-200 dark:border-amber-900/60 font-bold" id="liveTableHeader">
                                 <!-- Wird dynamisch befüllt -->
@@ -1339,6 +1360,7 @@
                         </tbody>
                     </table>
                 </div>
+                <p class="text-[10px] text-slate-500 dark:text-slate-400" style="margin-top:6px"><span class="lt-legend-dot"></span>= Geber</p>
 
                 <div class="mt-6 border-t border-amber-200/60 dark:border-amber-900/40 pt-4">
                     <button onclick="toggleLiveStats()" id="toggleLiveStatsBtn" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer">
@@ -3194,8 +3216,11 @@
 
             season.liveDraft = draftObj;
             
-            // Offline-Backup-Logik (Verbindung mit localStorage)
-            safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(draftObj));
+            // Offline-Backup-Logik (Verbindung mit localStorage). Die Markierung _own kennzeichnet
+            // die Kopie als EIGENE Eingabe dieses Geräts (im Gegensatz zu einer nur aus der Cloud
+            // gespiegelten Kopie eines fremden Entwurfs, siehe startDatabaseListener()). Sie wird
+            // nur lokal gespeichert und nie in die Cloud geschrieben.
+            safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify({ ...draftObj, _own: true }));
             
             saveLiveDraftToCloud();
 
@@ -4695,9 +4720,15 @@
                 // Offline-Backup-Logik (Verbindung mit localStorage)
                 const localDraftStr = safeLocalStorageGet(`doko_live_draft_${state.currentSeasonKey}`);
                 let localLive = null;
+                let localDraftIsOwn = false;
                 if (localDraftStr) {
                     try {
                         localLive = JSON.parse(localDraftStr);
+                        // _own nur lokal: nicht in den Entwurf übernehmen, der später in die Cloud geht.
+                        if (localLive && typeof localLive === 'object') {
+                            localDraftIsOwn = localLive._own === true;
+                            delete localLive._own;
+                        }
                         // Falls es bereits ein neueres Match in dieser Saison gibt, verwerfe den alten lokalen Entwurf
                         if (localLive && season.matches) {
                             const newestMatchTimestamp = Object.values(season.matches).reduce((max, m) => Math.max(max, m.createdTimestamp || m.timestamp || 0), 0);
@@ -4715,6 +4746,16 @@
                     } catch (e) {
                         console.error("Fehler beim Verarbeiten des Offline-Entwurfs", e);
                     }
+                }
+
+                // Eine nur aus der Cloud gespiegelte Kopie (nicht selbst eingegeben) ist KEIN
+                // Offline-Backup dieses Geräts: Ist der Entwurf in der Cloud verschwunden (z.B. weil
+                // der Eingebende den Abend abgebrochen oder gespeichert hat), muss auch die Kopie
+                // weg. Sonst zeigt dieses Gerät den längst verworfenen Live-Stand weiter an – auch
+                // nach einem Neuladen – und könnte ihn später sogar wieder in die Cloud schreiben.
+                if (localLive && !cloudLive && !localDraftIsOwn) {
+                    localLive = null;
+                    safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
                 }
 
                 let finalLive = null;
@@ -4737,7 +4778,7 @@
                         if (hasEditLock) saveLiveDraftToCloud();
                     } else {
                         finalLive = cloudLive;
-                        safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
+                        safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(hasEditLock ? { ...cloudLive, _own: true } : cloudLive));
                     }
                 } else if (localLive) {
                     // Wenn der Nutzer die Sperre nicht hat, alten lokalen Entwurf nicht in die Cloud drücken
@@ -4747,7 +4788,7 @@
                     if (hasEditLock) saveLiveDraftToCloud();
                 } else if (cloudLive) {
                     finalLive = cloudLive;
-                    safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(cloudLive));
+                    safeLocalStorageSet(`doko_live_draft_${state.currentSeasonKey}`, JSON.stringify(hasEditLock ? { ...cloudLive, _own: true } : cloudLive));
                 }
 
                 if (finalLive) {
@@ -8096,7 +8137,7 @@
                 const liveTableBody = document.getElementById('liveTableBody');
 
                 // 1. Spaltenköpfe generieren (Sitzreihenfolge)
-                let headerHtml = `<th class="p-3 border-r border-amber-200 dark:border-amber-900/60 text-xs uppercase tracking-wider"></th>`;
+                let headerHtml = `<th class="lt-th lt-first lt-first-head border-r border-amber-200 dark:border-amber-900/60 text-xs uppercase tracking-wider"></th>`;
                 
                 detailedOrder.forEach(name => {
                     const pflichtType = getPlayedPflichtsoloType(name);
@@ -8105,7 +8146,7 @@
                     const badgeTitle = playedPflicht ? `Pflichtsolo bereits gespielt: ${pflichtType}` : 'Pflichtsolo noch offen';
 
                     headerHtml += `
-                        <th class="p-3 border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
+                        <th class="lt-th border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
                             <span class="inline-flex items-center justify-center gap-1">
                                 <span>${escapeHtml(name)}</span>
                                 <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
@@ -8118,7 +8159,7 @@
 
                 // 2. Gesamtpunkte-Zeile ganz oben vorbereiten
                 let tableRowsHtml = `<tr class="bg-amber-100/70 dark:bg-amber-950/40 font-extrabold border-b-2 border-amber-200 dark:border-amber-900/60">
-                    <td class="p-3 font-extrabold text-amber-950 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-xs text-left">GESAMTPUNKTE</td>`;
+                    <td class="lt-th lt-first lt-first-total font-extrabold text-amber-950 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-[10px] text-left">GESAMT</td>`;
 
                 detailedOrder.forEach(name => {
                     const score = totals[name] || 0;
@@ -8126,7 +8167,7 @@
                     const sign = score > 0 ? '+' : '';
 
                     tableRowsHtml += `
-                        <td class="p-3 text-center border-r border-amber-200 dark:border-amber-900/60 align-top">
+                        <td class="lt-cell text-center border-r border-amber-200 dark:border-amber-900/60 align-top">
                             <span class="font-mono text-sm ${cls}">${sign}${formatDE(score)}</span>
                         </td>`;
                 });
@@ -8148,18 +8189,16 @@
                         return;
                     }
 
-                    const pointTypeBadge = g.pointType === 'platzierung' ? ' <span class="text-[8px] bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 font-bold px-1 rounded border border-amber-200 dark:border-amber-900">🏆 Platzierung</span>' : '';
-                    const dealerText = g._dealerName ? `<span class="text-[9px] text-amber-600 dark:text-amber-500 font-semibold block leading-tight mt-0.5">Geber: ${escapeHtml(g._dealerName)}</span>` : '';
+                    const pointTypeBadge = g.pointType === 'platzierung' ? ' <span title="Platzierungspunkte" class="text-[10px]">🏆</span>' : '';
                     tableRowsHtml += `
                         <tr class="hover:bg-amber-50/20 dark:hover:bg-amber-950/20 transition text-xs">
-                            <td class="p-2.5 font-bold text-amber-950 dark:text-amber-200 border-r border-amber-100 dark:border-amber-900/40 text-left align-top">
-                                <span>Spiel ${liveGameNumber} ${pointTypeBadge}</span>
-                                ${dealerText}
+                            <td class="lt-cell lt-first lt-first-row font-bold text-amber-950 dark:text-amber-200 border-r border-amber-100 dark:border-amber-900/40 text-left align-top whitespace-nowrap">
+                                <span># ${liveGameNumber}${pointTypeBadge}</span>
                             </td>`;
 
                     detailedOrder.forEach(name => {
                         if (g.points[name] === undefined) {
-                            tableRowsHtml += `<td class="p-2.5 text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-100/40 align-top">-</td>`;
+                            tableRowsHtml += `<td class="lt-cell${g._dealerName === name ? ' lt-dealer' : ''} text-center text-gray-300 dark:text-slate-600 italic bg-gray-50/50 dark:bg-slate-800/30 border-r border-amber-100/40 align-top">-</td>`;
                         } else {
                             const val = g.points[name];
                             const cls = val > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : (val < 0 ? 'text-red-600 dark:text-red-400 font-bold' : 'text-slate-500');
@@ -8167,7 +8206,7 @@
 
                             const badges = [];
                             if (g.solo && g.solo[name]) {
-                                const kindLabel = soloKindLabel(g.soloKind?.[name]) === 'Pflicht' ? 'Pflichtsolo' : 'Lustsolo';
+                                const kindLabel = soloKindLabel(g.soloKind?.[name]) === 'Pflicht' ? 'Pflicht' : 'Lust';
                                 badges.push(`<span class="text-[8px] text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-950 px-1 py-0.5 rounded shadow-xs">${kindLabel}</span>`);
                             }
                             if (g.ansage && g.ansage[name]) {
@@ -8176,7 +8215,7 @@
                             const extraText = badges.length ? `<span class="flex flex-wrap justify-center gap-0.5 mt-1">${badges.join('')}</span>` : '';
 
                             tableRowsHtml += `
-                                <td class="p-2.5 text-center border-r border-amber-100/40 align-top">
+                                <td class="lt-cell${g._dealerName === name ? ' lt-dealer' : ''} text-center border-r border-amber-100/40 align-top">
                                     <span class="font-mono ${cls}">${sign}${formatDE(val)}</span>
                                     ${extraText}
                                 </td>`;
@@ -8188,6 +8227,12 @@
                 });
 
                 liveTableBody.innerHTML = tableRowsHtml;
+
+                // Mindestbreite an die Spielerzahl koppeln (statt fest 600 px): schmale erste Spalte
+                // plus je Spieler ca. 56 px. Passt es nicht in den Bildschirm, wird gewischt; die
+                // erste Spalte (# Spiel) bleibt dabei stehen.
+                const liveTableEl = document.getElementById('liveTable');
+                if (liveTableEl) liveTableEl.style.minWidth = (40 + detailedOrder.length * 56) + 'px';
 
                 if (liveStatsExpanded) {
                     renderLiveStats();
