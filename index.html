@@ -52,6 +52,28 @@
         /* Handy-Hochformat: Saison-Tabelle und Ewige Gesamttabelle zeigen nur Platz, Spieler und
            Schnitt; Teilnahmen und Punkte erscheinen als kleine Zeile darunter (.mt-sub). Ab 640 px
            bleibt die klassische Spaltenansicht mit Mindestbreite bestehen. */
+        /* Eingabebereich (Spiel für Spiel): große Umschalt-Chips statt winziger Kontrollkästchen.
+           Die echten Checkboxen bleiben (unsichtbar) im DOM – ids, onchange und .checked/.disabled
+           funktionieren unverändert; nur das Aussehen kommt vom benachbarten .ec-t. */
+        .ec { display: block; position: relative; cursor: pointer; }
+        .ec-in { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+        .ec-t { display: block; text-align: center; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; border-radius: 999px; padding: 10px 4px; font-size: 12px; font-weight: 600; line-height: 1.2; transition: background-color .15s, border-color .15s, color .15s; user-select: none; }
+        .dark .ec-t { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+        .ec-sm { flex-shrink: 0; }
+        .ec-sm .ec-t { padding: 5px 10px; font-size: 11px; }
+        .ec-solo .ec-in:checked + .ec-t, .ec-out .ec-in:checked + .ec-t { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        .ec-ansage .ec-in:checked + .ec-t { background: #dbeafe; border-color: #93c5fd; color: #1e40af; }
+        .dark .ec-solo .ec-in:checked + .ec-t, .dark .ec-out .ec-in:checked + .ec-t { background: rgba(245, 158, 11, .18); border-color: #b45309; color: #fcd34d; }
+        .dark .ec-ansage .ec-in:checked + .ec-t { background: rgba(59, 130, 246, .2); border-color: #2563eb; color: #bfdbfe; }
+        .ec-out .ec-in:checked + .ec-t::after { content: " ✓"; }
+        .ec-in:focus-visible + .ec-t { outline: 2px solid #206a92; outline-offset: 1px; }
+        .ec-in:disabled + .ec-t { opacity: .45; }
+        .ec:has(.ec-in:disabled) { cursor: not-allowed; }
+        /* Handy-Hochformat: Schublade "Spieltag hinzufügen" mit kleineren Rändern. */
+        @media (max-width: 639px) {
+            #adminDrawer { padding: 10px; }
+            #adminDrawer .ad-card { padding: 8px; }
+        }
         /* Live-Tabelle (laufender Abend), Handy-Hochformat: schmale, beim Wischen fixierte erste
            Spalte ("# 1"), engere Zellen; der Geber ist als Feld in seiner Spalte dezent grau getönt. */
         .lt-cell { padding: 0.625rem; }
@@ -575,19 +597,31 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.3.5 -->
+                <!-- Version 2.4 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.3.5</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.4</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">16.10.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
-                        <li><strong>Handy-Ansicht der Tabellen:</strong> Saison-Tabelle, Live-Tabelle und Ewige Gesamttabelle passen jetzt ins Hochformat.</li>
+                        <li><strong>Handy-Ansicht Eingabebereich:</strong> Pflichtsolo, Lustsolo, Ansage und Aussetzen sind jetzt große Umschalter, die Ränder sind schmaler.</li>
+                        <li><strong>Handy-Ansicht Live-Tabelle:</strong> Passt jetzt bei 4 oder 5 Spielern ins Hochformat.</li>
+                        <li><strong>Bugfix Live-Ansicht:</strong> Nach „Abbrechen" verschwindet der Live-Stand jetzt auch bei anderen Geräten.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.3.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.3.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">08.10.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Handy-Ansicht der Tabellen:</strong> Saison-Tabelle und Ewige Gesamttabelle passen jetzt ins Hochformat.</li>
                         <li><strong>Ansage-Guru:</strong> Nullspiele zählen jetzt in der Gewinnquote als gespielt.</li>
                         <li><strong>Bugfix Notizfunktion:</strong> Beim schnellen Schließen wird der zuletzt getippte Text jetzt noch gespeichert.</li>
                         <li><strong>Bugfix Import:</strong> Der Notiztext aus einem JSON-Backup wird jetzt korrekt wiederhergestellt.</li>
                         <li><strong>Bugfix Festung-Kachel:</strong> Ein negativer Bestschnitt wird nicht mehr mit vorangestelltem „+" angezeigt.</li>
-                        <li><strong>Bugfix Live-Ansicht:</strong> Nach „Abbrechen" verschwindet der Live-Stand jetzt auch bei anderen Geräten.</li>
                     </ul>
                 </div>
 
@@ -1085,7 +1119,7 @@
                 <button onclick="toggleAdminModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-2xl font-bold cursor-pointer p-1">&times;</button>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <div class="ad-card bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-steel-800 dark:text-steel-400" id="formTitle">Abend eintragen</h2>
                 <div id="inputForm" class="space-y-3">
                     <div id="modernFormFields" class="space-y-3">
@@ -1125,7 +1159,7 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+            <div class="ad-card bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-slate-800 dark:text-slate-200">Spieler dieser Saison</h2>
                 <div class="flex gap-2 mb-4">
                     <input id="newPlayerName" type="text" placeholder="Neuer Name..." class="border border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 rounded-lg p-2 flex-grow text-sm focus:ring-2 focus:ring-steel-500 outline-none">
@@ -7091,19 +7125,19 @@
                             return `
                                 <div class="bg-white dark:bg-slate-900 border ${isNextDealer ? 'border-amber-300 dark:border-amber-700 ring-2 ring-amber-100 dark:ring-amber-950' : formAccent.row} rounded-lg p-2 space-y-2">
                                     <div class="flex items-center gap-2">
-                                        ${detailedOrder.length > 4 ? `
-                                        <label class="flex items-center gap-1 text-[10px] text-gray-600 dark:text-slate-400 shrink-0 cursor-pointer">
-                                            <input type="checkbox" id="sitout-${escapeHtml(name)}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeHtml(escapeJsString(name))}')" class="rounded text-amber-600 w-3 h-3"> aussetzen
-                                        </label>
-                                        ` : `<input type="checkbox" id="sitout-${escapeHtml(name)}" class="hidden">`}
-                                        <span class="text-xs font-semibold text-gray-700 dark:text-slate-200 flex-grow truncate flex items-center gap-1">
+                                        <span class="text-sm font-semibold text-gray-700 dark:text-slate-200 flex-grow truncate flex items-center gap-1">
                                             ${escapeHtml(name)}
                                         </span>
                                         ${isNextDealer ? `
-                                        <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[8px] font-bold px-1 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide shrink-0">
+                                        <span class="inline-flex items-center bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-800 tracking-wide shrink-0">
                                             🃏 Geber
                                         </span>
                                         ` : ''}
+                                        ${detailedOrder.length > 4 ? `
+                                        <label class="ec ec-out ec-sm">
+                                            <input type="checkbox" class="ec-in" id="sitout-${escapeHtml(name)}" ${isOut ? 'checked' : ''} onchange="toggleSittingOutInDraft('${escapeHtml(escapeJsString(name))}')"><span class="ec-t">aussetzen</span>
+                                        </label>
+                                        ` : `<input type="checkbox" id="sitout-${escapeHtml(name)}" class="hidden">`}
                                     </div>
                                     <span id="gamepointwrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} block space-y-1.5">
                                         <input type="number" id="gamepoint-${escapeHtml(name)}" value="${prefillPoint !== null ? prefillPoint : ''}" oninput="autoFillZeroSumInDraft()" placeholder="0" class="w-full border border-gray-300 dark:border-slate-700 dark:bg-slate-800 dark:text-white rounded p-1 text-xs text-right bg-white">
@@ -7118,14 +7152,14 @@
                                         </div>
                                     </span>
                                     <div id="gamesolowrap-${escapeHtml(name)}" class="${isOut ? 'hidden' : ''} grid grid-cols-3 gap-1">
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold ${pflichtBlocked ? 'text-gray-400 dark:text-slate-600' : 'text-gray-600 dark:text-slate-400'}" title="${pflichtBlocked ? `Bereits gespielt` : ''}">
-                                            <input type="checkbox" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'pflicht')" class="rounded text-steel-600 w-3 h-3 disabled:opacity-50"> Pflichtsolo
+                                        <label class="ec ec-solo" title="${pflichtBlocked ? `Pflichtsolo bereits gespielt` : 'Pflichtsolo'}">
+                                            <input type="checkbox" class="ec-in" id="gamepflicht-${escapeHtml(name)}" ${prefillSoloKind === 'pflicht' ? 'checked' : ''} ${pflichtBlocked ? 'disabled' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'pflicht')"><span class="ec-t">Pflichtsolo</span>
                                         </label>
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'lust')" class="rounded text-steel-600 w-3 h-3"> Lustsolo
+                                        <label class="ec ec-solo" title="Lustsolo">
+                                            <input type="checkbox" class="ec-in" id="gamelust-${escapeHtml(name)}" ${prefillSoloKind === 'lust' ? 'checked' : ''} onchange="handleSoloCheckboxChange('${escapeHtml(escapeJsString(name))}', 'lust')"><span class="ec-t">Lustsolo</span>
                                         </label>
-                                        <label class="flex items-center gap-1 text-[10px] font-semibold text-gray-600 dark:text-slate-400">
-                                            <input type="checkbox" id="gameansage-${escapeHtml(name)}" ${prefillAnsage ? 'checked' : ''} class="rounded text-blue-600 w-3 h-3"> 📢 Ansage
+                                        <label class="ec ec-ansage">
+                                            <input type="checkbox" class="ec-in" id="gameansage-${escapeHtml(name)}" ${prefillAnsage ? 'checked' : ''}><span class="ec-t">📢 Ansage</span>
                                         </label>
                                     </div>
                                 </div>
