@@ -85,6 +85,15 @@
         .dark .lt-first-head { background: #31211f; }
         .dark .lt-first-total { background: #2d2325; }
         .dark .lt-first-row { background: #1e293b; }
+        /* Kopfzeile und hervorgehobene Gesamtpunkte-Zeile (kein Haften: die Tabelle wird immer
+           vollständig dargestellt). */
+        .lt-sh { background: #fff9e3; box-shadow: inset 0 -1px 0 rgba(251, 191, 36, .6); }
+        .lt-tot { background: #fde68a !important; box-shadow: 0 3px 0 #d97706, 0 5px 6px rgba(0, 0, 0, .12); }
+        .lt-first.lt-tot { box-shadow: inset -1px 0 0 rgba(251, 191, 36, .35), 0 3px 0 #d97706, 0 5px 6px rgba(0, 0, 0, .12); }
+        .lt-total-num { font-size: 16px; font-weight: 800; }
+        .dark .lt-sh { background: #31211f; box-shadow: inset 0 -1px 0 rgba(180, 83, 9, .6); }
+        .dark .lt-tot { background: #5b3a0b !important; box-shadow: 0 3px 0 #f59e0b, 0 5px 6px rgba(0, 0, 0, .35); }
+        .dark .lt-first.lt-tot { box-shadow: inset -1px 0 0 rgba(251, 191, 36, .35), 0 3px 0 #f59e0b, 0 5px 6px rgba(0, 0, 0, .35); }
         .lt-dealer { background-color: #eceff3 !important; }
         .dark .lt-dealer { background-color: rgba(148, 163, 184, .16) !important; }
         .lt-legend-dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; border: 1px solid rgba(148, 163, 184, .5); background-color: #eceff3; }
@@ -393,6 +402,52 @@
             pointer-events: auto;
         }
 
+        /* Feste Leiste "Spieleingabe" am unteren Rand, solange ein Abend läuft und der
+           Eingabebereich geschlossen ist (siehe updateResumeBar). */
+        #resumeBar {
+            position: fixed; left: 12px; right: 12px; z-index: 40;
+            bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+            max-width: 640px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            background: #ea580c; color: #fff; border: 0; border-radius: 16px; padding: 12px 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .28); cursor: pointer; text-align: left;
+            font-weight: 800; font-size: 14px;
+        }
+        #resumeBar.hidden { display: none; }
+        #resumeBar small { display: block; font-weight: 600; font-size: 11px; opacity: .92; margin-top: 1px; }
+        #resumeBar .rb-go { flex-shrink: 0; background: #fff; color: #c2410c; border-radius: 10px; padding: 6px 12px; font-size: 13px; }
+        #resumeBar.rb-locked { background: #64748b; opacity: .85; }
+        #resumeBar.rb-locked .rb-go { color: #475569; }
+        .dark #resumeBar { background: #f97316; color: #1c1917; }
+        .dark #resumeBar .rb-go { background: #1c1917; color: #fdba74; }
+        .dark #resumeBar.rb-locked { background: #475569; color: #e2e8f0; }
+        .dark #resumeBar.rb-locked .rb-go { background: #1e293b; color: #cbd5e1; }
+        body.has-resume-bar { padding-bottom: 88px; }
+
+        /* Eingeklappte Zusammenfassung des Eingabebereichs (Spiel für Spiel, sobald Spiele erfasst
+           sind): Datum, Gastgeber, Teilnehmer und SoG-Chips in einer kompakten Karte. */
+        .es-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 8px 10px; }
+        .dark .es-card { background: #0f172a; border-color: #334155; }
+        .es-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .es-title { font-size: 13px; font-weight: 700; color: #1e293b; min-width: 0; }
+        .dark .es-title { color: #e2e8f0; }
+        .es-sub { font-size: 11px; font-weight: 500; color: #64748b; margin-top: 2px; }
+        .dark .es-sub { color: #94a3b8; }
+        .es-btn { flex-shrink: 0; font-size: 11px; font-weight: 700; color: #475569; background: #fff;
+                  border: 1px solid #cbd5e1; border-radius: 8px; padding: 3px 9px; cursor: pointer; }
+        .dark .es-btn { color: #cbd5e1; background: #1e293b; border-color: #475569; }
+        .es-sog { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px;
+                  padding-top: 8px; border-top: 1px solid rgba(148, 163, 184, .3); }
+        .es-sog-label { font-size: 10px; font-weight: 700; color: #94a3b8; margin-right: 2px; }
+        .es-sog .sog-chip { padding: 3px 10px; }
+        /* Deutlicher Kontrast: frei = neutral/grau, gewählt = kräftig orange gefüllt */
+        .es-card .es-sog .sog-chip { color: #64748b; background: #fff; border-color: #cbd5e1; font-weight: 700; }
+        .es-card .es-sog .sog-chip.sog-chip-on { color: #fff; background: #ea580c; border-color: #c2410c; font-weight: 800; }
+        .es-card .es-sog .sog-chip.sog-chip-disabled { color: #94a3b8; background: transparent; border-color: #cbd5e1; opacity: .4; }
+        .dark .es-card .es-sog .sog-chip { color: #cbd5e1; background: #1e293b; border-color: #475569; }
+        .dark .es-card .es-sog .sog-chip.sog-chip-on { color: #fff; background: #ea580c; border-color: #fb923c; }
+        .dark .es-card .es-sog .sog-chip.sog-chip-disabled { color: #94a3b8; background: transparent; border-color: #334155; opacity: .4; }
+
         /* SoG-Toggle ("Schmeißen ohne Grund"): kreisförmiger Orange-Ring-Chip statt der früheren
            eckigen Checkbox-Badge. Eigenständiges CSS statt neuer Tailwind-Klassen, da orange-*
            Utilities generell nicht in der vorkompilierten tailwind.css enthalten sind (kein
@@ -597,10 +652,25 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.4 -->
+                <!-- Version 2.4.5 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.4</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.4.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">17.10.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Eingabebereich:</strong> Datum, Gastgeber und Spielerliste klappen ein, sobald das erste Spiel erfasst ist. SoG lässt sich direkt in der Zusammenfassung setzen.</li>
+                        <li><strong>SoG-Regel technisch hinterlegt:</strong> Ein Spieler kann SoG erst ab seinem zweiten Spieltag der Saison nutzen.</li>
+                        <li><strong>Spieleingabe-Leiste:</strong> Bei laufendem Abend erscheint unten eine feste Leiste „Spieleingabe“. Der Button in der Tabellen-Kopfzeile entfällt.</li>
+                        <li><strong>Live-Tabelle:</strong> Gesamtpunkte/-zeile deutlicher hervorgehoben.</li>
+                        <li><strong>Bugfix Aussetzen:</strong> Nach dem Abwählen eines Spielers bleibt kein anderer Spieler mehr fälschlich auf „Aussetzen“ stehen.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.4 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.4</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">16.10.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -1122,6 +1192,8 @@
             <div class="ad-card bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                 <h2 class="text-lg font-semibold mb-3 border-b dark:border-slate-700 pb-2 text-steel-800 dark:text-steel-400" id="formTitle">Abend eintragen</h2>
                 <div id="inputForm" class="space-y-3">
+                    <div id="entrySummary" class="hidden es-card"></div>
+
                     <div id="modernFormFields" class="space-y-3">
                         <div class="bg-gray-50 dark:bg-slate-900 p-3 rounded border border-gray-200 dark:border-slate-700 space-y-3">
                             <div>
@@ -2616,6 +2688,26 @@
             return roundsPlayed.size / allRounds.size;
         }
 
+        // Hat der Spieler an diesem gespeicherten Abend tatsächlich mitgespielt? Bei Spiel-für-Spiel-
+        // Abenden zählt mindestens ein gespieltes Spiel (reiner Aussetzer/Zuschauer zählt nicht),
+        // bei Abenden mit Endergebnis das Vorhandensein eines Ergebnisses.
+        function playerPlayedInMatch(match, name) {
+            if (!match || !match.scores || match.scores[name] === undefined) return false;
+            if (match.mode === 'detailed' && match.games) return getEveningParticipation(match, name) > 0;
+            return true;
+        }
+
+        // SoG darf erst am zweiten Spieltag eines Spielers in der Saison genutzt werden, d.h. wenn er
+        // bereits an mindestens einem anderen gespeicherten Abend der Saison mitgespielt hat. Gilt
+        // nicht für historische Saisons. Beim Bearbeiten eines Abends, an dem das SoG schon vergeben
+        // ist, bleibt es erlaubt (Altbestand).
+        function sogTooEarly(season, name) {
+            if (!season || season.isHistorical) return false;
+            const matches = season.matches || {};
+            if (editingMatchId && matches[editingMatchId] && matches[editingMatchId].jokers && matches[editingMatchId].jokers[name]) return false;
+            return !Object.entries(matches).some(([mId, m]) => mId !== editingMatchId && playerPlayedInMatch(m, name));
+        }
+
         // Hilfsfunktion zur Ermittlung des Beteiligungs-Status
         function getEveningParticipationInfo(match, name) {
             if (!match || match.mode !== 'detailed' || !match.games) return null;
@@ -3760,6 +3852,7 @@
                     }
                 }
                 isAdminModalOpen = true;
+                updateResumeBar();
                 acquireEditLock();
                 modal.classList.remove('hidden');
                 lockBodyScroll();
@@ -3774,6 +3867,7 @@
                 // ein und fordert die gerade freigegebene Sperre direkt wieder an.
                 isAdminModalOpen = false;
                 releaseEditLock();
+                updateResumeBar();
                 modal.classList.add('opacity-0');
                 drawer.classList.add('translate-x-full');
                 unlockBodyScroll();
@@ -5044,7 +5138,37 @@
             }
         }
 
+        // Feste Leiste am unteren Rand: erscheint, wenn für den laufenden Abend bereits etwas
+        // eingetragen wurde und der Eingabebereich geschlossen ist.
+        function updateResumeBar() {
+            const bar = document.getElementById('resumeBar');
+            if (!bar) return;
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            const hasDraft = !editingMatchId && (
+                (entryMode === 'detailed' && detailedGames.length > 0) ||
+                (entryMode === 'simple' && Object.keys(tempScores || {}).length > 0)
+            );
+            const show = !!season && season.status !== 'abgeschlossen' && hasDraft && !isAdminModalOpen;
+            document.body.classList.toggle('has-resume-bar', show);
+            // Solange die Leiste sichtbar ist, wäre der Button in der Tabellen-Kopfzeile doppelt
+            // (Inline-Style statt hidden-Klasse, da der Button per flex-Klasse gestylt ist).
+            const headBtn = document.getElementById('adminOpenBtn');
+            if (headBtn) headBtn.style.display = show ? 'none' : '';
+            if (!show) {
+                bar.classList.add('hidden');
+                return;
+            }
+            const lockAgeMs = editLockInfo ? (Date.now() + serverTimeOffset) - (editLockInfo.ts || 0) : Infinity;
+            const locked = !!(editLockInfo && !hasEditLock && lockAgeMs < EDIT_LOCK_TIMEOUT_MS);
+            const n = detailedGames.filter(g => g && !g.isRoundMarker).length;
+            const sub = entryMode === 'detailed' ? `Abend läuft · ${n} ${n === 1 ? 'Spiel' : 'Spiele'}` : 'Abend läuft · Ergebnisse eingetragen';
+            bar.innerHTML = `<div>▶ Spieleingabe<small>${sub}</small></div><span class="rb-go">${locked ? '🔒 Gesperrt' : 'Öffnen'}</span>`;
+            bar.classList.toggle('rb-locked', locked);
+            bar.classList.remove('hidden');
+        }
+
         function updateEntryButtonLockUI() {
+            updateResumeBar();
             const btn = document.getElementById('adminOpenBtn');
             if (!btn) return;
             const modal = document.getElementById('adminModal');
@@ -5098,7 +5222,7 @@
                     (entryMode === 'detailed' && detailedGames.length > 0) ||
                     (entryMode === 'simple' && Object.keys(tempScores || {}).length > 0)
                 );
-                btn.innerHTML = hasUnsavedDraft ? '▶️ Eingabe fortsetzen' : '➕ Spieltag hinzufügen';
+                btn.innerHTML = hasUnsavedDraft ? '▶️ Spieleingabe' : '➕ Spieltag hinzufügen';
             }
         }
 
@@ -6598,8 +6722,13 @@
                 }
                 detailedGames = [];
                 editingGameIndex = null;
-                resetCustomSitouts();
             }
+
+            // Jede Änderung der Teilnehmerauswahl macht manuell gesetzte Aussetz-Markierungen
+            // hinfällig (auch ohne bereits erfasste Spiele). Sonst bliebe nach dem Abwählen eines
+            // Spielers z.B. bei nur noch 4 Teilnehmern ein Spieler unsichtbar auf "aussetzen"
+            // stehen, ohne dass der (bei 4 Spielern ausgeblendete) Chip ihn zurückstellen könnte.
+            resetCustomSitouts();
 
             if (!checked) {
                 delete tempScores[name];
@@ -6625,13 +6754,15 @@
                         });
                     }
                 }
-                simpleJoker.disabled = !checked || !!seasonJokers[name];
-                if (!checked) simpleJoker.checked = false;
+                const sogBlocked = !!seasonJokers[name] || sogTooEarly(state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null, name);
+                simpleJoker.disabled = !checked || sogBlocked;
+                if (!checked || sogBlocked) simpleJoker.checked = false;
                 
                 const label = document.getElementById('joker-label-' + name);
                 if (label) {
                     if (!checked) label.classList.remove('sog-chip-on'); // synchron zu simpleJoker.checked = false oben
-                    if (seasonJokers[name]) {
+                    if (sogBlocked) {
+                        label.classList.remove('sog-chip-on');
                         label.classList.add('sog-chip-disabled');
                         label.classList.remove('sog-chip-dim');
                     } else if (!checked) {
@@ -6978,7 +7109,87 @@
             renderDetailedSection();
         }
 
+        // true, solange der Nutzer den Eingabebereich (Datum/Teilnehmer/SoG) bewusst wieder aufgeklappt hat.
+        // Wird automatisch zurückgesetzt, sobald keine Spiele mehr erfasst sind.
+        let entryUserExpanded = false;
+
+        function toggleEntryExpanded() {
+            entryUserExpanded = !entryUserExpanded;
+            updateEntrySummary();
+        }
+
+        function toggleSogFromSummary(name) {
+            const cb = document.getElementById('joker-' + name);
+            if (!cb || cb.disabled) return;
+            cb.checked = !cb.checked;
+            cb.dispatchEvent(new Event('change'));
+            updateEntrySummary();
+        }
+
+        // Klappt Datum/Gastgeber/Spielerliste ein, sobald im Modus "Spiel für Spiel" Spiele erfasst
+        // sind, und zeigt stattdessen eine kompakte Zusammenfassung inkl. SoG-Chips. Die echten
+        // Formularelemente bleiben im DOM (nur ausgeblendet), die SoG-Chips schalten die
+        // vorhandenen Checkboxen (joker-<Name>) um.
+        function updateEntrySummary() {
+            const box = document.getElementById('entrySummary');
+            if (!box) return;
+            const parts = ['modernFormFields', 'pointsLabel', 'dragHint', 'matchPlayersContainer'].map(id => document.getElementById(id));
+            const curSeason = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            const isHistNow = !!(curSeason && curSeason.isHistorical);
+            const hasGames = entryMode === 'detailed' && !isHistNow && detailedGames.length > 0;
+            if (!hasGames) entryUserExpanded = false;
+
+            if (!hasGames) {
+                box.classList.add('hidden');
+                box.innerHTML = '';
+                parts.forEach(el => el && el.classList.remove('hidden'));
+                const mff0 = document.getElementById('modernFormFields');
+                if (mff0) mff0.style.display = 'block';
+                const dh = document.getElementById('dragHint');
+                if (dh && entryMode !== 'detailed') dh.classList.add('hidden');
+                return;
+            }
+
+            box.classList.remove('hidden');
+            const collapsed = !entryUserExpanded;
+            parts.forEach(el => el && el.classList.toggle('hidden', collapsed));
+            // render() setzt modernFormFields (Datum/Gastgeber) per Inline-Style auf "block", was die
+            // hidden-Klasse überstimmt – daher hier zusätzlich über den Inline-Style steuern.
+            const mff = document.getElementById('modernFormFields');
+            if (mff) mff.style.display = collapsed ? 'none' : 'block';
+
+            const dateVal = (document.getElementById('matchDate') || {}).value || '';
+            const dm = dateVal.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            const dateTxt = dm ? `${dm[3]}.${dm[2]}.${dm[1]}` : '';
+            const hostVal = (document.getElementById('matchHostSelect') || {}).value || '';
+            const title = ['📅 ' + (dateTxt || 'Datum?'), hostVal ? '🏠 ' + escapeHtml(hostVal) : ''].filter(Boolean).join(' · ');
+
+            let sogHtml = '';
+            if (collapsed && !isHistNow) {
+                const chips = detailedOrder.map(name => {
+                    const lab = document.getElementById('joker-label-' + name);
+                    const cb = document.getElementById('joker-' + name);
+                    const used = !!(lab && lab.classList.contains('sog-chip-disabled'));
+                    const on = !!(cb && cb.checked);
+                    const cls = 'sog-chip' + (on ? ' sog-chip-on' : '') + (used ? ' sog-chip-disabled' : '');
+                    return `<button type="button" class="${cls}" ${used ? 'disabled' : ''} onclick="toggleSogFromSummary('${escapeHtml(escapeJsString(name))}')">${escapeHtml(name)}</button>`;
+                }).join('');
+                sogHtml = `<div class="es-sog"><span class="es-sog-label">SoG:</span>${chips}</div>`;
+            }
+
+            box.innerHTML = `
+                <div class="es-head">
+                    <div class="es-title">${title}${collapsed ? `<div class="es-sub">${detailedOrder.length} Spieler: ${detailedOrder.map(escapeHtml).join(', ')}</div>` : ''}</div>
+                    <button type="button" class="es-btn" onclick="toggleEntryExpanded()">${collapsed ? 'Ändern ▾' : 'Einklappen ▴'}</button>
+                </div>${sogHtml}`;
+        }
+
         function renderDetailedSection() {
+            renderDetailedSectionCore();
+            updateEntrySummary();
+        }
+
+        function renderDetailedSectionCore() {
             const section = document.getElementById('detailedGameSection');
             if (!section) return;
 
@@ -7113,7 +7324,7 @@
                             // sonst würde jeder Re-Render (z.B. durch ein Hintergrund-Update) die manuelle
                             // Auswahl mitten in der Eingabe wieder verwerfen. Beim Bearbeiten eines bereits
                             // gespeicherten Spiels (isEditing) gilt weiterhin dessen fixierte sittingOut-Liste.
-                            const isOut = (!isEditing && tempCustomSitouts.hasOwnProperty(name))
+                            const isOut = (!isEditing && detailedOrder.length > 4 && tempCustomSitouts.hasOwnProperty(name))
                                 ? tempCustomSitouts[name]
                                 : suggestedOut.includes(name);
                             const isNextDealer = (!isEditing && detailedOrder.length >= 4 && detailedOrder.length <= 7 && detailedOrder.indexOf(name) === nextDealerIdx);
@@ -7437,6 +7648,15 @@
                     doubleJokerError = true;
                 }
             });
+
+            if (!doubleJokerError) {
+                Object.keys(matchJokers).forEach(name => {
+                    if (sogTooEarly(season, name)) {
+                        showToast(`Fehler: ${escapeHtml(name)} kann das „Schmeißen ohne Grund“ (SoG) erst ab dem 2. Spieltag in dieser Saison nutzen!`, 'error');
+                        doubleJokerError = true;
+                    }
+                });
+            }
 
             if (doubleJokerError) return;
             if (count < 4 || count > 7) return showToast("4 bis 7 Spieler erlaubt!", 'error');
@@ -8058,7 +8278,9 @@
             const belowSixtyEligibleByCount = activePlayerCount >= 5;
 
             document.getElementById('matchPlayersContainer').innerHTML = seasonPlayers.map(name => {
-                const hasUsedJokerAlready = seasonJokers[name] || false;
+                const sogUsedThisSeason = seasonJokers[name] || false;
+                const sogEarly = !sogUsedThisSeason && !isHist && sogTooEarly(season, name);
+                const hasUsedJokerAlready = sogUsedThisSeason || sogEarly;
                 let isChecked = false;
                 if (entryMode === 'detailed') {
                     isChecked = detailedOrder.includes(name);
@@ -8112,7 +8334,7 @@
                 else if (!isChecked) sogChipClasses.push('sog-chip-dim');
 
                 const sogHtml = isHist ? '' : `
-                    <label id="joker-label-${escapeHtml(name)}" class="${sogChipClasses.join(' ')}" ${hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
+                    <label id="joker-label-${escapeHtml(name)}" class="${sogChipClasses.join(' ')}" ${sogEarly ? 'title="SoG erst ab dem 2. Spieltag in dieser Saison möglich"' : hasUsedJokerAlready ? 'title="SoG bereits in dieser Saison genutzt!"' : (isChecked ? 'title="SoG nutzen"' : 'title="Mitspieler aktivieren, um SoG zu nutzen"')}>
                         <input type="checkbox" id="joker-${escapeHtml(name)}" ${isChecked && !hasUsedJokerAlready ? '' : 'disabled'} ${jokerChecked ? 'checked' : ''} onchange="this.parentElement.classList.toggle('sog-chip-on', this.checked); saveFormToTemp(); updateLiveDraft();"> SoG
                     </label>
                 `;
@@ -8149,11 +8371,12 @@
             rebuildDetailedOrder();
             updateModeToggleUI();
             restoreFormState();
+            updateEntrySummary();
             initMainPlayersSortable();
 
             // entryMode/detailedGames/tempScores sind an dieser Stelle für die aktuell angezeigte
             // Saison aktuell (siehe restoreFormState() oben) – jetzt den Button-Text außerhalb des
-            // Formulars entsprechend aktualisieren ("Eingabe fortsetzen" statt "hinzufügen", falls
+            // Formulars entsprechend aktualisieren ("Spieleingabe" statt "hinzufügen", falls
             // schon ein nicht gespeicherter Entwurf vorliegt).
             updateEntryButtonLockUI();
 
@@ -8171,7 +8394,7 @@
                 const liveTableBody = document.getElementById('liveTableBody');
 
                 // 1. Spaltenköpfe generieren (Sitzreihenfolge)
-                let headerHtml = `<th class="lt-th lt-first lt-first-head border-r border-amber-200 dark:border-amber-900/60 text-xs uppercase tracking-wider"></th>`;
+                let headerHtml = `<th class="lt-th lt-sh lt-first lt-first-head border-r border-amber-200 dark:border-amber-900/60 text-xs uppercase tracking-wider"></th>`;
                 
                 detailedOrder.forEach(name => {
                     const pflichtType = getPlayedPflichtsoloType(name);
@@ -8180,7 +8403,7 @@
                     const badgeTitle = playedPflicht ? `Pflichtsolo bereits gespielt: ${pflichtType}` : 'Pflichtsolo noch offen';
 
                     headerHtml += `
-                        <th class="lt-th border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
+                        <th class="lt-th lt-sh border-r border-amber-200 dark:border-amber-900/60 text-center select-none text-xs uppercase tracking-wider text-amber-950 dark:text-amber-100 font-bold">
                             <span class="inline-flex items-center justify-center gap-1">
                                 <span>${escapeHtml(name)}</span>
                                 <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-[2px] text-[7.5px] font-black leading-none ${badgeCls}" title="${badgeTitle}">
@@ -8193,7 +8416,7 @@
 
                 // 2. Gesamtpunkte-Zeile ganz oben vorbereiten
                 let tableRowsHtml = `<tr class="bg-amber-100/70 dark:bg-amber-950/40 font-extrabold border-b-2 border-amber-200 dark:border-amber-900/60">
-                    <td class="lt-th lt-first lt-first-total font-extrabold text-amber-950 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-[10px] text-left"></td>`;
+                    <td class="lt-th lt-tot lt-first lt-first-total font-extrabold text-amber-950 dark:text-amber-100 border-r border-amber-200 dark:border-amber-900/60 text-[10px] text-left"></td>`;
 
                 detailedOrder.forEach(name => {
                     const score = totals[name] || 0;
@@ -8201,8 +8424,8 @@
                     const sign = score > 0 ? '+' : '';
 
                     tableRowsHtml += `
-                        <td class="lt-cell text-center border-r border-amber-200 dark:border-amber-900/60 align-top">
-                            <span class="font-mono text-sm ${cls}">${sign}${formatDE(score)}</span>
+                        <td class="lt-cell lt-tot text-center border-r border-amber-200 dark:border-amber-900/60 align-top">
+                            <span class="font-mono lt-total-num ${cls}">${sign}${formatDE(score)}</span>
                         </td>`;
                 });
                 tableRowsHtml += `</tr>`;
@@ -8796,5 +9019,6 @@
             lastRenderedSeasonsSignature = computeSeasonsRenderSignature(state.seasons);
         }
     </script>
+    <button type="button" id="resumeBar" class="hidden" onclick="toggleAdminModal(true)"></button>
 </body>
 </html>
