@@ -402,6 +402,63 @@
             pointer-events: auto;
         }
 
+        /* Statistik-Baukasten: liegt in der immer dunklen Karte unter der Ewigen Gesamttabelle,
+           daher durchgehend dunkle Farben (unabhängig vom Hell-/Dunkelmodus der Seite). */
+        #statBuilderSection .sb-card { background: rgba(15, 23, 42, .55); border: 1px solid #334155; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+        #statBuilderSection .sb-row { margin-bottom: 12px; }
+        #statBuilderSection .sb-lbl { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+        #statBuilderSection .sb-sel { width: 100%; border: 1px solid #475569; border-radius: 10px; padding: 8px 10px; font-size: 14px; font-weight: 700;
+                  color: #e2e8f0; background: #1e293b; color-scheme: dark; }
+        #statBuilderSection .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+        #statBuilderSection .sb-chip { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; cursor: pointer;
+                   color: #cbd5e1; background: #1e293b; border: 1px solid #475569; }
+        #statBuilderSection .sb-chip.sb-on { color: #fff; background: #1e5a8a; border-color: #5aa0d6; }
+        #statBuilderSection .sb-chip.sb-add { border-style: dashed; color: #94a3b8; }
+        #statBuilderSection .sb-filter { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 8px; margin-bottom: 8px; }
+        #statBuilderSection .sb-filter-head { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 800; color: #e2e8f0; margin-bottom: 6px; }
+        #statBuilderSection .sb-x { font-size: 12px; font-weight: 800; color: #94a3b8; cursor: pointer; padding: 0 4px; background: none; border: 0; }
+        #statBuilderSection .sb-sent { font-size: 13px; line-height: 1.5; color: #e2e8f0; background: rgba(30, 90, 138, .25); border: 1px solid rgba(96, 165, 250, .35); border-radius: 10px; padding: 8px 10px; margin-bottom: 10px; }
+        #statBuilderSection .sb-total { padding: 4px 0 6px; }
+        #statBuilderSection .sb-big { font-size: 36px; font-weight: 900; line-height: 1.05; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+        #statBuilderSection .sb-minline { font-size: 12px; color: #cbd5e1; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+        #statBuilderSection .sb-num { width: 64px; border: 1px solid #475569; border-radius: 8px; padding: 5px 8px; font-size: 14px; font-weight: 700;
+                  color: #e2e8f0; background: #1e293b; text-align: center; color-scheme: dark; }
+        #statBuilderSection .sb-sub { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+        #statBuilderSection .sb-bar { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 12px; }
+        #statBuilderSection .sb-n { width: 64px; flex-shrink: 0; font-weight: 700; color: #e2e8f0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #statBuilderSection .sb-t { flex: 1; background: #334155; border-radius: 6px; height: 14px; }
+        #statBuilderSection .sb-f { height: 14px; border-radius: 6px; background: #5aa0d6; min-width: 2px; }
+        #statBuilderSection .sb-f.sb-neg { background: #f87171; }
+        #statBuilderSection .sb-v { width: 78px; flex-shrink: 0; text-align: right; font-weight: 800; color: #f1f5f9; font-variant-numeric: tabular-nums; }
+        #statBuilderSection .sb-v small { font-weight: 500; color: #94a3b8; }
+        #statBuilderSection .sb-note { font-size: 10px; color: #94a3b8; margin: 6px 0 0; }
+        #statBuilderSection .sb-muted { font-size: 12px; color: #94a3b8; }
+
+        /* Schalter für die Geberansage im Eingabeformular */
+        .ann-btn { flex-shrink: 0; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 999px; cursor: pointer;
+                   color: #475569; background: #fff; border: 1px solid #cbd5e1; }
+        .ann-btn.ann-off { color: #94a3b8; background: #f1f5f9; }
+        .dark .ann-btn { color: #cbd5e1; background: #1e293b; border-color: #475569; }
+        .dark .ann-btn.ann-off { color: #64748b; background: #0f172a; }
+
+        /* Regelverstoß-Box im Eingabebereich */
+        .pen-card { background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 8px 10px; }
+        .dark .pen-card { background: rgba(127, 29, 29, .15); border-color: rgba(185, 28, 28, .4); }
+        .pen-title { font-size: 12px; font-weight: 800; color: #b91c1c; }
+        .pen-title span { font-weight: 600; opacity: .8; }
+        .dark .pen-title { color: #fca5a5; }
+        .pen-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .pen-item { display: inline-flex; align-items: center; gap: 2px; }
+        .pen-chip { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; cursor: pointer;
+                    color: #64748b; background: #fff; border: 1px solid #cbd5e1; }
+        .dark .pen-chip { color: #cbd5e1; background: #1e293b; border-color: #475569; }
+        .pen-chip.pen-on { color: #fff; background: #dc2626; border-color: #b91c1c; font-weight: 800; }
+        .dark .pen-chip.pen-on { background: #dc2626; border-color: #f87171; }
+        .pen-minus { font-size: 13px; font-weight: 800; line-height: 1; width: 22px; height: 22px; border-radius: 999px; cursor: pointer;
+                     color: #b91c1c; background: #fff; border: 1px solid #fca5a5; }
+        .dark .pen-minus { background: #1e293b; color: #fca5a5; border-color: #7f1d1d; }
+        .pen-hint { font-size: 10px; color: #94a3b8; margin: 6px 0 0; }
+
         /* Feste Leiste "Spieleingabe" am unteren Rand, solange ein Abend läuft und der
            Eingabebereich geschlossen ist (siehe updateResumeBar). */
         #resumeBar {
@@ -652,10 +709,24 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.4.5 -->
+                <!-- Version 2.5 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.4.5</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.5</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">22.11.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Statistik-Baukasten (Beta):</strong> Unter der Ewigen Gesamttabelle lassen sich eigene Auswertungen aus allen Saisons zusammenstellen.</li>
+                        <li><strong>Regelverstöße:</strong> Pro Spieler und Abend lassen sich beliebig viele Regelverstöße mit je −13 Punkten erfassen, auch nachträglich in der aktiven Saison.</li>
+                        <li><strong>Geberansage:</strong> Nach jedem gespeicherten Spiel sagt das Gerät den nächsten Geber an. Per Knopf im Eingabeformular abschaltbar.</li>
+                        <li><strong>Saisonverlauf:</strong> Neue Buttons „Alle einblenden“ und „Alle ausblenden“ für die Spielerkurven.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.4.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.4.5</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">17.10.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -1224,6 +1295,12 @@
 
                     <div id="detailedGameSection" class="hidden space-y-3 pt-3 border-t border-gray-200/50 dark:border-slate-700"></div>
 
+                    <div id="penaltyBox" class="hidden pen-card">
+                        <div class="pen-title">⚠ Regelverstoß <span>(−13 Punkte je Verstoß)</span></div>
+                        <div id="penaltyChips" class="pen-chips"></div>
+                        <p id="penaltyHint" class="pen-hint"></p>
+                    </div>
+
                     <div class="flex gap-2 mt-4">
                         <button id="cancelMatchBtn" type="button" onclick="cancelMatchEntry()" class="flex-1 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 py-2 rounded-lg font-bold shadow transition cursor-pointer">✖ Abbrechen</button>
                         <button id="saveMatchBtn" onclick="saveMatch()" class="flex-1 bg-steel-600 hover:bg-steel-700 text-white py-2 rounded-lg font-bold shadow transition cursor-pointer">Abend speichern</button>
@@ -1517,6 +1594,10 @@
                         <button type="button" id="chartModeTotalBtn" onclick="setChartViewMode('total')" class="py-1.5 px-2 sm:px-3 rounded-md transition cursor-pointer min-w-0 text-center leading-tight break-words">📈 Gesamtverlauf</button>
                     </div>
                 </div>
+                <div class="flex flex-wrap gap-2 mb-2">
+                    <button type="button" onclick="setAllChartPlayersHidden(false)" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border bg-white text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">Alle einblenden</button>
+                    <button type="button" onclick="setAllChartPlayersHidden(true)" class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold transition shadow-xs cursor-pointer border bg-white text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700">Alle ausblenden</button>
+                </div>
                 <div id="chartLegendContainer" class="flex flex-wrap gap-2 mb-4"></div>
                 <div class="relative w-full" style="height: 320px;">
                     <canvas id="saisonVerlaufChart"></canvas>
@@ -1602,6 +1683,19 @@
                             <tbody id="allTimeTableBody" class="divide-y divide-slate-800 text-sm"></tbody>
                         </table>
                     </div>
+                    </div>
+                </div>
+
+                <div id="statBuilderSection">
+                    <button onclick="toggleStatBuilder()" id="statBuilderToggleBtn" class="w-full mt-4 flex items-center justify-between gap-2 accordion-header rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-steel-400 transition cursor-pointer">
+                        <span>📊 Statistik-Baukasten (Beta)</span>
+                        <span id="statBuilderToggleIcon" class="transition-transform">▼</span>
+                    </button>
+                    <div id="statBuilderContainer" class="accordion-wrap">
+                        <div class="accordion-inner">
+                            <p class="text-[11px] text-slate-400 mb-2">Eigene Auswertungen aus allen Saisons zusammenstellen: Kennzahl wählen, Spieler und Filter setzen, optional gruppieren.</p>
+                            <div id="sbBody"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1843,6 +1937,9 @@
         // Lokaler Formularzwischenspeicher zum Erhalt von Eingaben bei Rendering-Schleifen
         let tempScores = {};
         let tempJokers = {};
+        // Regelverstöße des laufenden Abends: { Spielername: Anzahl }. Jeder Verstoß kostet PENALTY_POINTS.
+        let tempPenalties = {};
+        const PENALTY_POINTS = 13;
         let matchBelowSixty = {};
 
         // Zustand für ein- und auszublendende Spieler in der Verlaufsgrafik
@@ -3324,6 +3421,7 @@
                 belowSixty: matchBelowSixty,
                 scores: tempScores,
                 jokers: tempJokers,
+                penalties: tempPenalties,
                 timestamp: Date.now()
             };
         }
@@ -3427,6 +3525,11 @@
                 }
             }
 
+            // Regelverstöße: Geräte ohne geöffneten Eingabebereich (Zuschauer, Neuladen) übernehmen den
+            // Entwurfsstand; das bearbeitende Gerät behält seinen lokalen Stand (sonst könnte ein
+            // älteres Cloud-Echo einen soeben getippten Verstoß wieder überschreiben).
+            if (!isAdminModalOpen) tempPenalties = { ...(live.penalties || {}) };
+
             // Punktzahlen und SoG-Status aus dem Entwurf zurückschreiben.
             // WICHTIG: Nur Werte übernehmen, die lokal noch NICHT gesetzt sind (echte
             // Wiederherstellung, z.B. nach Neuladen oder Fortsetzen eines Entwurfs) – und niemals
@@ -3526,6 +3629,17 @@
             const seasonKey = state.currentSeasonKey;
             if (!hiddenChartPlayers[seasonKey]) hiddenChartPlayers[seasonKey] = {};
             hiddenChartPlayers[seasonKey][name] = !isChartPlayerHidden(seasonKey, name);
+            render();
+        }
+
+        // Blendet alle Spielerlinien der aktuellen Saison auf einmal ein bzw. aus (explizite Auswahl,
+        // überschreibt auch den quotenbasierten Default der Gesamtverlauf-Ansicht).
+        function setAllChartPlayersHidden(hidden) {
+            const seasonKey = state.currentSeasonKey;
+            const season = seasonKey ? state.seasons[seasonKey] : null;
+            if (!season) return;
+            if (!hiddenChartPlayers[seasonKey]) hiddenChartPlayers[seasonKey] = {};
+            (season.players || []).forEach(name => { hiddenChartPlayers[seasonKey][name] = hidden; });
             render();
         }
 
@@ -3903,6 +4017,7 @@
                         matchBelowSixty = liveDraft.belowSixty || {};
                         tempScores = liveDraft.scores || {};
                         tempJokers = liveDraft.jokers || {};
+                        tempPenalties = { ...(liveDraft.penalties || {}) };
 
                         const dateInput = document.getElementById('matchDate');
                         if (dateInput) dateInput.value = liveDraft.matchDate || '';
@@ -3915,6 +4030,7 @@
                         matchBelowSixty = {};
                         tempScores = {};
                         tempJokers = {};
+                        tempPenalties = {};
 
                         document.getElementById('matchDate').value = "";
                         const hostSelect = document.getElementById('matchHostSelect');
@@ -4924,11 +5040,13 @@
                     detailedOrder = finalLive.detailedOrder || [];
                     detailedGames = (finalLive.detailedGames || []).map(normalizeGame);
                     matchBelowSixty = finalLive.belowSixty || {};
+                    if (!isAdminModalOpen) tempPenalties = { ...(finalLive.penalties || {}) };
                 } else {
                     entryMode = season.isHistorical ? 'simple' : 'detailed';
                     detailedOrder = [];
                     detailedGames = [];
                     matchBelowSixty = {};
+                    if (!isAdminModalOpen) tempPenalties = {};
                 }
             }
 
@@ -5136,6 +5254,485 @@
                 clearInterval(editLockUiRefreshInterval);
                 editLockUiRefreshInterval = null;
             }
+        }
+
+        // ======================================================================
+        // STATISTIK-BAUKASTEN: frei zusammenstellbare Auswertungen über alle Saisons.
+        // Aufbau: Kennzahl (Was?) × Spieler (Von wem?) × Filter (Nur wenn …) × Gruppierung.
+        // Datenbasis sind zwei flache Listen, die bei jeder Auswertung frisch aus state.seasons
+        // gebaut werden: eine Zeile je Spieler und Abend (evenings) sowie je Spieler und
+        // Einzelspiel (games, nur Abende "Spiel für Spiel" in Nicht-Historischen Saisons).
+        // ======================================================================
+        const SB_WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+        const SB_WEEKDAYS_LONG = ['montags', 'dienstags', 'mittwochs', 'donnerstags', 'freitags', 'samstags', 'sonntags'];
+        const SB_MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+
+        function sbBuildFacts() {
+            const evenings = [];
+            const games = [];
+            Object.keys(state.seasons || {}).forEach(seasonKey => {
+                const season = state.seasons[seasonKey];
+                if (!season || !season.matches) return;
+                const isHist = !!season.isHistorical;
+                Object.entries(season.matches).forEach(([matchId, match]) => {
+                    if (!match || !match.scores) return;
+                    // Datum: nur echte Daten (TT.MM.JJJJ); "Alter Abend Nr. X" hat keines.
+                    let ts = null, weekday = null, month = null, year = null;
+                    const dm = typeof match.date === 'string' ? match.date.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/) : null;
+                    if (dm) {
+                        const d = new Date(Date.UTC(+dm[3], +dm[2] - 1, +dm[1]));
+                        ts = d.getTime();
+                        weekday = (d.getUTCDay() + 6) % 7; // Mo = 0
+                        month = +dm[2] - 1;
+                        year = +dm[3];
+                    }
+                    const names = Object.keys(match.scores);
+                    const n = names.length;
+                    const hasScore = !(isHist && match.pointType === 'platzierung');
+
+                    // Platzierung wie in der Spieltage-Ansicht: nur qualifizierte Spieler, Gleichstand = gleicher Rang.
+                    // Historische Abende mit Platzierungspunkten (höher = besser, 0 = nicht gewertet) werden
+                    // ebenfalls nach ihren Punkten gerankt, damit sie bei Platz-Kennzahlen mitzählen.
+                    const rank = {};
+                    let maxRank = 0;
+                    {
+                        const sorted = names.filter(p => !isPlayerDisqualifiedInMatch(match, p) && (hasScore || match.scores[p] > 0))
+                            .sort((a, b) => match.scores[b] - match.scores[a]);
+                        let cnt = 0, lastScore = null, lastRank = 1;
+                        sorted.forEach(p => {
+                            cnt++;
+                            if (lastScore === null || match.scores[p] !== lastScore) { lastRank = cnt; lastScore = match.scores[p]; }
+                            rank[p] = lastRank;
+                            maxRank = Math.max(maxRank, lastRank);
+                        });
+                    }
+
+                    const base = { seasonKey, matchId, ts, weekday, month, year, host: match.host || null, n };
+                    names.forEach(p => {
+                        evenings.push({
+                            ...base, player: p,
+                            score: hasScore ? match.scores[p] : null,
+                            rank: rank[p] !== undefined ? rank[p] : null,
+                            isLast: rank[p] !== undefined && maxRank > 1 && rank[p] === maxRank,
+                            sog: !!(match.jokers && match.jokers[p]),
+                            pen: (match.penalties && match.penalties[p]) || 0,
+                            others: names.filter(q => q !== p),
+                            rankOf: rank[p] !== undefined ? rank[p] : null
+                        });
+                    });
+
+                    if (!isHist && match.mode === 'detailed' && Array.isArray(match.games)) {
+                        match.games.forEach(g => {
+                            if (!g || g.isRoundMarker) return;
+                            const gm = normalizeGame(g);
+                            const pts = gm.points || {};
+                            const players = Object.keys(pts);
+                            const soloists = players.filter(p => gm.solo[p] === true);
+                            const isSoloGame = soloists.length > 0;
+                            players.forEach(p => {
+                                const v = pts[p];
+                                const solo = gm.solo[p] === true;
+                                let kind = 'Normalspiel';
+                                if (solo) kind = gm.soloKind[p] === 'pflicht' ? 'Pflichtsolo' : 'Lustsolo';
+                                let partners = [], opponents = [];
+                                if (isSoloGame) {
+                                    opponents = solo ? players.filter(q => q !== p) : soloists.slice();
+                                } else if (v !== 0) {
+                                    partners = players.filter(q => q !== p && pts[q] === v);
+                                    opponents = players.filter(q => q !== p && pts[q] * v < 0);
+                                }
+                                games.push({
+                                    ...base, player: p, pts: v, solo, kind,
+                                    ansage: gm.ansage[p] === true,
+                                    partners, opponents,
+                                    sog: !!(match.jokers && match.jokers[p]),
+                                    pen: (match.penalties && match.penalties[p]) || 0,
+                                    rank: rank[p] !== undefined ? rank[p] : null,
+                                    isLast: rank[p] !== undefined && maxRank > 1 && rank[p] === maxRank,
+                                    others: names.filter(q => q !== p)
+                                });
+                            });
+                        });
+                    }
+                });
+            });
+            return { evenings, games };
+        }
+
+        // ---- Kennzahlen ------------------------------------------------------
+        // base: 'evening' | 'game'; need: Zeile muss dieses Feld haben (sonst nicht auswertbar);
+        // type 'count' (mit pred, Anteil an der Basis), 'avg', 'sum', 'max', 'min', 'all' (Anzahl Zeilen).
+        const SB_MEASURES = [
+            { id: 'abende', group: 'Abende', label: 'Abende gespielt', base: 'evening', type: 'all', unit: 'Abende' },
+            { id: 'siege', group: 'Abende', label: 'Abendsiege', base: 'evening', type: 'count', need: r => r.rank !== null, pred: r => r.rank === 1, unit: 'Abenden' },
+            { id: 'podium', group: 'Abende', label: 'Podiumsplätze (Platz 1–3)', base: 'evening', type: 'count', need: r => r.rank !== null, pred: r => r.rank <= 3, unit: 'Abenden' },
+            { id: 'letzter', group: 'Abende', label: 'Letzte Plätze', base: 'evening', type: 'count', need: r => r.rank !== null, pred: r => r.isLast, unit: 'Abenden' },
+            { id: 'avgScore', group: 'Abende', label: 'Ø Spieltagspunkte', base: 'evening', type: 'avg', need: r => r.score !== null, val: r => r.score, dec: 1, signed: true },
+            { id: 'sumScore', group: 'Abende', label: 'Summe Spieltagspunkte', base: 'evening', type: 'sum', need: r => r.score !== null, val: r => r.score, dec: 0, signed: true },
+            { id: 'maxScore', group: 'Abende', label: 'Bester Abend (Punkte)', base: 'evening', type: 'max', need: r => r.score !== null, val: r => r.score, dec: 0, signed: true },
+            { id: 'minScore', group: 'Abende', label: 'Schlechtester Abend (Punkte)', base: 'evening', type: 'min', need: r => r.score !== null, val: r => r.score, dec: 0, signed: true },
+            { id: 'avgRank', group: 'Abende', label: 'Ø Platzierung', base: 'evening', type: 'avg', need: r => r.rank !== null, val: r => r.rank, dec: 2, lowerBetter: true },
+            { id: 'spiele', group: 'Einzelspiele', label: 'Spiele gespielt', base: 'game', type: 'all', unit: 'Spiele' },
+            { id: 'gew', group: 'Einzelspiele', label: 'Spiele gewonnen', base: 'game', type: 'count', pred: r => r.pts > 0, unit: 'Spielen' },
+            { id: 'verl', group: 'Einzelspiele', label: 'Spiele verloren', base: 'game', type: 'count', pred: r => r.pts < 0, unit: 'Spielen' },
+            { id: 'null', group: 'Einzelspiele', label: 'Nullspiele', base: 'game', type: 'count', pred: r => r.pts === 0, unit: 'Spielen' },
+            { id: 'avgPts', group: 'Einzelspiele', label: 'Ø Punkte je Spiel', base: 'game', type: 'avg', val: r => r.pts, dec: 2, signed: true },
+            { id: 'sumPts', group: 'Einzelspiele', label: 'Summe Punkte aus Spielen', base: 'game', type: 'sum', val: r => r.pts, dec: 0, signed: true },
+            { id: 'maxPts', group: 'Einzelspiele', label: 'Höchster Einzelgewinn', base: 'game', type: 'max', val: r => r.pts, dec: 0, signed: true },
+            { id: 'minPts', group: 'Einzelspiele', label: 'Größter Einzelverlust', base: 'game', type: 'min', val: r => r.pts, dec: 0, signed: true },
+            { id: 'soli', group: 'Solo & Ansagen', label: 'Soli gespielt', base: 'game', type: 'count', pred: r => r.solo, unit: 'Spielen' },
+            { id: 'soliGew', group: 'Solo & Ansagen', label: 'Soli gewonnen (Anteil an Soli)', base: 'game', type: 'count', pre: r => r.solo, pred: r => r.pts > 0, unit: 'Soli' },
+            { id: 'ansagen', group: 'Solo & Ansagen', label: 'Ansagen gemacht', base: 'game', type: 'count', pred: r => r.ansage, unit: 'Spielen' },
+            { id: 'ansGew', group: 'Solo & Ansagen', label: 'Ansagen gewonnen (Anteil an Ansagen)', base: 'game', type: 'count', pre: r => r.ansage, pred: r => r.pts > 0, unit: 'Ansagen' }
+        ];
+
+        // ---- Filter ----------------------------------------------------------
+        // level 'evening' gilt für beide Kennzahl-Arten, 'game' nur für Einzelspiele.
+        // opts(facts) liefert die wählbaren Werte; test(row, vals) prüft, ob die Zeile passt;
+        // date: true = benötigt ein echtes Spieldatum.
+        const SB_FILTERS = {
+            weekday: { label: 'Wochentag', level: 'evening', date: true, opts: () => SB_WEEKDAYS.map((l, i) => ({ v: i, l })), test: (r, vals) => vals.includes(r.weekday) },
+            month: { label: 'Monat', level: 'evening', date: true, opts: () => SB_MONTHS.map((l, i) => ({ v: i, l })), test: (r, vals) => vals.includes(r.month) },
+            year: { label: 'Jahr', level: 'evening', date: true, opts: f => sbDistinct(f.evenings, r => r.year, true).map(v => ({ v, l: String(v) })), test: (r, vals) => vals.includes(r.year) },
+            season: { label: 'Saison', level: 'evening', opts: f => sbSeasonKeys(f).map(v => ({ v, l: v })), test: (r, vals) => vals.includes(r.seasonKey) },
+            host: { label: 'Gastgeber', level: 'evening', opts: f => sbDistinct(f.evenings, r => r.host).sort((a, b) => a.localeCompare(b, 'de')).map(v => ({ v, l: v })), test: (r, vals) => vals.includes(r.host) },
+            place: { label: 'Platz am Abend', level: 'evening', opts: () => [{ v: '1', l: '1.' }, { v: '2', l: '2.' }, { v: '3', l: '3.' }, { v: '4', l: '4.' }, { v: '5+', l: '5. oder schlechter' }, { v: 'last', l: 'Letzter' }], test: (r, vals) => r.rank !== null && vals.some(v => v === 'last' ? r.isLast : (v === '5+' ? r.rank >= 5 : r.rank === +v)) },
+            size: { label: 'Mitspielerzahl', level: 'evening', opts: f => sbDistinct(f.evenings, r => r.n, true).map(v => ({ v, l: String(v) })), test: (r, vals) => vals.includes(r.n) },
+            with: { label: 'Am Abend dabei: …', level: 'evening', player: true, opts: f => sbPlayerOpts(f), test: (r, vals, all) => vals[all ? 'every' : 'some'](v => v === r.player || r.others.includes(v)) }, // der Spieler selbst war ja ebenfalls dabei
+            partner: { label: 'Partner im Spiel: …', level: 'game', player: true, opts: f => sbPlayerOpts(f), test: (r, vals, all) => vals[all ? 'every' : 'some'](v => r.partners.includes(v)) },
+            opponent: { label: 'Gegner im Spiel: …', level: 'game', player: true, opts: f => sbPlayerOpts(f), test: (r, vals, all) => vals[all ? 'every' : 'some'](v => r.opponents.includes(v)) },
+            kind: { label: 'Spielart', level: 'game', opts: () => ['Normalspiel', 'Pflichtsolo', 'Lustsolo'].map(v => ({ v, l: v })), test: (r, vals) => vals.includes(r.kind) },
+            ansage: { label: 'Ansage', level: 'game', opts: () => [{ v: 'ja', l: 'mit Ansage' }, { v: 'nein', l: 'ohne Ansage' }], test: (r, vals) => vals.includes(r.ansage ? 'ja' : 'nein') },
+            result: { label: 'Spielergebnis', level: 'game', opts: () => [{ v: 'w', l: 'gewonnen' }, { v: 'l', l: 'verloren' }, { v: 'z', l: 'Nullspiel' }], test: (r, vals) => vals.includes(r.pts > 0 ? 'w' : (r.pts < 0 ? 'l' : 'z')) }
+        };
+
+        // ---- Gruppierungen ---------------------------------------------------
+        // keys(row) liefert die Gruppen, in die die Zeile fällt (Partner: je Partner eine).
+        const SB_GROUPS = {
+            none: { label: 'keine', level: 'evening' },
+            player: { label: 'Spieler', level: 'evening', keys: r => [r.player], order: 'value' },
+            weekday: { label: 'Wochentag', level: 'evening', date: true, keys: r => [r.weekday], label_of: v => SB_WEEKDAYS[v], order: 'key' },
+            month: { label: 'Monat', level: 'evening', date: true, keys: r => [r.month], label_of: v => SB_MONTHS[v], order: 'key' },
+            year: { label: 'Jahr', level: 'evening', date: true, keys: r => [r.year], label_of: v => String(v), order: 'key' },
+            season: { label: 'Saison', level: 'evening', keys: r => [r.seasonKey], order: 'season' },
+            host: { label: 'Gastgeber', level: 'evening', keys: r => [r.host || '–'], order: 'value' },
+            size: { label: 'Mitspielerzahl', level: 'evening', keys: r => [r.n], label_of: v => v + ' Spieler', order: 'key' },
+            place: { label: 'Platz am Abend', level: 'evening', keys: r => r.rank === null ? [] : [r.rank], label_of: v => v + '.', order: 'key' },
+            partner: { label: 'Partner', level: 'game', keys: r => r.partners, order: 'value' },
+            opponent: { label: 'Gegner', level: 'game', keys: r => r.opponents, order: 'value' },
+            kind: { label: 'Spielart', level: 'game', keys: r => [r.kind], order: 'value' }
+        };
+
+        function sbDistinct(rows, fn, numeric) {
+            const set = new Set();
+            rows.forEach(r => { const v = fn(r); if (v !== null && v !== undefined) set.add(v); });
+            const arr = [...set];
+            return numeric ? arr.sort((a, b) => a - b) : arr;
+        }
+        function sbSeasonKeys(f) {
+            const keys = sbDistinct(f.evenings, r => r.seasonKey);
+            sortSeasonsChronologically(keys);
+            return keys;
+        }
+        function sbPlayerOpts(f) {
+            return sbDistinct(f.evenings, r => r.player).sort((a, b) => a.localeCompare(b, 'de')).map(v => ({ v, l: v }));
+        }
+
+        // ---- Zustand ---------------------------------------------------------
+        let sbState = { measure: 'siege', player: '__all', filters: [], group: 'none', sort: 'auto', min: 0 };
+        let sbFactsCache = null;
+
+        let isStatBuilderExpanded = false;
+        function toggleStatBuilder() {
+            isStatBuilderExpanded = !isStatBuilderExpanded;
+            const container = document.getElementById('statBuilderContainer');
+            const icon = document.getElementById('statBuilderToggleIcon');
+            if (container) container.classList.toggle('is-open', isStatBuilderExpanded);
+            if (icon) icon.style.transform = isStatBuilderExpanded ? 'rotate(180deg)' : '';
+            // Beim Aufklappen die Datenbasis frisch aufbauen (Abende könnten sich geändert haben).
+            if (isStatBuilderExpanded) {
+                sbFactsCache = sbBuildFacts();
+                renderStatBuilder();
+            } else {
+                sbFactsCache = null;
+            }
+        }
+
+        function sbMeasure() { return SB_MEASURES.find(m => m.id === sbState.measure) || SB_MEASURES[0]; }
+
+        function sbSet(key, val) {
+            sbState[key] = val;
+            if (key === 'measure') sbCleanForBase();
+            renderStatBuilder();
+        }
+        // Beim Wechsel der Kennzahl-Art (Abend ↔ Spiel) unpassende Filter/Gruppierung entfernen.
+        function sbCleanForBase() {
+            const isGame = sbMeasure().base === 'game';
+            if (!isGame) {
+                sbState.filters = sbState.filters.filter(f => SB_FILTERS[f.key].level !== 'game');
+                if (SB_GROUPS[sbState.group].level === 'game') sbState.group = 'none';
+            }
+        }
+        function sbAddFilter(key) {
+            if (sbState.filters.some(f => f.key === key)) return;
+            sbState.filters.push({ key, vals: [] });
+            renderStatBuilder();
+        }
+        function sbRemoveFilter(i) {
+            sbState.filters.splice(i, 1);
+            renderStatBuilder();
+        }
+        // Bei Spieler-Filtern (dabei / Partner / Gegner): Oder-Bedingung (einer davon) oder Und-Bedingung (alle).
+        function sbSetMode(i, all) {
+            if (sbState.filters[i]) sbState.filters[i].all = !!all;
+            renderStatBuilder();
+        }
+        function sbToggleVal(i, optIdx) {
+            const f = sbState.filters[i];
+            if (!f) return;
+            const opts = SB_FILTERS[f.key].opts(sbFactsCache);
+            const o = opts[optIdx];
+            if (!o) return;
+            const at = f.vals.indexOf(o.v);
+            if (at >= 0) f.vals.splice(at, 1); else f.vals.push(o.v);
+            renderStatBuilder();
+        }
+        function sbSetMin(v) {
+            const n = parseInt(v, 10);
+            sbState.min = Number.isFinite(n) && n > 0 ? Math.min(n, 9999) : 0;
+            renderStatBuilder();
+        }
+        function sbSetPlayer(idx) {
+            const names = sbPlayerOpts(sbFactsCache);
+            sbState.player = idx === '' ? '__all' : (names[+idx] ? names[+idx].v : '__all');
+            renderStatBuilder();
+        }
+
+        // ---- Auswertung ------------------------------------------------------
+        function sbEvaluate() {
+            const f = sbFactsCache;
+            const m = sbMeasure();
+            const isGame = m.base === 'game';
+            let rows = isGame ? f.games : f.evenings;
+            if (sbState.player !== '__all') rows = rows.filter(r => r.player === sbState.player);
+
+            const activeFilters = sbState.filters.filter(x => x.vals.length > 0);
+            const group = SB_GROUPS[sbState.group] || SB_GROUPS.none;
+            const needsDate = activeFilters.some(x => SB_FILTERS[x.key].date) || !!group.date;
+
+            let noDate = new Set();
+            rows = rows.filter(r => {
+                if (needsDate && r.ts === null) { noDate.add(r.seasonKey + '|' + r.matchId); return false; }
+                return activeFilters.every(x => SB_FILTERS[x.key].test(r, x.vals, x.all));
+            });
+
+            // Zeilen, die für diese Kennzahl nicht auswertbar sind (z. B. historische Abende ohne Spieltagspunkte)
+            let unusable = new Set();
+            if (m.need) rows = rows.filter(r => { if (m.need(r)) return true; unusable.add(r.seasonKey + '|' + r.matchId); return false; });
+
+            const evSet = new Set(rows.map(r => r.seasonKey + '|' + r.matchId));
+            const effGroup = (sbState.player === '__all' && sbState.group === 'none') ? SB_GROUPS.player : group;
+            const groupKey = (sbState.player === '__all' && sbState.group === 'none') ? 'player' : sbState.group;
+
+            const calc = list => sbAggregate(m, list);
+            let result;
+            let hiddenMin = 0;
+            if (groupKey === 'none') {
+                result = { groups: null, total: calc(rows) };
+            } else {
+                const buckets = new Map();
+                rows.forEach(r => {
+                    effGroup.keys(r).forEach(k => {
+                        if (!buckets.has(k)) buckets.set(k, []);
+                        buckets.get(k).push(r);
+                    });
+                });
+                let groups = [...buckets.entries()].map(([k, list]) => ({
+                    key: k,
+                    label: effGroup.label_of ? effGroup.label_of(k) : String(k),
+                    res: calc(list)
+                }));
+                // Mindestanzahl: Gruppen mit zu wenig Datenbasis (Abende/Spiele/Soli …) nicht ranken.
+                if (sbState.min > 0 && (m.type === 'count' || m.type === 'avg')) {
+                    const before = groups.length;
+                    groups = groups.filter(g => (g.res.denom || 0) >= sbState.min);
+                    hiddenMin = before - groups.length;
+                }
+                const rateOf = g => (g.res.denom ? g.res.value / g.res.denom : -1);
+                if (m.type === 'count' && sbState.sort === 'rate') {
+                    groups.sort((a, b) => rateOf(b) - rateOf(a) || b.res.value - a.res.value || String(a.label).localeCompare(String(b.label), 'de'));
+                } else if (m.type === 'count' && sbState.sort === 'value') {
+                    groups.sort((a, b) => b.res.value - a.res.value || rateOf(b) - rateOf(a) || String(a.label).localeCompare(String(b.label), 'de'));
+                } else if (effGroup.order === 'key') groups.sort((a, b) => a.key - b.key);
+                else if (effGroup.order === 'season') {
+                    const order = sbSeasonKeys(f);
+                    groups.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+                } else groups.sort((a, b) => (a.res.value === null) - (b.res.value === null) || (m.lowerBetter ? a.res.value - b.res.value : b.res.value - a.res.value) || String(a.label).localeCompare(String(b.label), 'de'));
+                result = { groups, total: null };
+            }
+            return { m, result, evCount: evSet.size, noDate: noDate.size, unusable: unusable.size, groupKey, isGame, hiddenMin };
+        }
+
+        // Liefert { value, denom, rate } je nach Kennzahl-Typ.
+        function sbAggregate(m, rows) {
+            if (m.type === 'all') return { value: rows.length, denom: null };
+            if (m.type === 'count') {
+                const base = m.pre ? rows.filter(m.pre) : rows;
+                const hit = base.filter(m.pred).length;
+                return { value: hit, denom: base.length };
+            }
+            const vals = rows.map(m.val);
+            if (vals.length === 0) return { value: null, denom: 0 };
+            if (m.type === 'sum') return { value: vals.reduce((a, b) => a + b, 0), denom: null };
+            if (m.type === 'avg') return { value: vals.reduce((a, b) => a + b, 0) / vals.length, denom: vals.length, avg: true };
+            if (m.type === 'max') return { value: Math.max(...vals), denom: null };
+            if (m.type === 'min') return { value: Math.min(...vals), denom: null };
+            return { value: null, denom: null };
+        }
+
+        function sbFormat(m, res) {
+            if (res.value === null) return '–';
+            const dec = m.dec || 0;
+            const s = formatDE(res.value, dec);
+            return (m.signed && res.value > 0 ? '+' : '') + s;
+        }
+        function sbSub(m, res) {
+            if (m.type === 'count' && res.denom) return `von ${formatDE(res.denom)} ${m.unit} · ${formatDE(res.value / res.denom * 100, 0)} %`;
+            if (m.type === 'count') return `von 0 ${m.unit}`;
+            if (res.avg) return `aus ${formatDE(res.denom)} ${m.base === 'game' ? 'Spielen' : 'Abenden'}`;
+            return '';
+        }
+
+        // ---- Oberfläche ------------------------------------------------------
+        function renderStatBuilder() {
+            const body = document.getElementById('sbBody');
+            if (!body || !sbFactsCache) return;
+            const f = sbFactsCache;
+            const m = sbMeasure();
+            const isGame = m.base === 'game';
+            const players = sbPlayerOpts(f);
+
+            // Kennzahl-Auswahl nach Gruppen
+            const groupsHtml = [...new Set(SB_MEASURES.map(x => x.group))].map(g =>
+                `<optgroup label="${g}">${SB_MEASURES.filter(x => x.group === g).map(x => `<option value="${x.id}" ${x.id === m.id ? 'selected' : ''}>${escapeHtml(x.label)}</option>`).join('')}</optgroup>`).join('');
+            const playerHtml = `<option value="">Alle Spieler</option>` + players.map((p, i) => `<option value="${i}" ${sbState.player === p.v ? 'selected' : ''}>${escapeHtml(p.l)}</option>`).join('');
+
+            // Filter-Blöcke
+            const filterBlocks = sbState.filters.map((fl, i) => {
+                const def = SB_FILTERS[fl.key];
+                const opts = def.opts(f);
+                const chips = opts.map((o, oi) => `<button type="button" class="sb-chip${fl.vals.includes(o.v) ? ' sb-on' : ''}" onclick="sbToggleVal(${i}, ${oi})">${escapeHtml(o.l)}</button>`).join('');
+                const modeChips = def.player ? `<div class="sb-chips" style="margin-bottom:6px"><button type="button" class="sb-chip${!fl.all ? ' sb-on' : ''}" onclick="sbSetMode(${i}, false)">Einer davon</button><button type="button" class="sb-chip${fl.all ? ' sb-on' : ''}" onclick="sbSetMode(${i}, true)">Alle zusammen</button></div>` : '';
+                return `<div class="sb-filter"><div class="sb-filter-head"><span>${escapeHtml(def.label)}</span><button type="button" class="sb-x" title="Filter entfernen" onclick="sbRemoveFilter(${i})">✕</button></div>${modeChips}<div class="sb-chips">${chips || '<span class="sb-muted">keine Daten</span>'}</div></div>`;
+            }).join('');
+            const addChips = Object.keys(SB_FILTERS)
+                .filter(k => !sbState.filters.some(x => x.key === k) && (isGame || SB_FILTERS[k].level !== 'game'))
+                .map(k => `<button type="button" class="sb-chip sb-add" onclick="sbAddFilter('${k}')">＋ ${escapeHtml(SB_FILTERS[k].label)}</button>`).join('');
+
+            const groupChips = Object.keys(SB_GROUPS)
+                .filter(k => isGame || SB_GROUPS[k].level !== 'game')
+                .map(k => `<button type="button" class="sb-chip${sbState.group === k ? ' sb-on' : ''}" onclick="sbSet('group', '${k}')">${escapeHtml(SB_GROUPS[k].label)}</button>`).join('');
+
+            // Sortierung (nur Anzahl-Kennzahlen) und Mindestanzahl (Anzahl- und Durchschnitts-Kennzahlen) bei Ranglisten
+            const isGrouped = sbState.group !== 'none' || sbState.player === '__all';
+            const rateMode = isGrouped && m.type === 'count' && sbState.sort === 'rate';
+            const sortRow = (isGrouped && m.type === 'count') ? `
+                    <div class="sb-row"><div class="sb-lbl">Sortieren nach</div><div class="sb-chips">
+                        <button type="button" class="sb-chip${sbState.sort === 'auto' ? ' sb-on' : ''}" onclick="sbSet('sort', 'auto')">Standard</button>
+                        <button type="button" class="sb-chip${sbState.sort === 'value' ? ' sb-on' : ''}" onclick="sbSet('sort', 'value')">Anzahl</button>
+                        <button type="button" class="sb-chip${sbState.sort === 'rate' ? ' sb-on' : ''}" onclick="sbSet('sort', 'rate')">Quote in %</button>
+                    </div></div>` : '';
+            const unitTxt = m.unit || (m.base === 'game' ? 'Spielen' : 'Abenden');
+            const minRow = (isGrouped && (m.type === 'count' || m.type === 'avg')) ? `
+                    <div class="sb-row"><div class="sb-lbl">Mindestanzahl</div>
+                        <div class="sb-minline">nur Gruppen mit mindestens <input type="number" class="sb-num" min="0" inputmode="numeric" value="${sbState.min || ''}" placeholder="0" onchange="sbSetMin(this.value)"> ${escapeHtml(unitTxt)}</div></div>` : '';
+
+            // Ergebnis
+            const ev = sbEvaluate();
+            let resultHtml = '';
+            const unusableNote = ev.unusable > 0 ? `<p class="sb-note">${ev.unusable} Abende ohne verwertbare Punkteangabe (z. B. historische Platzierungspunkte) wurden übersprungen.</p>` : '';
+            const noDateNote = ev.noDate > 0 ? `<p class="sb-note">${ev.noDate} Abende ohne echtes Datum („Alter Abend Nr. …“) wurden übersprungen.</p>` : '';
+            const gameNote = isGame ? `<p class="sb-note">Einzelspiel-Auswertungen berücksichtigen nur Abende „Spiel für Spiel“.</p>` : '';
+            if (ev.result.groups === null) {
+                const t = ev.result.total;
+                resultHtml = `<div class="sb-total"><div class="sb-big">${sbFormat(m, t)}</div><div class="sb-sub">${escapeHtml(sbSub(m, t))}</div></div>`;
+            } else if (ev.result.groups.length === 0) {
+                resultHtml = `<p class="sb-muted">Keine passenden Daten.</p>`;
+            } else {
+                const vals = ev.result.groups.map(g => g.res.value).filter(v => v !== null);
+                const maxAbs = Math.max(1e-9, ...vals.map(v => Math.abs(v)));
+                resultHtml = ev.result.groups.map(g => {
+                    const v = g.res.value;
+                    const w = v === null ? 0 : Math.round(Math.abs(v) / maxAbs * 100);
+                    const neg = v !== null && v < 0;
+                    if (rateMode) {
+                        const rate = g.res.denom ? g.res.value / g.res.denom : null;
+                        const rw = rate === null ? 0 : Math.round(rate * 100);
+                        return `<div class="sb-bar"><span class="sb-n">${escapeHtml(g.label)}</span><div class="sb-t"><div class="sb-f" style="width:${rw}%"></div></div><span class="sb-v">${rate === null ? '–' : formatDE(rate * 100, 0) + ' %'} <small>${formatDE(g.res.value)}/${formatDE(g.res.denom || 0)}</small></span></div>`;
+                    }
+                    const sub = m.type === 'count' && g.res.denom ? `<small>/${formatDE(g.res.denom)}</small>` : '';
+                    return `<div class="sb-bar"><span class="sb-n">${escapeHtml(g.label)}</span><div class="sb-t"><div class="sb-f${neg ? ' sb-neg' : ''}" style="width:${w}%"></div></div><span class="sb-v">${sbFormat(m, g.res)} ${sub}</span></div>`;
+                }).join('');
+            }
+
+            // Klartext-Satz
+            const parts = [`<b>${escapeHtml(m.label)}</b>`, sbState.player === '__all' ? '<b>alle Spieler</b>' : `von <b>${escapeHtml(sbState.player)}</b>`];
+            sbState.filters.filter(x => x.vals.length).forEach(x => {
+                const def = SB_FILTERS[x.key];
+                const labels = def.opts(f).filter(o => x.vals.includes(o.v)).map(o => o.l);
+                parts.push(`${escapeHtml(def.label)}: <b>${labels.map(escapeHtml).join(def.player && x.all ? ' und ' : (def.player ? ' oder ' : ', '))}</b>`);
+            });
+            if (ev.groupKey !== 'none') parts.push(`nach <b>${escapeHtml(SB_GROUPS[ev.groupKey].label)}</b>`);
+            if (rateMode) parts.push('sortiert nach <b>Quote</b>');
+            if (isGrouped && sbState.min > 0 && (m.type === 'count' || m.type === 'avg')) parts.push(`mindestens <b>${sbState.min}</b> ${escapeHtml(unitTxt)}`);
+
+            body.innerHTML = `
+                <div class="sb-card">
+                    <div class="sb-row"><div class="sb-lbl">Was?</div><select class="sb-sel" onchange="sbSet('measure', this.value)">${groupsHtml}</select></div>
+                    <div class="sb-row"><div class="sb-lbl">Von wem?</div><select class="sb-sel" onchange="sbSetPlayer(this.value)">${playerHtml}</select></div>
+                    <div class="sb-row"><div class="sb-lbl">Nur wenn …</div>${filterBlocks}<div class="sb-chips">${addChips}</div></div>
+                    <div class="sb-row"><div class="sb-lbl">Gruppieren nach</div><div class="sb-chips">${groupChips}</div></div>
+                    ${sortRow}${minRow}
+                </div>
+                <div class="sb-card">
+                    <div class="sb-sent">${parts.join(' · ')}</div>
+                    ${resultHtml}
+                    ${ev.hiddenMin > 0 ? `<p class="sb-note">${ev.hiddenMin} ${ev.hiddenMin === 1 ? 'Eintrag' : 'Einträge'} unter der Mindestanzahl ausgeblendet.</p>` : ''}
+                    <p class="sb-note">Basis: ${formatDE(ev.evCount)} Abende.</p>
+                    ${gameNote}${noDateNote}${unusableNote}
+                </div>`;
+        }
+
+        // Regelverstoß-Box im Eingabebereich: ein Chip je Teilnehmer, jeder Tipp zählt einen Verstoß
+        // (−PENALTY_POINTS) dazu, der kleine „−“-Knopf nimmt einen zurück.
+        function renderPenaltyBox() {
+            const box = document.getElementById('penaltyBox');
+            const chips = document.getElementById('penaltyChips');
+            const hint = document.getElementById('penaltyHint');
+            if (!box || !chips) return;
+            const season = state.currentSeasonKey ? state.seasons[state.currentSeasonKey] : null;
+            if (!season || season.isHistorical) { box.classList.add('hidden'); return; }
+            const names = entryMode === 'detailed'
+                ? [...detailedOrder]
+                : (season.players || []).filter(n => { const cb = document.getElementById('check-' + n); return cb && cb.checked; });
+            if (names.length === 0) { box.classList.add('hidden'); chips.innerHTML = ''; return; }
+            box.classList.remove('hidden');
+            chips.innerHTML = names.map(n => {
+                const c = tempPenalties[n] || 0;
+                const arg = escapeHtml(escapeJsString(n));
+                return `<span class="pen-item"><button type="button" class="pen-chip${c > 0 ? ' pen-on' : ''}" onclick="changePenalty('${arg}', 1)">${escapeHtml(n)}${c > 0 ? ' ×' + c : ''}</button>${c > 0 ? `<button type="button" class="pen-minus" title="Einen Verstoß zurücknehmen" onclick="changePenalty('${arg}', -1)">−</button>` : ''}</span>`;
+            }).join('');
+            if (hint) hint.textContent = entryMode === 'detailed'
+                ? 'Wird beim Speichern von den Gesamtpunkten abgezogen.'
+                : 'Wird beim Speichern von den eingegebenen Punkten abgezogen.';
+        }
+
+        function changePenalty(name, delta) {
+            saveFormToTemp();
+            const next = Math.max(0, Math.min(9, (tempPenalties[name] || 0) + delta));
+            if (next === 0) delete tempPenalties[name]; else tempPenalties[name] = next;
+            updateLiveDraft();
+            render();
         }
 
         // Feste Leiste am unteren Rand: erscheint, wenn für den laufenden Abend bereits etwas
@@ -5597,6 +6194,7 @@
                 matchBelowSixty = live.belowSixty || {};
                 tempScores = live.scores || {};
                 tempJokers = live.jokers || {};
+                tempPenalties = { ...(live.penalties || {}) };
             } else {
                 entryMode = (season && season.isHistorical) ? 'simple' : 'detailed';
                 detailedOrder = [];
@@ -5604,6 +6202,7 @@
                 matchBelowSixty = {};
                 tempScores = {};
                 tempJokers = {};
+                tempPenalties = {};
             }
             // Datum/Gastgeber-Felder müssen beim Saisonwechsel ebenfalls auf den Stand der neu
             // angezeigten Saison gebracht werden – sonst blieben hier Werte der vorherigen
@@ -5734,6 +6333,7 @@
             editingGameIndex = null;
             tempScores = {};
             tempJokers = {};
+            tempPenalties = { ...(match.penalties || {}) };
             resetCustomSitouts();
             matchBelowSixty = match.belowSixty || {};
 
@@ -5776,7 +6376,7 @@
                             cb.checked = true;
                             cb.dispatchEvent(new Event('change'));
                             const scoreInput = document.getElementById(`score-${name}`);
-                            if (scoreInput) scoreInput.value = match.scores[name];
+                            if (scoreInput) scoreInput.value = match.scores[name] + PENALTY_POINTS * ((match.penalties && match.penalties[name]) || 0); // Eingabewert = Punkte VOR Strafe
                         }
                     });
 
@@ -5925,7 +6525,7 @@
             // für die Blitztabelle gezielt mit includeLiveDraft: false auf, um einen sauberen
             // "Stand vor der Live-Runde" zu bekommen, unabhängig vom zuletzt gespeicherten Spieltag.
             if (includeLiveDraft && isBlitztabelleActive && seasonKey === state.currentSeasonKey && entryMode === 'detailed' && detailedGames.length > 0 && !season.isHistorical) {
-                let currentTotals = computeDetailedTotals();
+                let currentTotals = computeDetailedTotals(true);
                 let tempMatch = {
                     mode: 'detailed',
                     order: detailedOrder,
@@ -6733,6 +7333,7 @@
             if (!checked) {
                 delete tempScores[name];
                 delete tempJokers[name];
+                delete tempPenalties[name];
                 delete matchBelowSixty[name];
             }
 
@@ -6857,7 +7458,9 @@
             return out;
         }
 
-        function computeDetailedTotals() {
+        // includePenalties: zieht die Regelverstoß-Strafen des laufenden Abends ab (Live-Tabelle,
+        // Blitztabelle). Ohne Strafen (Standard) bleibt die Nullsummen-Logik der Eingabe intakt.
+        function computeDetailedTotals(includePenalties = false) {
             let totals = {};
             detailedOrder.forEach(name => totals[name] = 0);
             detailedGames.forEach(game => {
@@ -6866,6 +7469,11 @@
                     if (totals[name] !== undefined) totals[name] += game.points[name];
                 });
             });
+            if (includePenalties) {
+                Object.keys(totals).forEach(name => {
+                    totals[name] -= PENALTY_POINTS * (tempPenalties[name] || 0);
+                });
+            }
             return totals;
         }
 
@@ -6966,6 +7574,53 @@
                 const input = document.getElementById('gamepoint-' + emptyNames[0]);
                 if (input) input.placeholder = `${suggestion > 0 ? '+' : ''}${suggestion} (Vorschlag)`;
             }
+        }
+
+        // Sagt nach dem Speichern eines Spiels den nächsten Geber per Sprachausgabe des Browsers an.
+        // Wird direkt aus dem Klick-Handler aufgerufen (Nutzergeste), damit mobile Browser die
+        // Ausgabe zulassen. Fehlt die Sprachausgabe oder ist der Geber nicht bestimmbar, passiert nichts.
+        // Ob die Ansage aktiv ist, wird pro Gerät gespeichert (Standard: an).
+        function speechSupported() {
+            return ('speechSynthesis' in window) && typeof SpeechSynthesisUtterance !== 'undefined';
+        }
+        function isDealerAnnounceOn() {
+            try { return localStorage.getItem('doko_announce_dealer') !== 'off'; } catch (e) { return true; }
+        }
+        function dealerAnnounceBtnLabel() {
+            return isDealerAnnounceOn() ? '🔊 Geberansage an' : '🔇 Geberansage aus';
+        }
+        function toggleDealerAnnounce() {
+            const on = !isDealerAnnounceOn();
+            try { localStorage.setItem('doko_announce_dealer', on ? 'on' : 'off'); } catch (e) { /* ohne Speicher gilt die Einstellung nur bis zum Neuladen nicht – Standard bleibt "an" */ }
+            const btn = document.getElementById('dealerAnnounceBtn');
+            if (btn) {
+                btn.textContent = dealerAnnounceBtnLabel();
+                btn.classList.toggle('ann-off', !on);
+            }
+            // Kurze Rückmeldung beim Einschalten (zugleich Nutzergeste, die mobile Browser für Ton brauchen)
+            if (on) speakText('Geberansage an');
+            else if (speechSupported()) window.speechSynthesis.cancel();
+        }
+        function speakText(text) {
+            try {
+                if (!speechSupported()) return;
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'de-DE';
+                const deVoice = (window.speechSynthesis.getVoices() || []).find(v => v.lang && v.lang.toLowerCase().startsWith('de'));
+                if (deVoice) utter.voice = deVoice;
+                window.speechSynthesis.cancel(); // laufende Ansage ersetzen
+                window.speechSynthesis.speak(utter);
+            } catch (e) { /* Sprachausgabe ist optional – Fehler bewusst ignoriert */ }
+        }
+
+        function announceNextDealer() {
+            try {
+                if (!speechSupported() || !isDealerAnnounceOn()) return;
+                const idx = getNextDealerIndex(detailedOrder, detailedGames);
+                const name = idx >= 0 ? detailedOrder[idx] : null;
+                if (!name) return;
+                speakText('Nächster Geber: ' + name);
+            } catch (e) { /* Sprachausgabe ist optional – Fehler bewusst ignoriert */ }
         }
 
         function addGameRound() {
@@ -7071,6 +7726,8 @@
             // Manuelle Aussetz-Abweichung galt nur für dieses eine (jetzt gespeicherte) Spiel;
             // für das nächste Spiel wieder mit dem regulären Rotationsvorschlag starten.
             resetCustomSitouts();
+
+            announceNextDealer();
 
             saveFormToTemp();
             updateLiveDraft();
@@ -7315,7 +7972,10 @@
 
             const newRoundHtml = `
                 <div id="gameEntryForm" class="${formAccent.wrap} border rounded-xl p-3 space-y-2">
-                    <p class="text-xs font-bold ${formAccent.title}">${isEditing ? `✏️ Spiel ${editingDisplayNumber || ''} bearbeiten` : `➕ Spiel ${nextGameIndex + 1} erfassen`}</p>
+                    <div class="flex items-center justify-between gap-2">
+                        <p class="text-xs font-bold ${formAccent.title}">${isEditing ? `✏️ Spiel ${editingDisplayNumber || ''} bearbeiten` : `➕ Spiel ${nextGameIndex + 1} erfassen`}</p>
+                        ${speechSupported() ? `<button type="button" id="dealerAnnounceBtn" class="ann-btn${isDealerAnnounceOn() ? '' : ' ann-off'}" onclick="toggleDealerAnnounce()">${dealerAnnounceBtnLabel()}</button>` : ''}
+                    </div>
                     ${detailedOrder.length > 4 ? `<p class="text-[10px] ${formAccent.hint}">„Aussetzen“ ist nach Reihenfolge vorgeschlagen, kann aber angepasst werden. Es müssen genau 4 Spieler aktiv sein.</p>` : ''}
                     <div class="space-y-2">
                         ${detailedOrder.map(name => {
@@ -7483,6 +8143,7 @@
             detailedGames = [];
             tempScores = {};
             tempJokers = {};
+            tempPenalties = {};
             matchBelowSixty = {};
             editingGameIndex = null;
             resetCustomSitouts();
@@ -7636,6 +8297,20 @@
                 }
             }
 
+            // Regelverstöße: Strafpunkte werden NACH der Nullsummenprüfung abgezogen (die Summe des
+            // Abends ist dadurch bewusst kleiner als 0). Gespeichert wird zusätzlich die Anzahl je
+            // Spieler (match.penalties), damit die Strafe in der Anzeige nachvollziehbar bleibt.
+            const matchPenalties = {};
+            if (!season.isHistorical) {
+                Object.keys(matchScores).forEach(n => {
+                    const c = tempPenalties[n] || 0;
+                    if (c > 0) {
+                        matchPenalties[n] = c;
+                        matchScores[n] -= PENALTY_POINTS * c;
+                    }
+                });
+            }
+
             Object.keys(matchJokers).forEach(name => {
                 let alreadyUsed = false;
                 if (season.matches) {
@@ -7677,6 +8352,7 @@
                 createdTimestamp: Date.now(),
                 mode: useDetailedMode ? 'detailed' : 'simple',
                 pointType: season.isHistorical ? matchPointType : 'spieltag',
+                ...(Object.keys(matchPenalties).length > 0 ? { penalties: matchPenalties } : {}),
                 ...(useDetailedMode ? { order: detailedOrderForSave, games: detailedGamesForSave } : {})
             };
 
@@ -7720,6 +8396,7 @@
             editingGameIndex = null;
             tempScores = {};
             tempJokers = {};
+            tempPenalties = {};
             matchBelowSixty = {};
             
             liveStatsExpanded = false;
@@ -8372,6 +9049,7 @@
             updateModeToggleUI();
             restoreFormState();
             updateEntrySummary();
+            renderPenaltyBox();
             initMainPlayersSortable();
 
             // entryMode/detailedGames/tempScores sind an dieser Stelle für die aktuell angezeigte
@@ -8386,7 +9064,7 @@
             if (entryMode === 'detailed' && detailedGames.length > 0 && !editingMatchId) {
                 liveViewer.classList.remove('hidden');
 
-                const totals = computeDetailedTotals();
+                const totals = computeDetailedTotals(true);
                 const actualGamesCount = detailedGames.filter(g => !g.isRoundMarker).length;
                 document.getElementById('liveViewerCount').textContent = actualGamesCount;
 
@@ -8482,6 +9160,18 @@
                     tableRowsHtml += `</tr>`;
                     liveGameNumber++;
                 });
+
+                // Strafzeile für Regelverstöße des laufenden Abends (unter den Einzelspielen).
+                if (detailedOrder.some(n => (tempPenalties[n] || 0) > 0)) {
+                    tableRowsHtml += `
+                        <tr class="text-xs bg-red-50/70 dark:bg-red-950/20 border-t border-red-200 dark:border-red-900/50">
+                            <td class="lt-cell lt-first lt-first-row font-bold text-red-700 dark:text-red-400 border-r border-red-100 dark:border-red-900/40 text-left align-top whitespace-nowrap" title="Regelverstoß">⚠</td>
+                            ${detailedOrder.map(n => {
+                                const c = tempPenalties[n] || 0;
+                                return `<td class="lt-cell text-center border-r border-red-100 dark:border-red-900/40 align-top"><span class="font-mono font-bold text-red-700 dark:text-red-400" title="${c}× Regelverstoß">${c > 0 ? '−' + (PENALTY_POINTS * c) : ''}</span></td>`;
+                            }).join('')}
+                        </tr>`;
+                }
 
                 liveTableBody.innerHTML = tableRowsHtml;
 
@@ -8926,6 +9616,7 @@
                                                         }
                                                         return '';
                                                     })()}
+                                                    ${(match.penalties && match.penalties[p]) ? `<span class="text-[9px] px-1 py-0.5 rounded border bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900 font-bold" title="Regelverstoß: ${match.penalties[p]}× ${PENALTY_POINTS} Minuspunkte">⚠ −${PENALTY_POINTS * match.penalties[p]}</span>` : ''}
                                                     <span class="${scoreClass} font-bold text-xs whitespace-nowrap">${prefix}${formatDE(score)} ${pointsLabelText}</span>
                                                 </div>
                                             </div>
