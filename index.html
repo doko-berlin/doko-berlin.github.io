@@ -709,10 +709,21 @@
             <h2 class="text-2xl font-bold mb-4 text-steel-800 dark:text-steel-400 border-b dark:border-slate-700 pb-2 flex items-center gap-2">✨ Changelog (What's new?)</h2>
             <div class="space-y-4 max-h-96 overflow-y-auto pr-1">
 
-                <!-- Version 2.5 -->
+                <!-- Version 2.5.1 -->
                 <div class="border-l-2 border-steel-500 pl-3 py-1">
                     <div class="flex justify-between items-center">
-                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.5</span>
+                        <span class="text-sm font-bold text-slate-800 dark:text-slate-200">Version 2.5.1</span>
+                        <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">23.11.2026</span>
+                    </div>
+                    <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
+                        <li><strong>Bugfix Abbruch und Speichern:</strong> Wird ein laufender Abend auf einem Gerät abgebrochen oder gespeichert, verschwindet er nun auch auf dem Gerät, dem die Eingabe-Sperre zuvor entzogen wurde.</li>
+                    </ul>
+                </div>
+
+                <!-- Version 2.5 -->
+                <div class="border-l-2 border-slate-300 dark:border-slate-700 pl-3 py-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold text-slate-600 dark:text-slate-300">Version 2.5</span>
                         <span class="text-[10px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900 font-bold px-1.5 py-0.5 rounded">22.11.2026</span>
                     </div>
                     <ul class="list-disc list-inside text-xs text-slate-600 dark:text-slate-300 space-y-1.5 mt-2">
@@ -4987,6 +4998,19 @@
                             localLive = null;
                             safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
                         }
+                        // Wurde der Abend auf einem ANDEREN Gerät bewusst abgebrochen (Vermerk in der
+                        // Cloud, Server-Zeit), ist eine ältere lokale Sicherung ebenfalls überholt –
+                        // auch wenn sie als eigene Eingabe markiert ist. Lokale Zeit dafür per
+                        // serverTimeOffset auf Server-Zeit umrechnen. Später begonnene Entwürfe bleiben.
+                        const cancelledAt = season.liveDraftCancelledAt || 0;
+                        if (localLive && localLive.timestamp && cancelledAt &&
+                            (localLive.timestamp + serverTimeOffset) <= cancelledAt) {
+                            localLive = null;
+                            safeLocalStorageRemove(`doko_live_draft_${state.currentSeasonKey}`);
+                            if (localDraftIsOwn) {
+                                showToast('Der laufende Abend wurde auf einem anderen Gerät abgebrochen oder gespeichert.', 'info');
+                            }
+                        }
                     } catch (e) {
                         console.error("Fehler beim Verarbeiten des Offline-Entwurfs", e);
                     }
@@ -8165,8 +8189,17 @@
                     // Zeitstempel (0) und würde von dieser Schutzlogik fälschlich als "veraltet"
                     // eingestuft – der alte Entwurf würde dadurch sofort wiederhergestellt. Ein
                     // gezieltes remove() auf dem konkreten Pfad umgeht dieses Problem sauber.
+                    //
+                    // Zusätzlich wird in derselben atomaren Aktion ein Abbruch-Vermerk
+                    // (liveDraftCancelledAt, Server-Zeit) an der Saison hinterlegt. Andere Geräte, die
+                    // noch eine lokale Sicherung dieses Abends haben (z.B. weil ihnen die Sperre
+                    // übernommen wurde), verwerfen sie damit im Realtime-Listener – sonst würde der
+                    // Abend dort weiterleben und später wieder in die Cloud zurückgeschrieben.
                     if (!editLockInfo || hasEditLock) {
-                        trackPendingWrite(db.ref(`doko_v2_data/seasons/${seasonKey}/liveDraft`).remove()).catch((err) => {
+                        trackPendingWrite(db.ref(`doko_v2_data/seasons/${seasonKey}`).update({
+                            liveDraft: null,
+                            liveDraftCancelledAt: firebase.database.ServerValue.TIMESTAMP
+                        })).catch((err) => {
                             console.warn('Löschen des Live-Entwurfs in der Cloud fehlgeschlagen:', err);
                             showToast('Der Entwurf konnte nicht in der Cloud gelöscht werden. Bitte Internetverbindung prüfen.', 'error');
                         });
@@ -8377,6 +8410,14 @@
             lastCancelledDraftTs = Date.now() + serverTimeOffset + 2000;
             const seasonKey = state.currentSeasonKey;
             delete season.liveDraft;
+            // Abschluss-Vermerk in der Saison (geschätzte Serverzeit, geht mit dem anschließenden
+            // .set() in die Cloud): Andere Geräte verwerfen damit eine ältere lokale Sicherung dieses
+            // Abends im Realtime-Listener, unabhängig von ihrer Geräte-Uhr. Nur beim Speichern eines
+            // NEUEN Abends – beim Bearbeiten eines alten Abends läuft ein anderer Entwurf evtl. weiter.
+            // Siehe cancelMatchEntry() / startDatabaseListener().
+            if (!editingMatchId) {
+                season.liveDraftCancelledAt = Date.now() + serverTimeOffset;
+            }
             // WICHTIG: Die lokale Offline-Sicherung in localStorage wird bewusst NICHT
             // hier sofort gelöscht, sondern erst weiter unten, nachdem die Cloud-Speicherung
             // tatsächlich bestätigt wurde. Andernfalls würde bei einer Firebase-Schreibung,
